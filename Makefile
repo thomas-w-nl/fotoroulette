@@ -2,7 +2,7 @@
 
 run:
 	source python_install/bin/activate; \
-	python main.py;
+	python src/main.py;
 
 shell:
 	source python_install/bin/activate; \
