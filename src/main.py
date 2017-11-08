@@ -1,5 +1,7 @@
 from modules.log import *
+import sys
+import os
 
-log.critical("ERR")
-print(__name__)
-log.debug("wazaaa")
+log.info("Python version: " + sys.version)
+log.debug("WorkingDir: " + os.getcwd())
+import modules.opencv
