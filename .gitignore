@@ -3,7 +3,7 @@ docs/_build
 *~
 #*
 .idea
-
+.directory
 
 #
 # Python shizzel
@@ -118,6 +118,8 @@ venv.bak/
 #
 # C++ shizzel
 #
+
+cmake-build-debug
 
 # Prerequisites
 *.d
