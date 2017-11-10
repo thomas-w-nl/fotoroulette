@@ -29,13 +29,35 @@ cv::Mat drawRectangle(cv::Mat img, std::vector<cv::Rect> rect) {
     return img;
 }
 
-int main() {
+void videoCapture() {
+    cv::VideoCapture cap(0);
+    if (!cap.isOpened()) {
+        std::cout << "camera failed!";
+    }
+    cv::namedWindow("cam", 1);
+    while (1) {
+        cv::Mat frame;
+        cap >> frame;
+        frame = drawRectangle(frame, getFace(frame));
+        cv::imshow("cam", frame);
+        if (cv::waitKey(27) >= 0) break;
+    }
+
+}
+
+void imgRecon() {
     std::string imgName = "arnold.jpg";
-    chdir("/home/noeel/Documents/git/pi-fys");
     cv::Mat img = cv::imread("img/" + imgName);
     img = drawRectangle(img, getFace(img));
+
     cv::imshow("OpenCV", img);
 //    cv::imwrite("out/" + imgName, img);
     cv::waitKey(0);
+}
+
+int main() {
+    chdir("/home/noeel/Documents/git/pi-fys");
+    videoCapture();
+//    imgRecon();
     return 1;
 }
