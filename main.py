@@ -3,6 +3,7 @@ import cv2
 import time
 import serial
 
+
 def gen_photo(camera):
     while True:
         ret, frame = camera.read()
@@ -13,6 +14,7 @@ def gen_photo(camera):
 def save_photo(photo_name, frame):
     print("Saving file: %s" % photo_name)
     cv2.imwrite(photo_name, frame)
+
 
 if __name__ == "__main__":
     cam = cv2.VideoCapture(-1)
