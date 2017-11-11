@@ -33,6 +33,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # ones.
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.todo',
+    'sphinx.ext.napoleon',
     'sphinx.ext.viewcode']
 
 # Add any paths that contain templates here, relative to this directory.
@@ -49,8 +50,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Vakantiekieker'
-copyright = '2017, Valentijn van de Beek, Thomas Wiggers, Michel Jonk, Noeël Moeskops, Theo Bouwman'
-author = 'Valentijn van de Beek, Thomas Wiggers, Michel Jonk, Noeël Moeskops, Theo Bouwman'
+copyright = '2017, Valentijn van de Beek, Thomas Wiggers, Michel Jonk,\nNoeël Moeskops, Theo Bouwman'
+author = 'Valentijn van de Beek, Thomas Wiggers, Michel Jonk,\nNoeël Moeskops, Theo Bouwman'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
