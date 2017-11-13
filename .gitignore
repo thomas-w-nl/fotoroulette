@@ -4,3 +4,5 @@ docs/_build
 #*
 *png
 .idea/
+env/
+python_install/
