@@ -3,7 +3,7 @@ import uuid
 import cv2
 import os
 
-import numpy
+import numpy as np
 
 from PIL import Image
 
@@ -38,15 +38,25 @@ class Game:
 class Versus(Game):
 
     def generate_image(self):
-        # TODO: combine image1 and image2
+        img1 = cv2.imread(self._photos[0])
+        img2 = cv2.imread(self._photos[1])
 
-        background = Image.open(self._photos[0])
+        h1, w1 = img1.shape[:2]
+        h2, w2 = img2.shape[:2]
+
+        # create empty matrix
+        background = np.zeros((max(h1, h2), w1 + w2, 3), np.uint8)
+
+        # combine 2 images
+        background[:h1, :w1, :3] = img1
+        background[:h2, w1:w1 + w2, :3] = img2
+
+        # load overlay
         overlay = Image.open(PROJECT_ROOT_DIR + "/assets/overlays/versus.png")
-
-        background = background.convert("RGBA")
         overlay = overlay.convert("RGBA")
 
-        text_img = Image.new('RGBA', (DEFAULT_WIDTH, DEFAULT_HEIGHT), (0, 0, 0, 0))
-        text_img.paste(background, (0, 0))
-        text_img.paste(overlay, (0, 0), mask=overlay)
-        text_img.save(PROJECT_ROOT_DIR + "/assets/generated_output/" + str(self._game_id) + ".jpg", format="png")
+        # generate final image
+        gen_img = Image.new('RGBA', (DEFAULT_WIDTH, DEFAULT_HEIGHT), (0, 0, 0, 0))
+        gen_img.paste(img1, (0, 0))
+        gen_img.paste(overlay)
+        gen_img.save(PROJECT_ROOT_DIR + "/assets/generated_output/" + str(self._game_id) + ".jpg", format="png")
