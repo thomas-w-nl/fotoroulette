@@ -1,8 +1,12 @@
-python_install/
-docs/_build
 *~
 #*
-*png
 .idea/
-env/
+.DS_Store
+__pycache__/
+
 python_install/
+env/
+docs/_build
+
+assets/taken_pictures/
+assets/generated_output/
