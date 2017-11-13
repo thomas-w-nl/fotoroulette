@@ -7,6 +7,8 @@ import numpy
 
 from PIL import Image
 
+PROJECT_ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 DEFAULT_WIDTH = 300
 DEFAULT_HEIGHT = 250
 
@@ -22,11 +24,12 @@ class Game:
         self.name = name
         self._photos = photos
 
-    def push_foto(self, photo):
+    def push_photo(self, photo):
+        """
+        Push a photo to the photos array
+        :param photo: String: path of the image
+        """
         self._photos.append(photo)
-
-    def bewerk(self, index):
-        return self._photos[index]
 
     def clear(self):
         self._photos = []
@@ -35,18 +38,7 @@ class Game:
 class Versus(Game):
 
     def generate_image(self):
-        PROJECT_ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-        overlay = cv2.imread(PROJECT_ROOT_DIR + "/assets/overlays/versus.png")
-
-        # image1 = cv2.imread(PROJECT_ROOT_DIR + "/" + self._photos[0])
-
-        # image2 = cv2.imread(PROJECT_ROOT_DIR + "/" + self._photos[1])
-
-        # TODO: combine image1 and image2 to fixed size image
-
-        #
-        # output_image = cv2.addWeighted(image1, 1.0, overlay, 1.0, 0)
+        # TODO: combine image1 and image2
 
         background = Image.open(self._photos[0])
         overlay = Image.open(PROJECT_ROOT_DIR + "/assets/overlays/versus.png")
