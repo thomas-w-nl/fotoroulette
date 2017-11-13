@@ -10,8 +10,8 @@ shell:
 
 
 install:
-	python3.6 -m venv --prompt "pi" --system-site-packages python_install
+	python3 -m venv --prompt "pi" --system-site-packages python_install
 	source python_install/bin/activate; \
-	pip3.6 install -r Requirements.txt;
+	pip3 install -r Requirements.txt;
 
 
