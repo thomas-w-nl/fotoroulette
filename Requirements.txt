@@ -1,4 +1,5 @@
 alabaster==0.7.10
+pyserial==3.4
 Babel==2.5.1
 certifi==2017.11.5
 chardet==3.0.4
@@ -10,8 +11,6 @@ imagesize==0.7.1
 Jinja2==2.9.6
 MarkupSafe==1.0
 numpy==1.13.3
-opencv-python==3.3.0.10
-pockets==0.5.1
 Pygments==2.2.0
 pytz==2017.3
 requests==2.18.4
