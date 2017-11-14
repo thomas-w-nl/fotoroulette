@@ -14,7 +14,7 @@ class PiCamera:
     """
     def __init__(self):
         self._cam = cv2.VideoCapture(-1)
-        self._face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+        self._face_cascade = cv2.CascadeClassifier('haarCascades/haarcascade_frontalface_default.xml')
 
     def get_photo(self):
         """
