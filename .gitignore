@@ -6,6 +6,7 @@ docs/_build
 .directory
 test
 out
+.iml
 #
 # Python shizzel
 #
