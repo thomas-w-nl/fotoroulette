@@ -5,7 +5,7 @@
 __pycache__/
 
 python_install/
-env/
+env
 docs/_build
 
 assets/taken_pictures/
