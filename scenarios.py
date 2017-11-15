@@ -14,14 +14,16 @@ DEFAULT_HEIGHT = 250
 
 
 class Game:
-    def __init__(self, name, photos):
+    def __init__(self, name, bg, fg_list):
         """
         :param name: Name of the game
-        :param photos:
+        :param bg: background
+        :param fg_list: list of images with offsets to overlay
         """
         self._game_id = uuid.uuid4()
         self.name = name
-        self._photos = photos
+        self._bg = bg
+        self._fg_list = fg_list
 
     def push_photo(self, photo):
         """
@@ -79,12 +81,16 @@ class Versus(Game):
         return bg
 
     def generate_image(self):
-        bg = cv2.imread(self._photos[0])
-        fg = cv2.imread(self._photos[1])
 
-        # todo for each image
-        out = Versus.overlay(bg, fg, -1, -1)
+        bg = cv2.imread(self._bg)
 
-        cv2.imshow('out', out)
+        for fg_i in self._fg_list:
+            fg_i_img = cv2.imread(fg_i[0])
+            fg_offset_x = fg_i[1]
+            fg_offset_y = fg_i[2]
+
+            bg = Versus.overlay(bg, fg_i_img, fg_offset_x, fg_offset_y)
+
+        cv2.imshow('out', bg)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
