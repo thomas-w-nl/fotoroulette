@@ -14,14 +14,14 @@ class Servo:
         self.delay = delay
 
     def __next__(self):
-        if self.angle > self.max_angle:
+        if self.angle >= self.max_angle:
             raise StopIteration
 
         self.angle += self.step
 
         time.sleep(self.delay)
         duty = self.angle / 20.0 + 2.5
-        self.ChangeDutyCycle(duty)
+        self.pwm.ChangeDutyCycle(duty)
 
         return self.angle
 
@@ -30,7 +30,7 @@ class Servo:
 
 
 if __name__ == "__main__":
-    servo = Servo()
+    servo = Servo(step=5, delay=1)
 
     for angle in servo:
         print(angle)
