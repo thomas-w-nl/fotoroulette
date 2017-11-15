@@ -1,36 +1,41 @@
 import RPi.GPIO as GPIO
 import time
 
-GPIO.setmode(GPIO.BCM)
 
-TRIG = 23
-ECHO = 24
+class RangeSensor:
+    def __init__(self):
 
-print "Distance Measurement In Progress"
+        GPIO.setmode(GPIO.BCM)
 
-GPIO.setup(TRIG, GPIO.OUT)
-GPIO.setup(ECHO, GPIO.IN)
+        self.TRIG = 23
+        self.ECHO = 24
 
-GPIO.output(TRIG, False)
-print "Waiting For Sensor To Settle"
-time.sleep(2)
+    def __del__(self):
+        GPIO.cleanup()
 
-GPIO.output(TRIG, True)
-time.sleep(0.00001)
-GPIO.output(TRIG, False)
+    def get_distance(self):
 
-while GPIO.input(ECHO) == 0:
-    pulse_start = time.time()
+        GPIO.setup(self.TRIG, GPIO.OUT)
+        GPIO.setup(self.ECHO, GPIO.IN)
 
-while GPIO.input(ECHO) == 1:
-    pulse_end = time.time()
+        GPIO.output(self.TRIG, False)
+        time.sleep(2)
 
-pulse_duration = pulse_end - pulse_start
+        GPIO.output(self.TRIG, True)
+        time.sleep(0.00001)
+        GPIO.output(self.TRIG, False)
 
-distance = pulse_duration * 17150
+        # todo use some clever thread interrupts or something
+        while GPIO.input(self.ECHO) == 0:
+            pulse_start = time.time()
 
-distance = round(distance, 2)
+        while GPIO.input(self.ECHO) == 1:
+            pulse_end = time.time()
 
-print "Distance:", distance, "cm"
+        pulse_duration = pulse_end - pulse_start
 
-GPIO.cleanup()
+        distance = pulse_duration * 17150
+
+        distance = round(distance, 2)
+
+        return distance
