@@ -15,10 +15,8 @@ class NetworkingService:
                 fullpath = os.path.join(image_path, filename)
                 files.append(('image[]', open(fullpath, 'rb')))
 
-        headers = {'auth': self.auth_key, 'Content-Type': 'application/x-www-form-urlencoded'}
-        r = requests.post(self.url + '/api/session/upload', files=files)
-        print(r.content)
-        exit()
+        headers = { 'auth': self.auth_key }
+        r = requests.post(self.url + '/api/session/upload', files=files, headers=headers)
 
         content = json.loads(r.content)
 
