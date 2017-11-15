@@ -10,7 +10,7 @@ shell:
 
 
 install:
-	python -m venv --prompt "pi" --system-site-packages python_install
+	python3 -m venv --prompt "pi" --system-site-packages python_install
 	source python_install/bin/activate; \
 	pip install -r Requirements.txt;
 
