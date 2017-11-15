@@ -62,23 +62,29 @@ class Versus(Game):
         rows_fg, cols_fg, channels_fg = fg.shape
         rows_bg, cols_bg, channels_bg = bg.shape
 
-        if offset_x == -1:
-            offset_x = int((rows_bg - rows_fg) / 2)
+        if (offset_x < -100) or (offset_x < -100):
+            raise ValueError('offset more than 100%')
 
-        if offset_y == -1:
-            offset_y = int((cols_bg - cols_fg) / 2)
+        # negative numbers from -100 to 1 are percentage offsets
+        if offset_y < 0:
+            offset_y_percentage = offset_y * -0.01
+            offset_y = int((rows_bg - rows_fg) * offset_y_percentage)
+
+        if offset_x < 0:
+            offset_x_percentage = offset_x * -0.01
+            offset_x = int((cols_bg - cols_fg) * offset_x_percentage)
 
         if (rows_fg > rows_bg) or (cols_fg > cols_bg):
             raise ValueError('Overlay bigger than background')
 
-        if ((offset_x + rows_fg) > rows_bg) or ((offset_y + cols_fg) > cols_bg):
+        if ((offset_y + rows_fg) > rows_bg) or ((offset_x + cols_fg) > cols_bg):
             raise ValueError('offset too big')
 
         # I want to put logo on top-left corner, So I create a Region of interest (ROI)
-        roi_rows_end = offset_x + rows_fg
-        roi_cols_end = offset_y + cols_fg
+        roi_rows_end = offset_y + rows_fg
+        roi_cols_end = offset_x + cols_fg
 
-        roi = bg[offset_x:roi_rows_end, offset_y:roi_cols_end]
+        roi = bg[offset_y:roi_rows_end, offset_x:roi_cols_end]
 
         # Now create a mask of logo and create its inverse mask also
         gray_fg = cv2.cvtColor(fg, cv2.COLOR_BGR2GRAY)
@@ -95,7 +101,7 @@ class Versus(Game):
 
         dst = cv2.add(bg_bg, fg_fg)
 
-        bg[offset_x:roi_rows_end, offset_y:roi_cols_end] = dst
+        bg[offset_y:roi_rows_end, offset_x:roi_cols_end] = dst
 
         return bg
 
