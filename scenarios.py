@@ -1,4 +1,5 @@
 import uuid
+from enum import Enum
 
 import cv2
 import os
@@ -11,6 +12,24 @@ PROJECT_ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 DEFAULT_WIDTH = 300
 DEFAULT_HEIGHT = 250
+
+
+class Games(Enum):
+    VERSUS = 0
+    SUPERHEROES = 1
+    ROULETTE = 2
+    LOVEMETER = 3
+
+
+def new_game(game, name, photos):
+    if game == Games.VERSUS:
+        return Versus(name, photos)
+    elif game == Games.SUPERHEROES:
+        return Superheroes(name, photos)
+    elif game == Games.ROULETTE:
+        return Roulette(name, photos)
+    elif game == Games.LOVEMETER:
+        return LoveMeter(name, photos)
 
 
 class Game:
@@ -26,7 +45,7 @@ class Game:
     def push_photo(self, photo):
         """
         Push a photo to the photos array
-        :param photo: String: path of the image
+        :param photo: path of the image
         """
         self._photos.append(photo)
 
@@ -88,3 +107,18 @@ class Versus(Game):
         cv2.imshow('out', out)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+
+
+class Superheroes(Game):
+    def generate_image(self):
+        return
+
+
+class LoveMeter(Game):
+    def generate_image(self):
+        return
+
+
+class Roulette(Game):
+    def generate_image(self):
+        return
