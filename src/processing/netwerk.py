@@ -1,2 +1,4 @@
-def send_photos(frame[]: Mat) -> str:
-    pass
+def send_photos(frame[]: Mat
+
+) -> str:
+pass

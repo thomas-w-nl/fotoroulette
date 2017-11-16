@@ -6,4 +6,3 @@ class photo_data:
 
     def get_sensor_data(self, graden: int):
         pass
-

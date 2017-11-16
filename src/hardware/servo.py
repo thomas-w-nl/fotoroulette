@@ -1,4 +1,3 @@
-
 _speed = 1
 
 
@@ -25,4 +24,4 @@ def increase_position(grade: int) -> int:
 
 
 print("shit")
-    # TODO: close pins met destructor
+# TODO: close pins met destructor
