@@ -14,13 +14,15 @@ def save_photo(photo_name, frame):
     print("Saving file: %s" % photo_name)
     cv2.imwrite(photo_name, frame)
 
+
+# gecommente dingen zijn nogal camera specifiek, werkt niet bij mij
 if __name__ == "__main__":
-    cam = cv2.VideoCapture(-1)
+    cam = cv2.VideoCapture(0)
     photo_gen = gen_photo(cam)
-    device = serial.Serial('/dev/ttyACM3', 9600, timeout=0)
+    # device = serial.Serial('/dev/ttyACM3', 9600, timeout=0)
 
     while True:
-        message = device.readline().decode("utf-8")
+        #message = device.readline().decode("utf-8")
         photo = next(photo_gen)
         # photo = add_median(photo)
         cv2.imshow('image', photo)
@@ -29,8 +31,8 @@ if __name__ == "__main__":
         if key == ord('q'):
             break
 
-        if message != "":
-            save_photo(str(time.clock_gettime(0)) + '.png', photo)
+            # if message != "":
+            #save_photo(str(time.clock_gettime(0)) + '.png', photo)
 
     cam.release()
     cv2.destroyAllWindows()
