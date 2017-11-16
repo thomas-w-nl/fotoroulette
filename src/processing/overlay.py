@@ -1,6 +1,4 @@
 import numpy as np
-from enum import Enum
-
 
 # todo moet ook image path en face image offsets bevatten voor elke game type
 class GameType:
