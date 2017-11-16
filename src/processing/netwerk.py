@@ -1,4 +1,5 @@
-def send_photos(frame[]: Mat
+import numpy as np
 
-) -> str:
-pass
+
+def send_photos(frame: np.array) -> str:
+    pass

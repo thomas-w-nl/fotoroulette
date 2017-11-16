@@ -26,7 +26,7 @@ def get_distance() -> int:
     Meet de afstand met de sensor. Hiervoor moeten Echo op pin 24 en Trig op pin 23 aangsloten zijn
     met weerstanden. De sensor wordt geinitaliseerd bij het inladen van dit bestand.
     Voor naukeurigheid wordt de afstand 3x gemeten.
-    :return: int met de afstand in cm
+    :return: int: de afstand in cm
     \"""
     distance = 0
 
