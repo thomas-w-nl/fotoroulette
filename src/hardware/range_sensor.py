@@ -2,7 +2,7 @@ def get_distance() -> int:
     return 10
 
 
-# todo dummy data, remove 4 triple quotes
+# todo dummy data, remove 2 triple quotes and 2 backslashes
 """
 import RPi.GPIO as GPIO
 import time
