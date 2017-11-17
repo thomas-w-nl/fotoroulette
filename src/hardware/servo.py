@@ -1,28 +1,14 @@
-
-_speed = 1
-
-
-def set_speed(speed: int) -> int:
-    _speed = speed
-    return _speed
+_position = 0
 
 
-def get_speed() -> int:
-    return _speed
-
-
-def goto_position(grade: int) -> int:
-    pass
+def goto_position(graden: int):
+    _position = graden
 
 
 def get_position() -> int:
     pass
 
 
-def increase_position(grade: int) -> int:
-    goto_position(get_position() + grade)
+def increase_position(graden: int) -> int:
+    goto_position(get_position() + graden)
     return get_position()
-
-
-print("shit")
-    # TODO: close pins met destructor
