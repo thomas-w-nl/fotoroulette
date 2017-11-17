@@ -1,22 +1,16 @@
 import cv2
-# from log import *
-from ..modules.log import *
+from log import *
 
 # TODO: Dit bestand moet nog gedocumenteerd worden, en miss moeten wat namen duidelijker en return waardes op videoCapture enzo.
 
 def getFace(frame):
+    log.debug(frame)
     imgGrey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    face_cascade = cv2.CascadeClassifier("haarCascades/haarcascade_frontalface_default.xml")
-
+    face_cascade = cv2.CascadeClassifier("haarCascades/haarcascade_frontalface_alt.xml")
     if face_cascade == None:
         log.error("Face cascade failed to load!")
-
     # mijn C lijn, TODO: uitzoeken wat al die shizzel achter imgGrey/faces is.
     # face_cascade.detectMultiScale(imgGrey, faces, 1.1, 2, 0 | cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
-
-    # cv2.CascadeClassifier.detectMultiScale3(image[, scaleFactor[, minNeighbors[, flags[, minSize[, maxSize[,
-    # outputRejectLevels]]]]]]) → objects, rejectLevels, levelWeights
-
     faces = face_cascade.detectMultiScale(imgGrey, 1.3, 5)
     return faces
 
@@ -32,7 +26,7 @@ def videoCapture():
     # TODO: deze moet eingelijk een frame returnen ofzo
     cap = cv2.VideoCapture(0)
 
-    if cap.isOpened() == False:
+    if cap.isOpened() == None:
         log.error("Could not open camera")
 
     while 1:
@@ -74,6 +68,8 @@ def cut(frame, rect):
         # TODO: Dit moet eigenlijk met arrays werken anders werkt het niet meer meerdere gezichten.
         return frame[y:(y+h), x:(x+w)]
 
+
 if __name__ == "__main__":
     # only use this for testing!
-    imgRecon()
+    # imgRecon()
+    videoCapture()
