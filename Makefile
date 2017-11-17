@@ -1,15 +1,17 @@
 .PHONY: install shell run 
 
 run:
-	source env/bin/activate;
-	python src/main.py;
+	source python_install/bin/activate; \
+	python3.6 main.py;
 
 shell:
-	source env/bin/activate; \
+	source python_install/bin/activate; \
 	bpython;
 
 
 install:
-	python3 -m venv --prompt "pi" --system-site-packages env
-	source env/bin/activate; \
-	pip install -r Requirements.txt;
+	python3 -m venv --prompt "pi" --system-site-packages python_install
+	source python_install/bin/activate; \
+	pip3 install -r Requirements.txt;
+
+
