@@ -2,32 +2,33 @@ import random
 import cv2
 from bisect import bisect_left
 
-# voor alle waarden die binnen de helft van de sensor angle liggen is de data valid
-SENSOR_ANGLE_HALF = 15 / 2
-# y = -1/((130^2)*1.3)(x - 130)^2 + 0.8
+SENSOR_ANGLE = 15
+# y = -1/((130^2)*1.3)(x - 130)^2 + 1
 SWEETSPOT = 130  # cm
 SWEETSPOT_WIDTH_FACTOR = 1.3
-MAX_CONFIDENCE = 0.8
+MAX_CONFIDENCE = 1
 
 
 class PhotoData:
     def __init__(self):
-        self._photo = []
+        self._photos = []
         self._photo_angle = []
         self._sensor_data = []
-        self._sensor_data_angle = []
-        self._sorted = True
 
-    def get_sensor_data(self, graden: int) -> int:
+    def __iter__(self):
+        for photo, photo_angle in zip(self._photos, self._photo_angle):
+            yield (photo, photo_angle)
+
+    def get_sensor_confidence(self, graden: int) -> int:
         """
         Geeft de confidence score voor de sensor data bij een meegegeven aantal graden
-        :param graden: het aantal graden
+        :param graden: de hoek waar de data wordt opgevraagd
         :return confidence_score: de zekerheid of er iemand voor staat
         """
 
-        closes_data = self._get_closest(graden)
+        closes_data = self._angle_to_data(graden)
 
-        if 0 > closes_data > SENSOR_ANGLE_HALF:
+        if closes_data < 0:
             return -1
 
         afstand = self._sensor_data[closes_data]
@@ -41,43 +42,35 @@ class PhotoData:
         # todo dummy data
         # return confidence
 
-        return random.random()
+        return random.randrange(0.3, 0.9)
 
-    def _get_closest(self, number):
+    def _angle_to_data(self, angle: int) -> int:
 
-        out = -1
+        """
+        Return de sensor data voor een bepaalde hoek
+        :param angle: de hoek waar de data wordt opgevraagd
+        :return: de afstand
+        """
+        steps = int(round(angle / SENSOR_ANGLE, 0))
 
-        if self._sorted:
-            """
-            Assumes myList is sorted. Returns closest value to myNumber.
+        if steps < 0 or steps > len(self._sensor_data):
+            return -1
 
-            If two numbers are equally close, return the smallest number.
-            """
-            pos = bisect_left(self._sensor_data_angle, number)
-            if pos == 0:
-                return self._sensor_data_angle[0]
-            if pos == len(self._sensor_data_angle):
-                return -1
-            before = self._sensor_data_angle[pos - 1]
-            after = self._sensor_data_angle[pos]
-            if after - number < number - before:
-                return after
-            else:
-                return before
-
-        elif not self._sorted:
-            out = min(self._sensor_data_angle, key=lambda x: abs(x - number))
-
-        return out
+        data = self._sensor_data[steps]
+        return data
 
     def get_photo(self, i):
-        # return {self._photo[i], self._photo_angle[i]}
+        # return (self._photo[i], self._photo_angle[i])
 
-        # todo dummy data, remove import cv2
+        # todo dummy data
         dummy_photo = cv2.imread('img/faces.jpg')
         dummy_angle = random.randint(0, 180)
-        return {dummy_photo, dummy_angle}
+        return (dummy_photo, dummy_angle)
 
     def set_photo(self, photo, photo_angle):
-        self._photo.append(photo)
+        self._photos.append(photo)
         self._photo_angle.append(photo_angle)
+
+    def set_sensor_data(self, sensor_data, sensor_data_angle):
+        self._sensor_data.append(sensor_data)
+        self._sensor_data_angle.append(sensor_data_angle)
