@@ -2,18 +2,21 @@ import random
 import cv2
 from bisect import bisect_left
 
-SENSOR_ANGLE = 15
+
 # y = -1/((130^2)*1.3)(x - 130)^2 + 1
+from src.hardware import range_sensor
+
 SWEETSPOT = 130  # cm
 SWEETSPOT_WIDTH_FACTOR = 1.3
 MAX_CONFIDENCE = 1
 
 
 class PhotoData:
-    def __init__(self):
+    def __init__(self, sensor_data_step_size):
         self._photos = []
         self._photo_angle = []
         self._sensor_data = []
+        self._sensor_data_step_size = sensor_data_step_size
 
     def __iter__(self):
         for photo, photo_angle in zip(self._photos, self._photo_angle):
@@ -51,7 +54,8 @@ class PhotoData:
         :param angle: de hoek waar de data wordt opgevraagd
         :return: de afstand
         """
-        steps = int(round(angle / SENSOR_ANGLE, 0))
+        # het aantal stappen genomen om bij de juiste meting uit te komen
+        steps = int(round(angle / self._sensor_data_step_size, 0))
 
         if steps < 0 or steps > len(self._sensor_data):
             return -1
@@ -71,6 +75,5 @@ class PhotoData:
         self._photos.append(photo)
         self._photo_angle.append(photo_angle)
 
-    def set_sensor_data(self, sensor_data, sensor_data_angle):
+    def set_sensor_data(self, sensor_data):
         self._sensor_data.append(sensor_data)
-        self._sensor_data_angle.append(sensor_data_angle)

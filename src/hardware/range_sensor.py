@@ -1,6 +1,7 @@
 # todo dummy data, uncomments
 import random
 
+SENSOR_ANGLE = 15
 
 def get_distance() -> int:
     return random.randrange(50, 200)
