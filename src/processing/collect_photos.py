@@ -5,52 +5,49 @@ from src.processing.photo_data import PhotoData
 
 START_ANGLE = 0
 STOP_ANGLE = 180
+TOTAL_ANGLE = STOP_ANGLE - START_ANGLE
 
 # de step size voor de volgende meeting
-RANGE_SENSOR_MEASURE_OFFSET = range_sensor.SENSOR_ANGLE
+RANGE_SENSOR_STEP_SIZE = range_sensor.SENSOR_ANGLE
+CAMERA_STEP_SIZE = int(Camera.CAMERA_H_ANGLE / 2)
 
 
 def collect_photos() -> photo_data:
-    # todo do not move based on current position, move to planed position and decide which planned position is first
-    data = PhotoData(RANGE_SENSOR_MEASURE_OFFSET)
+    data = PhotoData(RANGE_SENSOR_STEP_SIZE)
     cam = Camera()
 
-    photo = cam.take_picture()
-    distance = range_sensor.get_distance()
+    cam_step = 0
+    range_step = 0
 
-    cur_pos = START_ANGLE
+    next_pic_angle = 0
+    next_range_angle = 0
 
-    data.set_photo(photo, cur_pos)
-    data.set_sensor_data(distance)
-
-    move_to_next_pic_angle = cur_pos + int(Camera.CAMERA_H_ANGLE / 2)
-    move_to_next_range_angle = cur_pos + RANGE_SENSOR_MEASURE_OFFSET
+    current_pos = 0
 
     # while we can still collect images or sensor data
-    while move_to_next_range_angle < STOP_ANGLE or move_to_next_pic_angle < STOP_ANGLE:
+    while next_range_angle <= STOP_ANGLE or next_pic_angle <= STOP_ANGLE:
 
         # move for picture
-        if move_to_next_pic_angle < move_to_next_range_angle:
-            servo.goto_position(move_to_next_pic_angle)
-            cur_pos = move_to_next_pic_angle
-            move_to_next_pic_angle = cur_pos + int(Camera.CAMERA_H_ANGLE / 2)
+        if next_pic_angle <= next_range_angle:
+            servo.goto_position(next_pic_angle)
+            current_pos = next_pic_angle
+
+            cam_step += 1
 
             photo = cam.take_picture()
-            data.set_photo(photo, cur_pos)
+            data.set_photo(photo, current_pos)
 
         # move for range
-        elif move_to_next_range_angle < move_to_next_pic_angle:
-            servo.goto_position(move_to_next_range_angle)
-            cur_pos = move_to_next_range_angle
-            move_to_next_range_angle = cur_pos + RANGE_SENSOR_MEASURE_OFFSET
+        if next_range_angle <= next_pic_angle:
+            servo.goto_position(next_range_angle)
+
+            range_step += 1
 
             distance = range_sensor.get_distance()
             data.set_sensor_data(distance)
 
-        else:
-            raise EnvironmentError("Critical: Cannot move to picture or range angle")
+        next_pic_angle = CAMERA_STEP_SIZE * cam_step
+        next_range_angle = RANGE_SENSOR_STEP_SIZE * range_step
 
     return data
 
-
-collect_photos()
