@@ -52,8 +52,7 @@ def get_distance() -> int:
 #         distance += raw
 #
 #     distance = int(distance / MEASUREMENTS)
-#     # todo dummy data
-#     return 10
+#     return distance
 #
 #
 # def _get_distance_raw() -> int:

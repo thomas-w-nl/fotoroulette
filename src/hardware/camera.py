@@ -2,10 +2,10 @@ import random
 import numpy as np
 import cv2
 
+CAMERA_H_ANGLE = 62.2
+
 
 class Camera:
-    CAMERA_H_ANGLE = 62.2
-
     def take_picture(self) -> np.array:
         # todo dummy data
 
