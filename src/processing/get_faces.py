@@ -55,6 +55,13 @@ def get_faces(photos_with_data: PhotoData) -> list:
 
             if total_confidence > MIN_FACE_CONFIDENCE:
                 all_faces.append((cropped_face, angle))
+                cv2.imshow("img", cropped_face)
+                cv2.waitKey(0)
+            else:
+                print("Face dropped! confidence: " + str(total_confidence))
+                cv2.imshow("DROPPED", cropped_face)
+                cv2.waitKey(0)
+
 
     pass
 
@@ -77,5 +84,6 @@ def location_to_angle(img_width, photo_angle, rect: list) -> int:
     return angle
 
 
-photo_data = collect_photos()
-get_faces(photo_data)
+for i in range(20):
+    photo_data = collect_photos()
+    get_faces(photo_data)

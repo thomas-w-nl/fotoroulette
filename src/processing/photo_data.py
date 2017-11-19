@@ -29,12 +29,7 @@ class PhotoData:
         :return confidence_score: de zekerheid of er iemand voor staat
         """
 
-        closes_data = self._angle_to_data(graden)
-
-        if closes_data < 0:
-            return -1
-
-        afstand = self._sensor_data[closes_data]
+        afstand = self._angle_to_data(graden)
 
         a = -1 / ((SWEETSPOT ** 2) * SWEETSPOT_WIDTH_FACTOR)
         haakjes = (afstand - SWEETSPOT) ** 2
@@ -45,7 +40,7 @@ class PhotoData:
         # todo dummy data
         # return confidence
 
-        return random.randrange(0.3, 0.9)
+        return random.uniform(0.35, 0.9)
 
     def _angle_to_data(self, angle: int) -> int:
 
@@ -57,8 +52,8 @@ class PhotoData:
         # het aantal stappen genomen om bij de juiste meting uit te komen
         steps = int(round(angle / self._sensor_data_step_size, 0))
 
-        if steps < 0 or steps > len(self._sensor_data):
-            return -1
+        if steps < 0 or steps > (len(self._sensor_data) - 1):
+            return 0
 
         data = self._sensor_data[steps]
         return data
