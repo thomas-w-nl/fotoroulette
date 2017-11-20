@@ -15,7 +15,7 @@ CAMERA_STEP_SIZE = int(camera.CAMERA_H_ANGLE / 2)
 def collect_photos() -> photo_data:
     """
     Maakt de fotos en meet de afstand om een bepaald aantal graden
-    :return: alle fotos met range sensor data
+    :return: Alle fotos met range sensor data
     """
     data = PhotoData(RANGE_SENSOR_STEP_SIZE)
     cam = Camera()
@@ -26,7 +26,7 @@ def collect_photos() -> photo_data:
     next_pic_angle = 0
     next_range_angle = 0
 
-    current_pos = 0
+    current_pos = START_ANGLE
 
     # while we can still collect images or sensor data
     while next_range_angle <= STOP_ANGLE or next_pic_angle <= STOP_ANGLE:
