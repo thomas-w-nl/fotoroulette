@@ -4,10 +4,6 @@ from enum import Enum
 import cv2
 import os
 
-import numpy as np
-
-from PIL import Image
-
 PROJECT_ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 DEFAULT_WIDTH = 300
@@ -17,8 +13,7 @@ DEFAULT_HEIGHT = 250
 class Games(Enum):
     VERSUS = 0
     SUPERHEROES = 1
-    ROULETTE = 2
-    LOVEMETER = 3
+    LOVEMETER = 2
 
 
 def new_game(game, name, photos):
@@ -26,8 +21,6 @@ def new_game(game, name, photos):
         return Versus(name, photos)
     elif game == Games.SUPERHEROES:
         return Superheroes(name, photos)
-    elif game == Games.ROULETTE:
-        return Roulette(name, photos)
     elif game == Games.LOVEMETER:
         return LoveMeter(name, photos)
 
@@ -50,6 +43,19 @@ class Game:
         :param photo: path of the image
         """
         self._photos.append(photo)
+
+    def play(self):
+        # 1) turn to each position
+            # check if someone in front of it (and if between given "play" range
+            # if so, take pictures on position
+        # 2) for each picture get faces and save
+        return
+
+    def end_game(self):
+        # 1) ask user if them want to play another game
+            # if so, show select screen
+            # else, show end screen, upload photos and show code for website
+        return
 
     def clear(self):
         self._photos = []
@@ -120,9 +126,25 @@ class Versus(Game):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+    def play(self):
+        self.play()
+        # 1) choose pairs of 2 and generate a Versus overlay and show them on the screen.
+        # (if more than 2 continue until every player has a Versus picture of them)
+
+        # 2) end game
+        return
+
 
 class Superheroes(Game):
     def generate_image(self):
+        # 1) choose pairs of 2 and generate a Superheroes overlay and show them on the screen.
+        # (if more than 2 continue until every player has a Superheroes picture of them)
+
+        # 2) end game
+        return
+
+    def play(self):
+        self.play()
         return
 
 
@@ -130,7 +152,10 @@ class LoveMeter(Game):
     def generate_image(self):
         return
 
+    def play(self):
+        # 1) choose pairs of 2 and generate a Lovemeter overlay and show them on the screen.
+        # (if more than 2 continue until every player has a Versus picture of them)
 
-class Roulette(Game):
-    def generate_image(self):
+        # 2) end game
+        super.end_game();
         return
