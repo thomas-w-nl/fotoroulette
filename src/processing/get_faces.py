@@ -43,7 +43,7 @@ def get_faces(photos_with_data: PhotoData) -> List[Face]:
     """
     Returned de uniek gezichten uit meerder fotos die voldoen aan een bepaalde drempelwaarde
     :param photos_with_data: de fotos met sensor en orientatie data
-    :return: De uitgeknipte gezichten
+    :return: De gezichten als List[Face]
     """
 
     all_faces = []
