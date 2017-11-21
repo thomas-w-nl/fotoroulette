@@ -3,15 +3,14 @@ import logging
 
 
 def __init__():
-    logger = logging.getLogger(__name__)
-    logging.basicConfig(
-        format='%(levelname)-8s %(asctime)s [%(filename)s:%(lineno)d] %(message)s',
-        datefmt='%d-%m-%Y:%H:%M:%S',
-        level=logging.DEBUG)
+    pass
 
-
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    format='%(levelname)-8s %(asctime)s [%(filename)s:%(lineno)d] %(message)s',
+    datefmt='%d-%m-%Y:%H:%M:%S',
+    level=logging.DEBUG)
 log = logger
-
 
 # check if file is run as module
 if __name__ != "__main__":

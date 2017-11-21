@@ -38,7 +38,7 @@ def collect_photos() -> photo_data:
 
             cam_step += 1
 
-            photo = cam.take_picture()
+            photo = cam.get_frame()
             data.set_photo(photo, current_pos)
 
         # move for range
