@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+from src.common.log import *
 from src.hardware import camera
 from src.processing.collect_photos import collect_photos
 from src.processing.photo_data import PhotoData
@@ -93,7 +94,7 @@ def _append_face_if_unique_and_centered(all_faces: List[Face], cur_face: Face, p
             if other_face_dist_to_photo_center > cur_face_dist_to_photo_center:
                 all_faces.remove(other_face)
                 all_faces.append(cur_face)
-                print("Appended!")
+                log.debug("Appended!")
 
                 # else sla het gezicht dat minder goed in beeld is over
         else:
@@ -127,10 +128,13 @@ def _opencv_get_faces(photo: np.array) -> List[List[List[int]], List[float]]:
     :return: Een list met de coordinaten van de gezichten en een list met confidence scores
     """
     img_gray = cv2.cvtColor(photo, cv2.COLOR_BGR2GRAY)
+    # TODO Deze shizzel moet vanuit de git-root, niet twee mapjes terug. Dit is error prome!
     face_cascade = cv2.CascadeClassifier("../../haarCascades/haarcascade_frontalface_default.xml")
 
     if face_cascade is None:
-        raise FileNotFoundError("Face cascade failed to load!")
+        message = "Face cascade failed to load!"
+        log.error(message)
+        raise FileNotFoundError(message)
 
     # https://stackoverflow.com/questions/20801015/recommended-values-for-opencv-detectmultiscale-parameters
     cv_faces, _ignore, cv_confidences = face_cascade.detectMultiScale3(
