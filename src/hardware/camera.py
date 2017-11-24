@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 from src.common.log import *
 
-CAMERA_H_ANGLE = 62.2
+CAMERA_H_FOV = 62.2
 
 
 class Camera:

@@ -9,7 +9,8 @@ from typing import List
 from src.common import tools
 
 # face confidence drempelwaarde
-MIN_FACE_CONFIDENCE = 0.7
+# 0.65 is voor de huidige fotos een goede waarde
+MIN_FACE_CONFIDENCE = 0.65
 
 
 # opencv detection settings (AKA dont touch if you dont know)
@@ -21,7 +22,7 @@ OPENCV_MIN_NEIGHBORS = 4
 NEARBY_FACE_ANGLE_DIFF_MAX = 5
 
 # de waarde van opencv vs de range sensor, 0.7
-OPENCV_WEIGHT = 1  # FIXME 0.7 override
+OPENCV_WEIGHT = 0.7  # FIXME 0.7 override
 RANGE_SENSOR_WEIGHT = 1 - OPENCV_WEIGHT
 OPENCV_MAX_FACE_CONFIDENCE = 10  # er is geen documentatie voor, het lijkt er op dat dit de max wel is
 
@@ -172,11 +173,11 @@ def _location_to_angle(img_width: int, photo_angle: float, rect: list) -> float:
     :return: De hoek van de locatie ten opzichte van het startpunt van de camera
     """
 
-    # scale van range(0, img_width) naar range(-camera.CAMERA_H_ANGLE/2, camera.CAMERA_H_ANGLE/2) met offset photo_angle
+    # scale van range(0, img_width) naar range(-camera.CAMERA_H_FOV/2, camera.CAMERA_H_FOV/2) met offset photo_angle
     center = round(rect[0] + (rect[2] / 2))
     OldRange = img_width
-    NewRange = camera.CAMERA_H_ANGLE
-    NewMin = photo_angle - int(camera.CAMERA_H_ANGLE / 2)
+    NewRange = camera.CAMERA_H_FOV
+    NewMin = photo_angle - int(camera.CAMERA_H_FOV / 2)
     angle = ((center * NewRange) / OldRange) + NewMin
     angle = round(angle, 1)
     return angle
