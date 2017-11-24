@@ -4,12 +4,12 @@ from src.processing import photo_data
 from src.processing.photo_data import PhotoData
 
 START_ANGLE = 0
-STOP_ANGLE = 20  # todo should be 180
+STOP_ANGLE = 180  # todo should be 180
 TOTAL_ANGLE = STOP_ANGLE - START_ANGLE
 
 # de step size voor de volgende meeting
 RANGE_SENSOR_STEP_SIZE = range_sensor.SENSOR_ANGLE
-CAMERA_STEP_SIZE = int(camera.CAMERA_H_ANGLE / 2)
+CAMERA_STEP_SIZE = int(camera.CAMERA_H_FOV / 2)
 
 
 def collect_photos() -> photo_data:
@@ -38,7 +38,7 @@ def collect_photos() -> photo_data:
 
             cam_step += 1
 
-            photo = cam.take_picture()
+            photo = cam.get_dummy_frame()
             data.set_photo(photo, current_pos)
 
         # move for range
