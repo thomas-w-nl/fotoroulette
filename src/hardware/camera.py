@@ -25,6 +25,32 @@ class Camera:
 
         return frame
 
+    photo = 0
+
+    def get_dummy_frame(self, index=0) -> np.array:
+        # todo dummy data
+
+
+        image_list = listdir("../../img")
+
+        if self.photo == (len(image_list) - 1):
+            self.photo = 0
+        else:
+            self.photo += 1
+
+        pick = self.photo
+
+        if index != 0:
+            pick = index
+
+        frame = cv2.imread("../../img/" + str(image_list[pick]))
+
+        if frame is None:
+            raise ValueError("Failed to load img!")
+
+        return frame
+
+
     # open camera
     def __init__(self):
         """
