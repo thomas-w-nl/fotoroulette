@@ -4,7 +4,7 @@ from src.processing import photo_data
 from src.processing.photo_data import PhotoData
 
 START_ANGLE = 0
-STOP_ANGLE = 70  # todo should be 180
+STOP_ANGLE = 300  # todo should be 180
 TOTAL_ANGLE = STOP_ANGLE - START_ANGLE
 
 # de step size voor de volgende meeting

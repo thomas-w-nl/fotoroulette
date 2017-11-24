@@ -1,5 +1,5 @@
 import random
-from typing import List
+from typing import List, Tuple
 
 import cv2
 import numpy as np
@@ -63,17 +63,14 @@ class PhotoData:
         data = self._sensor_data[steps]
         return data
 
-    def get_photo(self, i: int) -> List[np.array, int]:
+    def get_photo(self, i: int) -> list:
         """
         Vraag een foto op
         :param i: De index van de foto
         :return: De foto met de hoek ten opzichte van de startpunt van de camera
         """
-        # return (self._photo[i], self._photo_angle[i])
-        # todo dummy data
-        dummy_photo = cv2.imread('img/faces.jpg')
-        dummy_angle = random.randint(0, 180)
-        return [dummy_photo, dummy_angle]
+        return [self._photo[i], self._photo_angle[i]]
+
 
     def set_photo(self, photo: np.array, photo_angle: float):
         """

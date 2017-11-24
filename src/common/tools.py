@@ -55,5 +55,4 @@ def draw_image(img):
     :param: plaatje
     """
     cv2.imshow("FYS", img)
-    # cv2.waitKey(0)
-
+    cv2.waitKey()

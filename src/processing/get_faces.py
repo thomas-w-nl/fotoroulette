@@ -6,20 +6,22 @@ from src.hardware import camera
 from src.processing.collect_photos import collect_photos
 from src.processing.photo_data import PhotoData
 from typing import List
+from src.common import tools
 
 # face confidence drempelwaarde
-MIN_FACE_CONFIDENCE = 0.5
-# de waarde van opencv vs de range sensor
-OPENCV_WEIGHT = 0.7
+MIN_FACE_CONFIDENCE = 0.7
+
 
 # opencv detection settings (AKA dont touch if you dont know)
 OPENCV_MIN_FACE_SIZE = 50
 OPENCV_SCALE_FACTOR = 1.1
-OPENCV_MIN_NEIGHBORS = 5
+OPENCV_MIN_NEIGHBORS = 4
 
-# het maximum verschil waarbij twee gezichten als een wordt gezien
+# het maximum verschil waarbij twee gezichten als een wordt gezien in graden
 NEARBY_FACE_ANGLE_DIFF_MAX = 5
 
+# de waarde van opencv vs de range sensor, 0.7
+OPENCV_WEIGHT = 1  # FIXME 0.7 override
 RANGE_SENSOR_WEIGHT = 1 - OPENCV_WEIGHT
 OPENCV_MAX_FACE_CONFIDENCE = 10  # er is geen documentatie voor, het lijkt er op dat dit de max wel is
 
@@ -78,10 +80,8 @@ def _append_face_if_unique_and_centered(all_faces: List[Face], cur_face: Face, p
     :param cur_face: Het gezicht om toe te voegen
     :param photo_width: De breedte van de foto
     """
-    if len(all_faces) == 0:
-        all_faces.append(cur_face)
-        pass
 
+    added_face = False
     for other_face in all_faces:
 
         # if het huidige gezicht dicht bij een oud gezicht zit
@@ -94,12 +94,10 @@ def _append_face_if_unique_and_centered(all_faces: List[Face], cur_face: Face, p
             if other_face_dist_to_photo_center > cur_face_dist_to_photo_center:
                 all_faces.remove(other_face)
                 all_faces.append(cur_face)
-                log.debug("Appended!")
+                added_face = True
 
-                # else sla het gezicht dat minder goed in beeld is over
-        else:
-            # voeg het unieke gezicht toe
-            all_faces.append(cur_face)
+    if not added_face:
+        all_faces.append(cur_face)
 
 
 def _get_total_confidence(photos_with_data: PhotoData, current_face_angle: float, cv_confidence: float) -> float:
@@ -112,6 +110,7 @@ def _get_total_confidence(photos_with_data: PhotoData, current_face_angle: float
     """
     sensor_confidence = photos_with_data.get_sensor_confidence(current_face_angle)
     opencv_confidence = cv_confidence / OPENCV_MAX_FACE_CONFIDENCE
+
     # if sensor data niet beschikbaar
     if sensor_confidence == -1:
         total_confidence = opencv_confidence
@@ -121,15 +120,16 @@ def _get_total_confidence(photos_with_data: PhotoData, current_face_angle: float
     return total_confidence
 
 
-def _opencv_get_faces(photo: np.array) -> List[List[List[int]], List[float]]:
+def _opencv_get_faces(photo: np.array) -> list:
     """
     Returnt alle gezichten die door opencv gevonden worden in de foto, met de confidence score voor elk gezicht
     :param photo: De foto met gezichten
     :return: Een list met de coordinaten van de gezichten en een list met confidence scores
     """
     img_gray = cv2.cvtColor(photo, cv2.COLOR_BGR2GRAY)
-    # TODO Deze shizzel moet vanuit de git-root, niet twee mapjes terug. Dit is error prome!
-    face_cascade = cv2.CascadeClassifier("../../haarCascades/haarcascade_frontalface_default.xml")
+    # TODO Deze shizzel moet vanuit de git-root, niet twee mapjes terug. Dit is error prone!
+
+    face_cascade = cv2.CascadeClassifier("haarCascades/haarcascade_frontalface_default.xml")
 
     if face_cascade is None:
         message = "Face cascade failed to load!"
@@ -180,4 +180,3 @@ def _location_to_angle(img_width: int, photo_angle: float, rect: list) -> float:
     angle = ((center * NewRange) / OldRange) + NewMin
     angle = round(angle, 1)
     return angle
-

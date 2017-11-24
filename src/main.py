@@ -3,10 +3,21 @@ import src.common.tools as tools
 from src.common.log import *
 import cv2
 
-cam = Camera()
+from src.processing.collect_photos import collect_photos
+from src.processing.get_faces import get_faces
 
-while 1:
-    tools.draw_image(cam.get_frame())
-    if cv2.waitKey(27) >= 0: break
+data = collect_photos()
+
+for photo in data._photos:
+    cv2.imshow("Input photo's", photo)
+    cv2.waitKey()
+
+faces = get_faces(data)
+
+for face in faces:
+    cv2.imshow("output", face.face_image)
+    log.info("Face appended:" + str(face.confidence))
+    cv2.waitKey()
+
 
 log.info("great succes!")

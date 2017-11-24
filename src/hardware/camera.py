@@ -28,10 +28,11 @@ class Camera:
     photo = 0
 
     def get_dummy_frame(self, index=0) -> np.array:
-        # todo dummy data
 
+        img_path = "img"
 
-        image_list = listdir("../../img")
+        # Crasht het hier? Check je working dir in run config!
+        image_list = listdir(img_path)
 
         if self.photo == (len(image_list) - 1):
             self.photo = 0
@@ -43,7 +44,7 @@ class Camera:
         if index != 0:
             pick = index
 
-        frame = cv2.imread("../../img/" + str(image_list[pick]))
+        frame = cv2.imread(img_path + "/" + str(image_list[pick]))
 
         if frame is None:
             raise ValueError("Failed to load img!")
