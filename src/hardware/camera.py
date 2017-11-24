@@ -5,7 +5,6 @@ import numpy as np
 import cv2
 from src.common.log import *
 
-# TODO moet dit niet in de camera class?
 CAMERA_H_ANGLE = 62.2
 
 
