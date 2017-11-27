@@ -10,11 +10,11 @@ Welcome to Vakantiekieker's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   gui.rst
 
 
 Indices and tables
 ==================
-
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
