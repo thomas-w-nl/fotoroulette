@@ -10,6 +10,8 @@ if __name__ == "__main__":
     # vs.generate_image()
 
     # positive is offset in pixels, negative is offset in % from -100 to -1
+    # vs = sc.Superheroes("first game", "assets/overlays/superheroes.png")
+
     vs = sc.Versus("first game", "assets/overlays/versus.png")
 
     vs.play()
