@@ -15,3 +15,7 @@ if __name__ == "__main__":
     vs = sc.Versus("first game", "assets/overlays/versus.png")
 
     vs.play()
+
+    sh = sc.Superheroes("second game", "assets/overlays/superheroes.png")
+
+    sh.play()

@@ -2,7 +2,6 @@ from src.hardware import range_sensor, servo, camera
 from src.hardware.camera import Camera
 from src.processing import photo_data
 from src.processing.photo_data import PhotoData
-from src.common import tools
 
 START_ANGLE = 0
 STOP_ANGLE = 180  # todo should be 180
@@ -39,7 +38,7 @@ def collect_photos() -> photo_data:
 
             cam_step += 1
 
-            photo = tools.get_image("img/hipsterGirls.jpg")
+            photo = cam.get_dummy_frame()
             data.set_photo(photo, current_pos)
 
         # move for range

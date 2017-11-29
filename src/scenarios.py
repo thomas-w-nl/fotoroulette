@@ -63,11 +63,8 @@ class Versus(Game):
 
         overlay_height, overlay_width, overlay_channel = overlay.shape
 
-        print("Overlay shape: ", overlay_width, overlay_height)
-
         for i in [index_face_left, index_face_right]:
             face = self._faces[i]
-            # face.face_image = cv2.imread("assets/png.png")
 
             face.face_image = ov.resize_fit(face.face_image, int(overlay_width / 2), overlay_height)
 
@@ -136,24 +133,21 @@ class LoveMeter(Game):
     def _generate_image(self, index_face_left, index_face_right):
 
         overlay = cv2.imread(self._overlay)
+        overlay_height, overlay_width, overlay_channel = overlay.shape
 
         for i in [index_face_left, index_face_right]:
             face = self._faces[i]
 
-            face.face_image = ov.resize_fit(face.face_image, DEFAULT_WIDTH, DEFAULT_HEIGHT)
+            face.face_image = ov.resize_fit(face.face_image, int(overlay_width / 2) - 150, overlay_height - 150)
 
-            fg_offset_y = 0
-            fg_offset_x = 0
+            fg_offset_y = -30
+            fg_offset_x = -35
             if i is index_face_right:
-                fg_offset_x = DEFAULT_WIDTH
+                fg_offset_x = -70
 
-            overlay = Versus._overlay(overlay, face.face_image, fg_offset_x, fg_offset_y)
+            overlay = ov.apply_overlay(overlay, face.face_image, fg_offset_x, fg_offset_y)
 
         cv2.imwrite("assets/generated_output/" + str(uuid.uuid4()) + ".jpg", overlay)
-
-        # cv2.imshow('out', overlay)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
 
     def play(self):
         super(LoveMeter, self).play()
