@@ -11,6 +11,7 @@ from src.processing import overlay as ov
 
 PROJECT_ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# todo is dit nodig? input gezichten zijn variabel in groote, word daar rekening mee gehouden?
 DEFAULT_WIDTH = 300
 DEFAULT_HEIGHT = 250
 
