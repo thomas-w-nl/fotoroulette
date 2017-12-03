@@ -3,19 +3,13 @@ from cv2 import cv2
 import numpy as np
 
 # todo moet ook image path en face image offsets bevatten voor elke game type
-from src.processing.get_faces import Face
-
-
-class GameType:
-    VERSUS = 0
-    SUPERHEROES = 1
-    LOVEMETER = 3
 
 
 def apply_overlay(bg, fg, offset_x, offset_y, on_top=True):
     rows_fg, cols_fg, channels_fg = fg.shape
     rows_bg, cols_bg, channels_bg = bg.shape
 
+    # create new image to use as base
     background = np.zeros((rows_bg, cols_bg, 3), np.uint8)
 
     if (offset_x < -100) or (offset_x < -100):
@@ -39,6 +33,8 @@ def apply_overlay(bg, fg, offset_x, offset_y, on_top=True):
     roi_rows_end = offset_y + rows_fg
     roi_cols_end = offset_x + cols_fg
 
+    # if the overlay has transparent parts (on top of the faces)
+    # else, just add the faces
     if on_top:
         # Create mask, remove mask and place overlay on [background]
         background[offset_y:roi_rows_end, offset_x:roi_cols_end] = fg
@@ -57,12 +53,17 @@ def apply_overlay(bg, fg, offset_x, offset_y, on_top=True):
 
         background[offset_y:roi_rows_end, offset_x:roi_cols_end] = fg
 
-    cv2.destroyAllWindows()
-
     return background
 
 
 def resize_fit(image: np.array, max_width: int, max_height: int) -> np.array:
+    """
+    Resize [image] to fit the [max_width] and [max_height] params
+    :param image: np.array image
+    :param max_width: max width in pixels
+    :param max_height: max height in pixels
+    :return: resized image
+    """
     height, width, channels = image.shape
 
     scale_width = max_width / width
