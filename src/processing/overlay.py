@@ -2,10 +2,40 @@ from cv2 import cv2
 
 import numpy as np
 
-# todo moet ook image path en face image offsets bevatten voor elke game type
+
+def generate_overlay(game, index_left_face: int, index_right_face: int, offset_y: int, minus_image_width: int,
+                     offset_left_face: int, offset_right_face: int):
+    """
+    Generate the overlay with the given parameters
+    :param game: the [Game] object
+    :param index_left_face: index of the [Game]'s [faces] array for the left image
+    :param index_right_face: index of the [Game]'s [faces] array for the right image
+    :param offset_y: the y-axis offset, in pixels, for both faces
+    :param minus_image_width: use this of images need to be smaller, in pixels
+    :param offset_left_face: the offset for the left image in pixels, or in percentages if negative number
+    :param offset_right_face: the offset for the right image in pixels, or in percentages if negative number
+    :return: returns the created overlay
+    """
+    overlay = cv2.imread(game.overlay)
+
+    overlay_height, overlay_width, overlay_channel = overlay.shape
+
+    for i in [index_left_face, index_right_face]:
+        face = game.faces[i]
+
+        face.face_image = _resize_fit(face.face_image, int(overlay_width / 2) - minus_image_width, overlay_height - minus_image_width)
+
+        fg_offset_y = offset_y
+        fg_offset_x = offset_left_face
+        if i is index_right_face:
+            fg_offset_x = offset_right_face
+
+        overlay = _apply_overlay(overlay, face.face_image, fg_offset_x, fg_offset_y, False)
+
+    return overlay
 
 
-def apply_overlay(bg, fg, offset_x, offset_y, on_top=True):
+def _apply_overlay(bg, fg, offset_x, offset_y, on_top=True):
     rows_fg, cols_fg, channels_fg = fg.shape
     rows_bg, cols_bg, channels_bg = bg.shape
 
@@ -56,7 +86,7 @@ def apply_overlay(bg, fg, offset_x, offset_y, on_top=True):
     return background
 
 
-def resize_fit(image: np.array, max_width: int, max_height: int) -> np.array:
+def _resize_fit(image: np.array, max_width: int, max_height: int) -> np.array:
     """
     Resize [image] to fit the [max_width] and [max_height] params
     :param image: np.array image
