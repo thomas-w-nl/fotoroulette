@@ -3,9 +3,15 @@ import json
 import os
 import numpy as np
 
+"""
+Created Exception so we can catch it
+"""
 class UploadException(Exception):
     pass
 
+"""
+Send photos to server and get SessionId
+"""
 def send_photos(photos) -> np.array:
     headers = {"auth": "SUPER_GEHEIME_KEY"}
 
@@ -19,6 +25,9 @@ def send_photos(photos) -> np.array:
 
     return content
 
+"""
+Get images from directory and send to server
+"""
 def send_photos_by_path(image_path):
     files = [("image[]", open(os.path.join(image_path, file_), "rb"))
               for file_ in os.listdir(image_path)
