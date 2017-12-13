@@ -1,4 +1,3 @@
-class gui
-
+class gui:
     def __init__():
         pass

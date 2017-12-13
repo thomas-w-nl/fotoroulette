@@ -1,7 +1,7 @@
-from src.hardware import range_sensor, servo, camera
-from src.hardware.camera import Camera
-from src.processing import photo_data
-from src.processing.photo_data import PhotoData
+from hardware import range_sensor, servo, camera
+from hardware.camera import Camera
+from processing import photo_data
+from processing.photo_data import PhotoData
 
 START_ANGLE = 0
 STOP_ANGLE = 180  # todo should be 180
@@ -15,7 +15,9 @@ CAMERA_STEP_SIZE = int(camera.CAMERA_H_FOV / 2)
 def collect_photos() -> photo_data:
     """
     Maakt de fotos en meet de afstand om een bepaald aantal graden
-    :return: Alle fotos met range sensor data
+
+    Return:
+      Alle fotos met range sensor data
     """
     data = PhotoData(RANGE_SENSOR_STEP_SIZE)
     cam = Camera()
@@ -54,4 +56,3 @@ def collect_photos() -> photo_data:
         next_range_angle = RANGE_SENSOR_STEP_SIZE * range_step
 
     return data
-

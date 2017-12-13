@@ -4,9 +4,8 @@ from typing import List, Tuple
 import cv2
 import numpy as np
 
-
 # y = -1/((130^2)*1.3)(x - 130)^2 + 1
-from src.hardware import range_sensor
+from hardware import range_sensor
 
 SWEETSPOT = 130  # cm
 SWEETSPOT_WIDTH_FACTOR = 1.3
@@ -17,8 +16,11 @@ class PhotoData:
     def __init__(self, sensor_data_step_size: float):
         """
         Photo data houd de fotos met sensor data en hoek ten opzichte van de start bij
-        :param sensor_data_step_size: De grote van de stap in graden
+
+        Args:
+           sensor_data_step_size: De groote van de stap in graden
         """
+        # TODO: 1 lijst met een tuple
         self._photos = []
         self._photo_angle = []
         self._sensor_data = []
@@ -28,11 +30,16 @@ class PhotoData:
         for photo, photo_angle in zip(self._photos, self._photo_angle):
             yield (photo, photo_angle)
 
+    # TODO: Beter documenteren
     def get_sensor_confidence(self, graden: float) -> float:
         """
         Geeft de confidence score voor de sensor data bij een aantal graden ten opzichte van het startpunt van de camera
-        :param graden: De hoek ten opzichte van het startpunt van de camera
-        :return De zekerheid of er iemand voor staat
+
+        Args:
+           graden: De hoek ten opzichte van het startpunt van de camera
+
+        Returns:
+           De zekerheid of er iemand voor staat in floats
         """
 
         afstand = self._angle_to_data(graden)
@@ -50,8 +57,12 @@ class PhotoData:
 
         """
         Returnt de sensor data voor een bepaalde hoek. Returnt -1 als die niet beschikbaar is.
-        :param angle: De hoek waar de data wordt opgevraagd
-        :return: De afstand, -1 als deze niet beschikbaar is
+
+        Args:
+            angle: De hoek waar de data wordt opgevraagd
+
+        Returns:
+            De afstand als int of -1 als die niet beschikbaar is
         """
         # het aantal stappen genomen om bij de juiste meting uit te komen
         steps = int(round(angle / self._sensor_data_step_size, 0))
@@ -65,25 +76,35 @@ class PhotoData:
 
     def get_photo(self, i: int) -> list:
         """
-        Vraag een foto op
-        :param i: De index van de foto
-        :return: De foto met de hoek ten opzichte van de startpunt van de camera
+        Vraag een foto op.
+
+        Args:
+           i: De index van de foto
+
+        Returns:
+           De foto met de hoek ten opzichte van de startpunt van de camera
         """
+        # TODO: Tuple
         return [self._photo[i], self._photo_angle[i]]
 
 
     def set_photo(self, photo: np.array, photo_angle: float):
         """
-        Set een foto
-        :param photo: De foto
-        :param photo_angle: De hoek ten opzichte van de startpunt van de camera waarop de foto genomen is
+        Zet een foto
+
+        Args:
+           photo: De foto
+           photo_angle: De hoek ten opzichte van de startpunt van de camera waarop de foto
         """
         self._photos.append(photo)
         self._photo_angle.append(photo_angle)
 
+    # TODO: Hernoem naar gemeten afstand
     def set_sensor_data(self, sensor_data: int):
         """
-        Set sensor data, de hoek tussen de metingen wordt in de constructor aangegeven
-        :param sensor_data: De gemeten afstand
+        Zet sensor data, de hoek tussen de metingen wordt in de constructor aangegeven
+
+        Args:
+           sensor_data: De gemeten afstand
         """
         self._sensor_data.append(sensor_data)
