@@ -38,6 +38,11 @@ extensions = \
     'sphinx_autodoc_typehints',
     'sphinx.ext.viewcode']
 
+napoleon_numpy_docstring = False
+napoleon_include_init_with_doc = True
+napoleon_include_private_with_doc = True
+
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
