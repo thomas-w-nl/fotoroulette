@@ -3,16 +3,16 @@ import json
 import os
 import numpy as np
 
-"""
-Created Exception so we can catch it
-"""
+
 class UploadException(Exception):
     pass
 
-"""
-Send photos to server and get SessionId
-"""
 def send_photos(photos) -> np.array:
+    """
+    Verstuur foto's naar server en verkrijg sessionID
+    :param photos: De daadwerkelijke foto's die gestuurd worden
+    :return De sessionID die gereturned wordt van de server
+    """
     headers = {"auth": "SUPER_GEHEIME_KEY"}
 
     r = requests.post("https://fys.1hz.nl/api/session/upload",
@@ -25,10 +25,12 @@ def send_photos(photos) -> np.array:
 
     return content
 
-"""
-Get images from directory and send to server
-"""
 def send_photos_by_path(image_path):
+    """
+    Verstuur foto's uit een folder en stuur naar de server en verkrijg sessionID
+    :param image_path: Folder waar afbeeldingen in staan
+    :return De sessionID die gereturned wordt van de server
+    """
     files = [("image[]", open(os.path.join(image_path, file_), "rb"))
               for file_ in os.listdir(image_path)
              if file_.endswith(".jpg") or file_.endswith(".png")]
