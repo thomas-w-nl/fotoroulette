@@ -28,6 +28,14 @@ hardware\.servo module
     :undoc-members:
     :show-inheritance:
 
+hardware\.sound module
+----------------------
+
+.. automodule:: hardware.sound
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------
