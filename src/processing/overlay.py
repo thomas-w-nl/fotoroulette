@@ -3,34 +3,22 @@ from cv2 import cv2
 import numpy as np
 
 
-def generate_overlay(game, index_left_face: int, index_right_face: int, offset_y: int, minus_image_width: int,
-                     offset_left_face: int, offset_right_face: int):
+def generate_overlay(game):
     """
     Generate the overlay with the given parameters
     :param game: the [Game] object
-    :param index_left_face: index of the [Game]'s [faces] array for the left image
-    :param index_right_face: index of the [Game]'s [faces] array for the right image
-    :param offset_y: the y-axis offset, in pixels, for both faces
-    :param minus_image_width: use this of images need to be smaller, in pixels
-    :param offset_left_face: the offset for the left image in pixels, or in percentages if negative number
-    :param offset_right_face: the offset for the right image in pixels, or in percentages if negative number
     :return: returns the created overlay
     """
     overlay = cv2.imread(game.overlay)
 
     overlay_height, overlay_width, overlay_channel = overlay.shape
 
-    for i in [index_left_face, index_right_face]:
-        face = game.faces[i]
+    for i, face in enumerate(game.faces):
+        face_offset = game.offsets[i]
 
-        face.face_image = _resize_fit(face.face_image, int(overlay_width / 2) - minus_image_width, overlay_height - minus_image_width)
+        face.face_image = _resize_fit(face.face_image, int(overlay_width / 2) - face_offset['minus_image_width'], overlay_height - face_offset['minus_image_width'])
 
-        fg_offset_y = offset_y
-        fg_offset_x = offset_left_face
-        if i is index_right_face:
-            fg_offset_x = offset_right_face
-
-        overlay = _apply_overlay(overlay, face.face_image, fg_offset_x, fg_offset_y, False)
+        overlay = _apply_overlay(overlay, face.face_image, face_offset['offset_x'], face_offset['offset_y'], game.on_top)
 
     return overlay
 

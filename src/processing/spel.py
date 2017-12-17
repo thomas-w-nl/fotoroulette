@@ -15,35 +15,42 @@ class Games(Enum):
     VERSUS = 0
     SUPERHEROES = 1
     LOVEMETER = 2
+    WANTED = 3
 
 
 class Game:
-    def __init__(self, overlay):
+    def __init__(self):
         self._game_id = uuid.uuid4()
-        self.overlay = overlay
+        self.overlay = None
+        self.on_top = False
         self.faces = []
+        self.player_count = 2
+        self.offsets = []
 
-    def get_faces(self):
+    def _get_faces(self):
         """
         This will start taking pictures and cutting the faces out of them to use in the image
         """
         self.faces = get_faces.get_faces(collect_photos.collect_photos())
+        if len(self.faces) < 2:
+            raise ValueError("Cannot play with less than 2 faces")
 
-    def _random_images(self) -> (int, int):
+    def _random_images(self):
         """
         This will pick 2 different random indexes of the [_face] property
         :return: tuple with the 2 indexes
         """
-        rand1 = random.randint(0, len(self.faces) - 1)
-        rand2 = random.randint(0, len(self.faces) - 1)
+        if self.player_count > len(self.faces):
+            raise ValueError("To few faces to generate an overlay")
 
-        while rand1 == rand2:
-            rand2 = random.randint(0, len(self.faces) - 1)
+        random.shuffle(self.faces)
 
-        return rand1, rand2
+        diff = len(self.faces) - self.player_count
+
+        self.faces = self.faces[diff:]
 
 
-def new_game(game_type: Games, overlay: str) -> Game:
+def new_game(game_type: Games) -> Game:
     """
     Returns a new [Game] object based on the [game_type] parameter
     :param game_type:
@@ -51,57 +58,161 @@ def new_game(game_type: Games, overlay: str) -> Game:
     :return:
     """
     if game_type == Games.VERSUS:
-        return Versus(overlay)
+        return Versus()
     elif game_type == Games.SUPERHEROES:
-        return Superheroes(overlay)
+        return Superheroes()
     elif game_type == Games.LOVEMETER:
-        return LoveMeter(overlay)
+        return LoveMeter()
+    elif game_type == Games.WANTED:
+        return Wanted()
 
 
 class Versus(Game):
+    def __init__(self):
+        super(Versus, self).__init__()
+
+        self.overlay = "assets/overlays/versus.png"
+        self.player_count = 2
+        self.offsets = [
+            {
+                'offset_y': -50,
+                'offset_x': 0,
+                'minus_image_width': 0
+            },
+            {
+                'offset_y': -50,
+                'offset_x': -100,
+                'minus_image_width': 0
+            }
+        ]
+
     def gen_overlay(self):
         """
         This will start the scenario.
         It is possible here to add user interation
         """
 
-        super(Versus, self).get_faces()
+        super(Versus, self)._get_faces()
+        super(Versus, self)._random_images()
 
-        if len(self.faces) < 2:
-            raise ValueError("Cannot play with less than 2 faces")
+        return ov.generate_overlay(self)
 
-        rand1, rand2 = super(Versus, self)._random_images()
 
-        return ov.generate_overlay(self, rand1, rand2, -50, 0, 0, -100)
+class Wanted(Game):
+    def __init__(self):
+        super(Wanted, self).__init__()
+
+        self.overlay = "assets/overlays/wanted.png"
+        self.on_top = True
+        self.player_count = 1
+        self.offsets = [
+            {
+                'offset_y': -50,
+                'offset_x': -50,
+                'minus_image_width': 120
+            },
+        ]
+
+    def gen_overlay(self):
+        """
+        This will start the scenario.
+        It is possible here to add user interation
+        """
+
+        super(Wanted, self)._get_faces()
+        super(Wanted, self)._random_images()
+
+        return ov.generate_overlay(self)
 
 
 class Superheroes(Game):
+    def __init__(self):
+        super(Superheroes, self).__init__()
+
+        self.overlay = "assets/overlays/superheroes.png"
+        self.player_count = 3
+        self.offsets = [
+            {
+                'offset_y': -45,
+                'offset_x': -41,
+                'minus_image_width': 220
+            },
+            {
+                'offset_y': -45,
+                'offset_x': -58,
+                'minus_image_width': 220
+            },
+            {
+                'offset_y': -85,
+                'offset_x': -41,
+                'minus_image_width': 220
+            },
+            {
+                'offset_y': -85,
+                'offset_x': -58,
+                'minus_image_width': 220
+            },
+            {
+                'offset_y': -45,
+                'offset_x': -24,
+                'minus_image_width': 220
+            },
+            {
+                'offset_y': -45,
+                'offset_x': -75,
+                'minus_image_width': 220
+            },
+            {
+                'offset_y': -85,
+                'offset_x': -24,
+                'minus_image_width': 220
+            },
+            {
+                'offset_y': -85,
+                'offset_x': -75,
+                'minus_image_width': 220
+            },
+        ]
+
     def gen_overlay(self):
         """
         This will start the scenario.
         It is possible here to add user interation
         """
 
-        super(Superheroes, self).get_faces()
-        if len(self.faces) < 2:
-            raise ValueError("Cannot play with less than 2 faces")
+        super(Superheroes, self)._get_faces()
+        super(Superheroes, self)._random_images()
 
-        rand1, rand2 = super(Superheroes, self)._random_images()
-
-        return ov.generate_overlay(self, rand1, rand2, -65, 100, -20, -80)
+        return ov.generate_overlay(self)
 
 
 class LoveMeter(Game):
+    def __init__(self):
+        super(LoveMeter, self).__init__()
+
+        self.overlay = "assets/overlays/lovemeter.png"
+        self.on_top = True
+        self.player_count = 2
+        self.offsets = [
+            {
+                'offset_y': -30,
+                'offset_x': -35,
+                'minus_image_width': 150
+            },
+            {
+                'offset_y': -30,
+                'offset_x': -70,
+                'minus_image_width': 150
+            },
+        ]
+
     def gen_overlay(self):
         """
         This will start the scenario.
         It is possible here to add user interation
         """
 
-        super(LoveMeter, self).get_faces()
-        if len(self.faces) < 2:
-            raise ValueError("Cannot play with less than 2 faces")
+        super(LoveMeter, self)._get_faces()
+        super(LoveMeter, self)._random_images()
 
-        rand1, rand2 = super(LoveMeter, self)._random_images()
-
-        return ov.generate_overlay(self, rand1, rand2, -30, 150, -35, -70)
+        return ov.generate_overlay(self)
