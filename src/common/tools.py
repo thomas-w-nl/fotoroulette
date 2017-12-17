@@ -3,44 +3,54 @@ import cv2
 
 # Tools die gewoon handig zijn
 
-# TODO
+
+# TODO: Gebruik of geen type annotations of ALLEEN type annotations.
 def select_random(source, amount: int):
     """
     Select 'amount' random uit de array en returnt deze.
-    :rtype: array
     """
     # pick = random.randrange(0, len(image_list))
     pass
 
 
+# TODO: Wat is de punt van deze functie?
 def draw_rectangle(frame, rect):
     """
     draw een vierkantje op de gewenste lokatie
-    :param: frame: cv2 Mat om op te tekenen
-    :param: rect: (x, y, w, h)
-    :rtype: cv2.Mat
-    :return: plaatje met vierkantje
+
+    Args:
+       frame (:obj:`cv2.Mat`): Een foto om op te tekenen
+       rect: De coordinaten om te rekenen
+
+    Returns:
+       Een plaatje (:obj:`cv2.Mat`) met een vierkantje
     """
     for (x, y, w, h) in rect:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
     return frame
 
 
-# TODO
+# TODO:
 def draw_text(frame, string: str, rect):
     """
-    :arg: frame: Het plaatje waarom getekent moet worden
-    :arg: rect: locatie (x, y, w, h)
-    :arg: string: de tekst die op het plaatje moet worden geprint
-    :rtype: cv2.Mat
-    :return: frame met het tekstje
+
+    Args:
+       frame (:obj:`cv2.Mat`): Een plaatje waarom getekent moet worden
+       rect: coordinaten (x, y, w, h)
+       string(str): De tekst die op het plaatje moet worden geprint
+
+    Returns:
+       Een frame (:obj:`cv2.Mat`) met het teksts
     """
     pass
 
 
+# TODO: De punt hiervan?
 def get_image(path: str):
     """
     laad een plaatje in!
+
+
     :arg: dir naar het plaatje
     :rtype: cv2.Mat
     :return: Het plaatje

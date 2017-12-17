@@ -38,7 +38,7 @@ def collect_photos() -> photo_data:
 
             cam_step += 1
 
-            photo = cam.get_dummy_frame()
+            photo = cam.get_frame()
             data.set_photo(photo, current_pos)
 
         # move for range
@@ -54,4 +54,3 @@ def collect_photos() -> photo_data:
         next_range_angle = RANGE_SENSOR_STEP_SIZE * range_step
 
     return data
-
