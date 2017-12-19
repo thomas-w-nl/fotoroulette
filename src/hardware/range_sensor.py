@@ -1,3 +1,5 @@
+import threading
+from functools import partial
 import RPi.GPIO as GPIO
 import time
 
@@ -54,14 +56,18 @@ def _get_distance_raw() -> int:
     :return: De afstand in cm
     """
     # begin alvast te letten op de echo pin, wachten tot na de trigger kan er voor zorgen dat we de pulse missen.
-    GPIO.add_event_detect(ECHO, GPIO.BOTH, callback=edge_callback)
+    event = threading.Event()
+    callback = partial(edge_callback, event)
+    GPIO.add_event_detect(ECHO, GPIO.BOTH, callback=callback)
+
 
     # trigger de sensor om te meten
     GPIO.output(TRIG, True)
     time.sleep(0.00001)
     GPIO.output(TRIG, False)
 
-    time.sleep(0.047)  # max 8m wachten (8m / 171,50ms^-1)
+
+    event.wait() # wacht op de pulse event
 
     pulse_duration = global_time_end - global_time_start
     if pulse_duration < 0:
@@ -74,7 +80,7 @@ def _get_distance_raw() -> int:
     return distance
 
 
-def edge_callback(channel):
+def edge_callback(event, channel):
     global global_time_start
     global global_time_end
 
@@ -83,10 +89,12 @@ def edge_callback(channel):
     else:
         global_time_end = time.time()
 
+        # debounce door alleen te stoppen als we gestart zijn
+        if global_time_start:
+            event.set()
 
 
 if __name__ == "__main__":
     print(_get_distance_raw())
 
-    GPIO.remove_event_detect(ECHO)
     GPIO.cleanup()
