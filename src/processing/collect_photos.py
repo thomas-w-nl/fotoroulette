@@ -1,14 +1,15 @@
-from hardware import range_sensor, servo, camera
-from hardware.camera import Camera
-from processing import photo_data
-from processing.photo_data import PhotoData
+import cv2
+from src.hardware import range_sensor, servo, camera
+from src.hardware.camera import Camera
+from src.processing import photo_data
+from src.processing.photo_data import PhotoData
 
-START_ANGLE = 0
-STOP_ANGLE = 180  # todo should be 180
+START_ANGLE = 5
+STOP_ANGLE = 175
 TOTAL_ANGLE = STOP_ANGLE - START_ANGLE
 
 # de step size voor de volgende meeting
-RANGE_SENSOR_STEP_SIZE = range_sensor.SENSOR_ANGLE
+RANGE_SENSOR_STEP_SIZE = range_sensor.SENSOR_FOV
 CAMERA_STEP_SIZE = int(camera.CAMERA_H_FOV / 2)
 
 
@@ -22,37 +23,41 @@ def collect_photos() -> photo_data:
     data = PhotoData(RANGE_SENSOR_STEP_SIZE)
     cam = Camera()
 
-    cam_step = 0
-    range_step = 0
-
-    next_pic_angle = 0
-    next_range_angle = 0
-
     current_pos = START_ANGLE
+    next_pic_angle = current_pos
+    next_range_angle = current_pos
+
+    servo.goto_position(current_pos)
 
     # while we can still collect images or sensor data
     while next_range_angle <= STOP_ANGLE or next_pic_angle <= STOP_ANGLE:
 
         # move for picture
         if next_pic_angle <= next_range_angle:
+
             servo.goto_position(next_pic_angle)
+            print("Moving to " + str(next_pic_angle))
             current_pos = next_pic_angle
 
-            cam_step += 1
-
-            photo = cam.get_dummy_frame()
-            data.set_photo(photo, current_pos)
+            photo = cam.get_frame()
+            # data.set_photo(photo, current_pos)
+            cv2.imwrite('photo_' + str(next_pic_angle / 10) + '.png', photo)
+            next_pic_angle += CAMERA_STEP_SIZE
 
         # move for range
         if next_range_angle <= next_pic_angle:
+            print("Moving to " + str(next_range_angle))
             servo.goto_position(next_range_angle)
-
-            range_step += 1
+            current_pos = next_range_angle
 
             distance = range_sensor.get_distance()
-            data.set_sensor_data(distance)
+            # data.set_sensor_data(distance)
+            print("distance " + str(distance) + " on step " + str(next_range_angle / 10))
+            next_range_angle += RANGE_SENSOR_STEP_SIZE
 
-        next_pic_angle = CAMERA_STEP_SIZE * cam_step
-        next_range_angle = RANGE_SENSOR_STEP_SIZE * range_step
-
+    servo.goto_position(START_ANGLE)
     return data
+
+
+if __name__ == "__main__":
+    collect_photos()

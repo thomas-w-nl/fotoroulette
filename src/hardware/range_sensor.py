@@ -12,6 +12,8 @@ GELUIDSSNELHEID = 34300
 global_time_start = 0
 global_time_end = 0
 
+SENSOR_FOV = 15
+
 
 def _init():
     """
@@ -73,6 +75,8 @@ def _get_distance_raw() -> int:
     if pulse_duration < 0:
         return -1
 
+    GPIO.remove_event_detect(ECHO)
+
     distance = (pulse_duration * GELUIDSSNELHEID) / 2  # delen door twee omdat het geluid heen en terug gaat
 
     distance = int(distance)  # centimeter precision is realistischer
@@ -92,7 +96,6 @@ def edge_callback(event, channel):
         # debounce door alleen te stoppen als we gestart zijn
         if global_time_start:
             event.set()
-
 
 if __name__ == "__main__":
     print(_get_distance_raw())
