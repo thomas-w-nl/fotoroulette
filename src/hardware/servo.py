@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+
 _position = 0
 _max_position = 175
 _min_position = 5
@@ -29,7 +30,6 @@ def get_position() -> int:
     :return de positie van de servo
     """
     return _position
-
 
 
 def increase_position(graden: int) -> int:
