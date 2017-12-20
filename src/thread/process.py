@@ -1,8 +1,6 @@
-
-import socket
-import cv2
+import socket, pickle, cv2
 from src.common.log import *
-
+# Client
 addres = "unix_socket"
 myString = "hello world"
 sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -20,8 +18,6 @@ if __name__ == "__main__":
     log.debug("module running as main!")
     import src.common.tools as tool
     img = tool.get_image("img/ardnold.jpg")
-    log.debug(type(img))
-    cv2.imencode('.jpg', img)
-    log.debug(type(img))
-
+    sock.send(pickle.dump(img))
     # sock.send()
+

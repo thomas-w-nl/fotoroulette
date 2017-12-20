@@ -1,6 +1,6 @@
-import socketserver as socket, os
+import socketserver as socket, os, pickle
 from src.common.log import *
-
+# Server
 # TODO: Deze var moet ergens global staan
 addres = "unix_socket"
 
