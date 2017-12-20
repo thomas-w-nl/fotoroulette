@@ -20,7 +20,7 @@ def collect_photos() -> photo_data:
     Return:
       Alle fotos met range sensor data
     """
-    data = PhotoData(RANGE_SENSOR_STEP_SIZE)
+    data = PhotoData()
     cam = Camera()
 
     current_pos = START_ANGLE
@@ -40,7 +40,7 @@ def collect_photos() -> photo_data:
             current_pos = next_pic_angle
 
             photo = cam.get_frame()
-            # data.set_photo(photo, current_pos)
+            # data.append_photo(photo, current_pos)
             cv2.imwrite('photo_' + str(next_pic_angle / 10) + '.png', photo)
             next_pic_angle += CAMERA_STEP_SIZE
 
@@ -51,7 +51,7 @@ def collect_photos() -> photo_data:
             current_pos = next_range_angle
 
             distance = range_sensor.get_distance()
-            # data.set_sensor_data(distance)
+            # data.append_distance(distance, current_pos)
             print("distance " + str(distance) + " on step " + str(next_range_angle / 10))
             next_range_angle += RANGE_SENSOR_STEP_SIZE
 

@@ -5,106 +5,117 @@ import cv2
 import numpy as np
 
 # y = -1/((130^2)*1.3)(x - 130)^2 + 1
-from hardware import range_sensor
+from src.hardware import range_sensor
 
+# todo get from config
 SWEETSPOT = 130  # cm
 SWEETSPOT_WIDTH_FACTOR = 1.3
 MAX_CONFIDENCE = 1
 
 
 class PhotoData:
-    def __init__(self, sensor_data_step_size: float):
-        """
-        Photo data houd de fotos met sensor data en hoek ten opzichte van de start bij
+    def __init__(self):
+        self.rs = RangeSensor()
+        self.p = Photo()
 
-        Args:
-           sensor_data_step_size: De groote van de stap in graden
-        """
-        # TODO: 1 lijst met een tuple
-        self._photos = []
-        self._photo_angle = []
-        self._sensor_data = []
-        self._sensor_data_step_size = sensor_data_step_size
+    def append_photo(self, photo: np.array, photo_angle: float):
+        self.p.append(photo, photo_angle)
 
-    def __iter__(self):
-        for photo, photo_angle in zip(self._photos, self._photo_angle):
-            yield (photo, photo_angle)
+    def append(self, distance: float, distance_angle: float):
+        self.rs.append(distance, distance_angle)
 
-    # TODO: Beter documenteren
-    def get_sensor_confidence(self, graden: float) -> float:
+
+class RangeSensor:
+    def __init__(self):
+        self._distance = []
+        self._distance_angle = []
+
+    def append(self, distance: float, distance_angle: float):
+        self._distance.append(distance)
+        self._distance_angle.append(distance_angle)
+
+    def get_confidence(self, angle: float) -> float:
         """
         Geeft de confidence score voor de sensor data bij een aantal graden ten opzichte van het startpunt van de camera
 
         Args:
-           graden: De hoek ten opzichte van het startpunt van de camera
+           angle: De hoek ten opzichte van het startpunt van de camera
 
         Returns:
            De zekerheid of er iemand voor staat in floats
         """
 
-        afstand = self._angle_to_data(graden)
+        distance = self._angle_to_distance(angle)
 
-        # dit  is een parabool, boven staat de formule die in google gevisualiseerd kan worden
-        a = -1 / ((SWEETSPOT ** 2) * SWEETSPOT_WIDTH_FACTOR)
-        haakjes = (afstand - SWEETSPOT) ** 2
+        confidence = self._calculate_confidence(distance)
 
-        confidence = round(a * haakjes + MAX_CONFIDENCE, 2)
+        # het minimum is 0
         confidence = max(confidence, 0)
 
         return confidence
 
-    def _angle_to_data(self, angle: float) -> float:
+    def _calculate_confidence(self, distance: float, sweetspot: float = SWEETSPOT,
+                              width_factor: float = SWEETSPOT_WIDTH_FACTOR,
+                              max_confidence: float = MAX_CONFIDENCE) -> float:
+        """
+        Bereken een parabool voor de confidence score.
+
+        Args:
+           distance: De gemeten afstand
+           sweetspot: De positie waarop de confidence maximaal is
+           width_factor: De factor waarmee de breedte van de sweetspot vergroot wordt
+           max_confidence : De maximum confidence van de range sensor
 
         """
-        Returnt de sensor data voor een bepaalde hoek. Returnt -1 als die niet beschikbaar is.
+
+        return -1 / (sweetspot ** 2 * width_factor) * (distance - sweetspot) ** 2 + max_confidence
+
+    def _angle_to_distance(self, angle: float) -> float:
+
+        """
+        Returnt de gemeten afstand voor een bepaalde hoek. Returnt -1 als die niet beschikbaar is.
 
         Args:
             angle: De hoek waar de data wordt opgevraagd
 
         Returns:
-            De afstand als int of -1 als die niet beschikbaar is
+            De afstand als float of -1 als die niet beschikbaar is
         """
-        # het aantal stappen genomen om bij de juiste meting uit te komen
-        steps = int(round(angle / self._sensor_data_step_size, 0))
+
+        RANGE_SENSOR_FOV_HALF = range_sensor.SENSOR_FOV / 2
 
         # als deze buiten berijk is return error
-        if steps < 0 or steps > (len(self._sensor_data) - 1):
+        if angle < (self._distance_angle[0] - RANGE_SENSOR_FOV_HALF):
             return -1
 
-        data = self._sensor_data[steps]
-        return data
+        for index, range_angle in enumerate(self._distance_angle):
 
-    def get_photo(self, i: int) -> list:
-        """
-        Vraag een foto op.
+            if angle < range_angle:
 
-        Args:
-           i: De index van de foto
+                # kies de dichtsbijzijnde meting
+                if self._distance_angle[index] - angle < self._distance_angle[index - 1] - angle:
+                    return self._distance[index]
+                else:
+                    return self._distance[index - 1]
 
-        Returns:
-           De foto met de hoek ten opzichte van de startpunt van de camera
-        """
-        # TODO: Tuple
-        return [self._photo[i], self._photo_angle[i]]
+        # als de angle nog binnen de laatste meting valt
+
+        last_element = self._distance_angle[len(self._distance_angle) - 1]
+
+        if angle < (last_element + RANGE_SENSOR_FOV_HALF):
+            return self._distance[len(self._distance_angle) - 1]
+
+        return -1
 
 
-    def set_photo(self, photo: np.array, photo_angle: float):
-        """
-        Zet een foto
+class Photo:
+    def __init__(self):
+        self._photo = []
+        self._photo_angle = []
 
-        Args:
-           photo: De foto
-           photo_angle: De hoek ten opzichte van de startpunt van de camera waarop de foto
-        """
-        self._photos.append(photo)
+    def append(self, photo: np.array, photo_angle: float):
+        self._photo.append(photo)
         self._photo_angle.append(photo_angle)
 
-    # TODO: Hernoem naar gemeten afstand
-    def set_sensor_data(self, sensor_data: int):
-        """
-        Zet sensor data, de hoek tussen de metingen wordt in de constructor aangegeven
-
-        Args:
-           sensor_data: De gemeten afstand
-        """
-        self._sensor_data.append(sensor_data)
+    def __iter__(self):
+        yield self._photo, self._photo_angle

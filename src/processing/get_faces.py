@@ -4,30 +4,28 @@ import numpy as np
 from common.log import *
 from hardware import camera
 from processing.collect_photos import collect_photos
-from processing.photo_data import PhotoData
-from typing import List
+from processing.photo_data import PhotoData, Photo
+from typing import List, Tuple
 from common import tools
 
-# face confidence drempelwaard
-# 0.65 is voor de huidige fotos een goede waarde
+#: De drempelwaarde voor gezichts herkenning. 0.65 is voor de huidige fotos een goede waarde.
 MIN_FACE_CONFIDENCE = 0.65
 
-
-# opencv detection settings (AKA dont touch if you dont know)
+#: OpenCV gezichts detectie instellingen
 OPENCV_MIN_FACE_SIZE = 50
 OPENCV_SCALE_FACTOR = 1.1
 OPENCV_MIN_NEIGHBORS = 4
 
-# het maximum verschil waarbij twee gezichten als een wordt gezien in graden
+#: Het maximum verschil waarbij twee gezichten als een wordt gezien in graden
 NEARBY_FACE_ANGLE_DIFF_MAX = 5
 
-# de waarde van opencv vs de range sensor, 0.7
-OPENCV_WEIGHT = 0.7  # FIXME 0.7 override
+#: De waarde van opencv vs de range sensor en is een waarde van :math:`1.0 <= x <= 0.0`.
+OPENCV_WEIGHT = 0.7
 RANGE_SENSOR_WEIGHT = 1 - OPENCV_WEIGHT
 OPENCV_MAX_FACE_CONFIDENCE = 10  # er is geen documentatie voor, het lijkt er op dat dit de max wel is
 
 
-class Face:
+class Faces:
     def __init__(self, face_pos: List[int], angle: float, confidence: float, face_image: np.array):
         """
         Een datatype voor een gezicht
