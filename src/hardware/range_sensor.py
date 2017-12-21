@@ -3,7 +3,6 @@ from functools import partial
 import RPi.GPIO as GPIO
 import time
 
-MEASUREMENTS = 3
 TRIG = 23
 ECHO = 24
 
@@ -34,25 +33,20 @@ def get_distance() -> int:
     """
     Meet de afstand met de sensor. Hiervoor moeten Echo op pin 24 en Trig op pin 23 aangsloten zijn
     met weerstanden. De sensor wordt geinitaliseerd bij het inladen van dit bestand.
-    Voor naukeurigheid wordt de afstand 3x gemeten.
     :return: De afstand in cm
     """
-    distance = 0
-    # meet meerdere keren voor de zekerheid
-    for i in range(MEASUREMENTS):
-        raw = _get_distance_cm()
 
-        while raw < 4 or raw > 5000:
-            # corrigeer van onwaarschijnlijke afstand
-            raw = _get_distance_cm()
+    uncorrected = _get_distance_uncorrected()
 
-        distance += raw
+    # corrigeer van onwaarschijnlijke afstand
+    while uncorrected < 4 or uncorrected > 5000:
+        uncorrected = _get_distance_uncorrected()
 
-    distance = int(distance / MEASUREMENTS)
+    distance = uncorrected
     return distance
 
 
-def _get_distance_cm() -> int:
+def _get_distance_uncorrected() -> int:
     """
     Meet de afstand met de sensor zonder extra checks
     :return: De afstand in cm
@@ -97,6 +91,6 @@ def edge_callback(event, _):
 
 
 if __name__ == "__main__":
-    print(_get_distance_cm())
+    print(_get_distance_uncorrected())
 
     GPIO.cleanup()
