@@ -2,8 +2,8 @@ import RPi.GPIO as GPIO
 import time
 
 _position = 0
-_max_position = 175
-_min_position = 5
+MAX_SERVO_POS = 180
+MIN_SERVO_POS = 0
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(18, GPIO.OUT)
@@ -17,7 +17,7 @@ def goto_position(graden: int):
     :param graden: de positie waar de servo heen moet draaien
     """
     global _position
-    if (graden > _max_position or graden < _min_position):
+    if (graden > MAX_SERVO_POS or graden < MIN_SERVO_POS):
         raise IndexError("Servo: " + str(graden))
     _position = graden
     duty = calculate_angle(graden)
@@ -53,8 +53,8 @@ def calculate_angle(angle):
 
     servo_max = 10.5
     servo_min = 2.5
-    angle_max = _max_position
-    angle_min = _min_position
+    angle_max = MAX_SERVO_POS
+    angle_min = MIN_SERVO_POS
 
     servo_range = (servo_max - servo_min)
     angle_range = angle_max - angle_min

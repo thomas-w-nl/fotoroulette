@@ -21,7 +21,7 @@ class PhotoData:
     def append_photo(self, photo: np.array, photo_angle: float):
         self.p.append(photo, photo_angle)
 
-    def append(self, distance: float, distance_angle: float):
+    def append_distance(self, distance: float, distance_angle: float):
         self.rs.append(distance, distance_angle)
 
     def __iter__(self) -> Tuple[Photo, RangeSensor]:

@@ -1,12 +1,14 @@
 import cv2
+import pickle
+
 from src.hardware import range_sensor, servo, camera
 from src.hardware.camera import Camera
 from src.processing import photo_data
 from src.processing.photo_data import PhotoData
 
-START_ANGLE = 5
-STOP_ANGLE = 175
-TOTAL_ANGLE = STOP_ANGLE - START_ANGLE
+START_ANGLE = servo.MIN_SERVO_POS
+STOP_ANGLE = servo.MAX_SERVO_POS
+
 
 # de step size voor de volgende meeting
 RANGE_SENSOR_STEP_SIZE = range_sensor.SENSOR_FOV
@@ -40,7 +42,7 @@ def collect_photos() -> photo_data:
 
             photo = cam.get_frame()
             data.append_photo(photo, current_pos)
-            # cv2.imwrite('photo_' + str(next_pic_angle / 10) + '.png', photo)
+
             next_pic_angle += CAMERA_STEP_SIZE
 
         # move for range
@@ -50,7 +52,7 @@ def collect_photos() -> photo_data:
 
             distance = range_sensor.get_distance()
             data.append_distance(distance, current_pos)
-            # print("distance " + str(distance) + " on step " + str(next_range_angle / 10))
+
             next_range_angle += RANGE_SENSOR_STEP_SIZE
 
     servo.goto_position(START_ANGLE)
@@ -58,4 +60,6 @@ def collect_photos() -> photo_data:
 
 
 if __name__ == "__main__":
-    collect_photos()
+    pd = collect_photos()
+    with open('photodata_real.pkl', 'wb') as output:
+        pickle.dump(pd, output, pickle.HIGHEST_PROTOCOL)
