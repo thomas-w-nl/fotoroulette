@@ -48,8 +48,18 @@ def calculate_angle(angle):
     :param angle: De hoek die omgezet moet worden
     :return de waarde die de servo verwacht
     """
-    return float(angle) / 20.0 + 2.5
 
+    servo_max = 11
+    servo_min = 2.1
+    angle_max = _max_position
+    angle_min = _min_position
+
+    servo_range = (servo_max - servo_min)
+    angle_range = angle_max - angle_min
+
+    servo_angle = (((angle - angle_min) * servo_range) / angle_range) + servo_min
+
+    return round(servo_angle, 1)
 
 if __name__ == "__main__":
     while True:
