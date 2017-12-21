@@ -16,12 +16,14 @@ def goto_position(graden: int):
     Send servo to specific position
     :param graden: de positie waar de servo heen moet draaien
     """
+    global _position
     if (graden > _max_position or graden < _min_position):
         raise IndexError("Servo: " + str(graden))
     _position = graden
     duty = calculate_angle(graden)
     pwm.ChangeDutyCycle(duty)
     time.sleep(0.4)
+    pwm.ChangeDutyCycle(0)
 
 
 def get_position() -> int:
@@ -49,8 +51,8 @@ def calculate_angle(angle):
     :return de waarde die de servo verwacht
     """
 
-    servo_max = 11
-    servo_min = 2.1
+    servo_max = 10.5
+    servo_min = 2.5
     angle_max = _max_position
     angle_min = _min_position
 

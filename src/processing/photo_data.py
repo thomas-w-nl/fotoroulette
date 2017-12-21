@@ -120,5 +120,5 @@ class Photo:
         self._photo.append(photo)
         self._photo_angle.append(photo_angle)
 
-    def __iter__(self):
+    def __iter__(self) -> Tuple[np.array, float]:
         yield self._photo, self._photo_angle

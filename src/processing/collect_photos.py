@@ -36,23 +36,21 @@ def collect_photos() -> photo_data:
         if next_pic_angle <= next_range_angle:
 
             servo.goto_position(next_pic_angle)
-            print("Moving to " + str(next_pic_angle))
             current_pos = next_pic_angle
 
             photo = cam.get_frame()
-            # data.append_photo(photo, current_pos)
-            cv2.imwrite('photo_' + str(next_pic_angle / 10) + '.png', photo)
+            data.append_photo(photo, current_pos)
+            # cv2.imwrite('photo_' + str(next_pic_angle / 10) + '.png', photo)
             next_pic_angle += CAMERA_STEP_SIZE
 
         # move for range
         if next_range_angle <= next_pic_angle:
-            print("Moving to " + str(next_range_angle))
             servo.goto_position(next_range_angle)
             current_pos = next_range_angle
 
             distance = range_sensor.get_distance()
-            # data.append_distance(distance, current_pos)
-            print("distance " + str(distance) + " on step " + str(next_range_angle / 10))
+            data.append_distance(distance, current_pos)
+            # print("distance " + str(distance) + " on step " + str(next_range_angle / 10))
             next_range_angle += RANGE_SENSOR_STEP_SIZE
 
     servo.goto_position(START_ANGLE)

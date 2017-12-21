@@ -1,12 +1,12 @@
 import cv2
 import numpy as np
 
-from common.log import *
-from hardware import camera
-from processing.collect_photos import collect_photos
-from processing.photo_data import PhotoData, Photo
+from src.common.log import *
+from src.hardware import camera
+from src.processing.collect_photos import collect_photos
+from src.processing.photo_data import PhotoData, Photo
 from typing import List, Tuple
-from common import tools
+from src.common import tools
 
 # todo dit moet vanuit git config
 #: De drempelwaarde voor gezichts herkenning. 0.65 is voor de huidige fotos een goede waarde.
@@ -187,19 +187,19 @@ def _crop_image(img: np.array, rect) -> np.array:
     return img[y:(y + h), x:(x + w)]
 
 
-def _cut_out_head(face: np.array, photo: Photo) -> Face:
+def _cut_out_head(opencv_face, photo: Photo) -> np.array:
     """
     Haalt een gezicht uit de foto en geeft die weer terug als een aparte foto
 
     Args:
-        face: De locatie van het gezicht gedetecteerd door openCV en de range sensor
+        opencv_face: De locatie van het gezicht gedetecteerd door openCV en de range sensor
         photo: De volledige foto waaruit je wilt knippen
 
     Returns:
         De gezicht als een aparte foto
     """
 
-    face_pos, _ = face
-    cutout = _crop_image(photo.get_photo(), face_pos)
+    face_pos, _ = opencv_face
+    cutout = _crop_image(photo, face_pos)
 
     return cutout
