@@ -40,7 +40,7 @@ def get_distance() -> int:
     for i in range(MEASUREMENTS):
         raw = _get_distance_raw()
 
-        while raw < 4:
+        while raw < 4 or raw > 5000:
             # corrigeer van onwaarschijnlijke afstand
             raw = _get_distance_raw()
 

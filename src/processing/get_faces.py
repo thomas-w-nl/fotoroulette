@@ -8,7 +8,10 @@ from processing.photo_data import PhotoData, Photo
 from typing import List, Tuple
 from common import tools
 
+# todo dit moet vanuit git config
 #: De drempelwaarde voor gezichts herkenning. 0.65 is voor de huidige fotos een goede waarde.
+from src.processing.photo_data import RangeSensor
+
 MIN_FACE_CONFIDENCE = 0.65
 
 #: OpenCV gezichts detectie instellingen
@@ -25,7 +28,7 @@ RANGE_SENSOR_WEIGHT = 1 - OPENCV_WEIGHT
 OPENCV_MAX_FACE_CONFIDENCE = 10  # er is geen documentatie voor, het lijkt er op dat dit de max wel is
 
 
-class Faces:
+class Face:
     def __init__(self, face_pos: List[int], angle: float, confidence: float, face_image: np.array):
         """
         Een datatype voor een gezicht
@@ -43,9 +46,25 @@ class Faces:
         self.face_image = face_image
 
 
-def get_faces(photos_with_data: PhotoData) -> List[Face]:
+class Faces:
+    def __init__(self, photos_with_data: PhotoData):
+        """
+        Een datatype voor de uniek gezichten uit meerder fotos die voldoen aan een bepaalde drempelwaarde
+        uit het PhotoData object.
+
+        Args:
+            photos_with_data: De fotos met sensor en orientatie data
+        """
+
+        self.faces = get_faces(photos_with_data)
+
+    def __iter__(self):
+        yield self.faces
+
+
+def get_faces(photos_with_data: PhotoData) -> List[np.array]:
     """
-    Returned de uniek gezichten uit meerder fotos die voldoen aan een bepaalde drempelwaarde.
+    Returned de uniek gezichten uit meerdere fotos die voldoen aan een bepaalde drempelwaarde.
 
     Args:
        photos_with_data: De fotos met sensor en orientatie data
@@ -53,31 +72,42 @@ def get_faces(photos_with_data: PhotoData) -> List[Face]:
     Returns:
        Een lijst met de gezichten.
     """
-
+    # dit is misschien iets te pro, er gaat toch best wat logic door heen en dat is miss niet zo handig in 1 regel
+    # Rewrite is_unique as a filter so we can make this a oneliner
+    # all_heads = [_cut_out_head(face, photo) for face in photo
+    #              for photo in photos_with_data]
     all_faces = []
 
-    for single_photo in photos_with_data:
-        photo = single_photo[0]
-        photo_angle = single_photo[1]
-        photo_width = len(photo[0])
+    for photos, range_sensor in photos_with_data:
+        for photo in photos:
 
-        cv_faces, cv_confidences = _opencv_get_faces(photo)
+            for opencv_face in _opencv_get_faces(photo):
 
-        for cv_face_pos, cv_confidence in zip(cv_faces, cv_confidences):
-            face_angle = _location_to_angle(photo_width, photo_angle, cv_face_pos)
+                if not _confident(opencv_face, range_sensor):
+                    continue
 
-            total_confidence = _get_total_confidence(photos_with_data, face_angle, cv_confidence)
+                head = _cut_out_head(opencv_face, photo)
 
-            if total_confidence > MIN_FACE_CONFIDENCE:
-                cutout = _crop_image(photo, cv_face_pos)
-                face = Face(cv_face_pos, face_angle, total_confidence, cutout)
+                _append_or_replace(all_faces, head, len(photo))
 
-                _append_face_if_unique_and_centered(all_faces, face, photo_width)
 
     return all_faces
 
 
-def _append_face_if_unique_and_centered(all_faces: List[Face], cur_face: Face, photo_width: int):
+def _confident(opencv_face, range_sensor: RangeSensor) -> bool:
+    face_pos, confidence = opencv_face
+    # scale opencv confidence naar 0 tot 1
+    opencv_confidence = confidence / OPENCV_MAX_FACE_CONFIDENCE
+    range_confidence = range_sensor.get_confidence(face_pos)
+
+    total_confidence = (range_confidence * RANGE_SENSOR_WEIGHT) + (opencv_confidence * OPENCV_WEIGHT)
+
+    if total_confidence > MIN_FACE_CONFIDENCE:
+        return True
+    return False
+
+
+def _append_or_replace(all_faces: List[Face], cur_face: Face, photo_width: int) -> bool:
     """
     Voegt een gezicht toe aan all_faces als het gezicht uniek is. Als
     het gezicht beter in beeld is dan een oud gezicht wordt deze
@@ -87,52 +117,29 @@ def _append_face_if_unique_and_centered(all_faces: List[Face], cur_face: Face, p
        all_faces: list met alle gezichten
        cur_face: Het gezicht om toe te voegen
        photo_width: De breedte van de foto
+
+    Returns:
+       Of de foto al eerder gezien is
     """
 
-    added_face = False
     for other_face in all_faces:
-
         # if het huidige gezicht dicht bij een oud gezicht zit
         if abs(other_face.angle - cur_face.angle) < NEARBY_FACE_ANGLE_DIFF_MAX:
 
-            # if if het huidige gezicht dichter bij het midden van de camera is, vervang het oude gezicht
+            # if het huidige gezicht dichter bij het midden van de camera is, vervang het oude gezicht
             other_face_dist_to_photo_center = abs(other_face.pos_in_photo - (photo_width / 2))
-            cur_face_dist_to_photo_center = (abs(cur_face.pos_in_photo - (photo_width / 2)))
+            cur_face_dist_to_photo_center = abs(cur_face.pos_in_photo - (photo_width / 2))
 
             if other_face_dist_to_photo_center > cur_face_dist_to_photo_center:
                 all_faces.remove(other_face)
                 all_faces.append(cur_face)
-                added_face = True
+                return False
 
-    if not added_face:
-        all_faces.append(cur_face)
-
-
-def _get_total_confidence(photos_with_data: PhotoData, current_face_angle: float, cv_confidence: float) -> float:
-    """
-    Voeg de opencv en range sensor confidence score samen to een confidence score
-
-    Args:
-       photos_with_data: fotos met de data
-       current_face_angle: De hoek ten opzichte van het startpunt van de camera in graden
-       cv_confidence: De confidence van openCV
-
-    Returns:
-       De totale confidence als float
-    """
-    sensor_confidence = photos_with_data.get_sensor_confidence(current_face_angle)
-    opencv_confidence = cv_confidence / OPENCV_MAX_FACE_CONFIDENCE
-
-    # if sensor data niet beschikbaar
-    if sensor_confidence == -1:
-        total_confidence = opencv_confidence
-    else:
-        total_confidence = (sensor_confidence * RANGE_SENSOR_WEIGHT) + (opencv_confidence * OPENCV_WEIGHT)
-
-    return total_confidence
+    return True
 
 
-def _opencv_get_faces(photo: np.array) -> list:
+# Refactor into photo class
+def _opencv_get_faces(photo: np.array):
     """
     Geeft alle gezichten terug die door opencv gevonden worden in de foto, met de confidence score voor elk gezicht
 
@@ -140,12 +147,12 @@ def _opencv_get_faces(photo: np.array) -> list:
        photo: De foto met gezichten
 
     Returns:
-       Een list met de coordinaten van de gezichten en een lijst met confience scores
+       Een list met de coordinaten van de gezichten en een lijst met confidence scores
     """
-    img_gray = cv2.cvtColor(photo, cv2.COLOR_BGR2GRAY)
+    img_gray = cv2.cvtColor(photo.get_photo(), cv2.COLOR_BGR2GRAY)
 
     # TODO Deze shizzel moet vanuit de git-root, niet twee mapjes terug. Dit is error prone!
-    face_cascade = cv2.CascadeClassifier("haarCascades/haarcascade_frontalface_default.xml")
+    face_cascade = cv2.CascadeClassifier("../haarCascades/haarcascade_frontalface_default.xml")
 
     if face_cascade is None:
         message = "Face cascade failed to load!"
@@ -153,7 +160,7 @@ def _opencv_get_faces(photo: np.array) -> list:
         raise FileNotFoundError(message)
 
     # https://stackoverflow.com/questions/20801015/recommended-values-for-opencv-detectmultiscale-parameters
-    cv_faces, _ignore, cv_confidences = face_cascade.detectMultiScale3(
+    faces, _, confidences = face_cascade.detectMultiScale3(
         img_gray,
         scaleFactor=OPENCV_SCALE_FACTOR,
         minNeighbors=OPENCV_MIN_NEIGHBORS,
@@ -162,46 +169,37 @@ def _opencv_get_faces(photo: np.array) -> list:
     )
 
     # Moet een tuple zijn
-    return [cv_faces, cv_confidences]
+    return zip(faces, confidences)
 
 
-def _crop_image(img: np.array, rect: list) -> np.array:
+def _crop_image(img: np.array, rect) -> np.array:
     """
     Knip een vierkant uit een array zoals aangegeven in rect
 
     Args:
        img: foto
-       rect: (x,y,w,h) (?)
+       rect: (x,y,w,h) (top left xt coordinates, width and height)
 
     Returns:
        De uitgeknipte foto.
     """
-    x = rect[0]
-    y = rect[1]
-    w = rect[2]
-    h = rect[3]
-
+    x, y, w, h = rect
     return img[y:(y + h), x:(x + w)]
 
 
-def _location_to_angle(img_width: int, photo_angle: float, rect: list) -> float:
+def _cut_out_head(face: np.array, photo: Photo) -> Face:
     """
-    Zet een locatie op een foto gemaakt op hoek photo_angle om naar de hoek van de locatie.
+    Haalt een gezicht uit de foto en geeft die weer terug als een aparte foto
 
     Args:
-       img_width: De breedte van de foto
-       photo_angle: De hoek waarop de foto is gemaakt
-       rect: De locatie als (x, y, w, h)
+        face: De locatie van het gezicht gedetecteerd door openCV en de range sensor
+        photo: De volledige foto waaruit je wilt knippen
 
     Returns:
-       De hoek van de locatie ten opzichte van het startpunt van de camera
+        De gezicht als een aparte foto
     """
 
-    # scale van range(0, img_width) naar range(-camera.CAMERA_H_FOV/2, camera.CAMERA_H_FOV/2) met offset photo_angle
-    center = round(rect[0] + (rect[2] / 2))
-    OldRange = img_width
-    NewRange = camera.CAMERA_H_FOV
-    NewMin = photo_angle - int(camera.CAMERA_H_FOV / 2)
-    angle = ((center * NewRange) / OldRange) + NewMin
-    angle = round(angle, 1)
-    return angle
+    face_pos, _ = face
+    cutout = _crop_image(photo.get_photo(), face_pos)
+
+    return cutout

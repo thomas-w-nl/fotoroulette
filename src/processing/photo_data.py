@@ -24,6 +24,9 @@ class PhotoData:
     def append(self, distance: float, distance_angle: float):
         self.rs.append(distance, distance_angle)
 
+    def __iter__(self) -> Tuple[Photo, RangeSensor]:
+        yield self.p, self.rs
+
 
 class RangeSensor:
     def __init__(self):
