@@ -42,7 +42,7 @@ class Server:
             REJECTED = 202
             CONNECTION_LOST = 203
             CONNECTION_TIMEOUT = 204
-            VERSION_MISMATCH = 305
+            VERSION_MISMATCH = 205
 
             CLOSE_CONNECTION = 301
 
