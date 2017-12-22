@@ -1,10 +1,11 @@
 import socket, socketserver, pickle, os
 from src.common.log import *
 from enum import Enum
+from src.thread.fricp import FRICP
 
 
 class Server:
-    class ServerHandeler(socketserver.BaseRequestHandler):
+    class ServerHandeler(socketserver.StreamRequestHandler):
         """
         The RequestHandler class for our server.
 
@@ -13,97 +14,61 @@ class Server:
         client.
         """
 
+        class ValidationError(Exception):
+            def __init__(self, error: FRICP.Response, fricp: FRICP):
+                self.error = error
+                self.fricp = fricp
+
+            def __str__(self):
+                return self.error.name
+
+            def response(self) -> FRICP:
+                # TODO: een @property hiervan maken
+                # TODO: uitvogelen hoe ik dynamich de owner toekan voegen, het is nu altijd hardware...
+                response = FRICP(FRICP.Request.RESPONSE, self.fricp.owner, FRICP.Owner.HARDWARE, self.error)
+                return response
+
         def handle(self):
-            # self.request is the TCP socket connected to the client
-            self.data = self.request.recv(1024).strip()
-            # log.debug("{} wrote:".format(self.client_address[0]))
-            log.debug(self.data)
-            # just send back the same data, but upper-cased
-            self.request.sendall(self.data.upper())
+            # TODO: is data global maken wel handig? Maak er geen gebruik van namelijk
+            self.data = pickle.load(self.rfile)
+            try:
+                self.validate_package(self.data)
+            except self.ValidationError as error:
+                self.reply(error.response().to_binary())
+                log.error("failed to validate incoming fricp package: ", error)
+                return -1
+
+        def validate_package(self, fricp: FRICP):
+            # TODO: moet validate niet deel zijn van FRICP object?
+            # valideren of er geen onbekende waardes inzitten
+            if fricp.version is not FRICP.current_version:
+                raise self.ValidationError(FRICP.Response.VERSION_MISMATCH, self.data)
+            if fricp.request not in FRICP.Request:
+                raise self.ValidationError(FRICP.Response.UNKNOWN_REQUEST, self.data)
+            if fricp.owner not in FRICP.Owner:
+                raise self.ValidationError(FRICP.Response.UNKNOWN_OWNER, self.data)
+
+            # valideren of er geen onmogelijke combinaties inzitten.
+            if fricp.request == FRICP.Request.RESPONSE and fricp.response == FRICP.Response.REQUEST:
+                raise self.ValidationError(FRICP.Response.INVALID_VALUE_COMBINATION, self.data)
+
+            # Wanneer je data naar jezelf verstuurd
+            # TODO: uitzoeken hoe ik erachter kom wie ik ben. Owner is nu HARDWARE
+            if fricp.owner == FRICP.Owner.HARDWARE:
+                raise self.ValidationError(FRICP.Response.LOOPBACK_DETECTED, self.data)
+
+            # valideren of het request wel uit kan worden gevoert.
+            # TODO: owner is nu gehard-coded op HARDWARE. Moet natuurlijk dynamich worden
+            if 100 > fricp.request > 199:
+                raise self.ValidationError(FRICP.Response.UNABLE_TO_HANDLE_REQUEST, self.data)
+
+        def reply(self, fricp: FRICP):
+            self.wfile.write(fricp)
 
     class ServerStatus(Enum):
         ERROR = -2
         OFF = -1
-        UNSET = 0
-        ON = 1
-
-    class FRICP():
-        # Foto Roulette Internal Communication Protocol
-        class Method(Enum):
-            GET = 0
-            POST = 1
-
-        class StatusCode(Enum):
-            UNDEFINED = 0
-            SUCCES = 100
-
-            UNKNOWN_ERROR = 200
-            UNKNOWN_REQUEST = 201
-            REJECTED = 202
-            CONNECTION_LOST = 203
-            CONNECTION_TIMEOUT = 204
-            VERSION_MISMATCH = 305
-
-            CLOSE_CONNECTION = 301
-
-        class Request(Enum):
-            HARDWARE_GET_CAMERA = auto()
-            HARDWARE_GET_SERVO_POSITION = auto()
-            HARDWARE_POST_CAMERA = auto()
-            HARDWARE_POST_SERVO_POSITION = auto()
-
-        class Owner(Enum):
-            HARDWARE = auto()
-            GUI = auto()
-            PROCESSING = auto()
-
-        def __init__(self, request, method, data, owner, statis_code=StatusCode.UNDEFINED, open=false, buffer_size=1024,
-                     version=1):
-            """
-            Foto Roulette Internal Communication Protocol
-            Protocol voor de communicatie tussen de processing; hardware en gui
-            Args:
-                request (Request/Enum): De request of response die je doet.
-                method (Method/Enum): "GET" als je opvraagt, "POST" Als je wat vraagt
-                data (Any): De data die je verstuurd.
-                owner (Owner/Enum): "HARDWARE/GUI/PROCESSING" Wie het bericht verstuurd
-                statis_code (:obj: `StatusCode/Enum`, optional): "UNDEFINED" Voor een request.
-                    Bij een response staat de status van het bericht. Default is "UNDEFINED"
-                open (:obj: `bool`, optional): true voor een continuous verbinding. Default is false
-                buffer_size (:obj: `int`, optional): Hoegroot de buffer moet zijn. Default is 1024
-                version (:obj: `int`, optional): De FRICP versie nummer. Default is 1
-            """
-            self.request = request
-            self.method = method
-            self.data = data
-            self.owner = owner
-            self.statisCode = statis_code
-            self.open = open
-            self.bufferSize = buffer_size
-            self.version = version
-
-            # self.binaryData =
-
-        def __del__(self):
-            pass
-
-        def get_dictionary(self):
-            """
-            Krijg de directionary zodat je er wat nuttige dingen mee kan doen.
-            Returns:
-                dictionary: Dirtionary van het FRICP
-
-            """
-            return {'request': self.request, 'method': self.method, 'data': self.data, 'owner': self.owner,
-                    'statisCode': self.statisCode, 'open': self.open, 'bufferSize': self.bufferSize,
-                    'version': self.version}
-
-        def get_binary(self):
-            """
-            Returns:
-                binary: Krijg de dirtionary in een pickle pakketje zodat je het kan versturen
-            """
-            return pickle.dump(self.get_dictionary())
+        ON = 0
 
     def __init__(self):
         """
@@ -114,10 +79,10 @@ class Server:
 
         # Deze moet je overwriten als je deze class extend
         self.addr = "unixSocket"
-        self.owner = "Unset"
+        self.owner = FRICP.Owner.invalid_names
 
         self._serverStatus = self._set_server_status(OFF)
-        self.sock = socketserver.UnixStreamServer(self.addr, self.ServerHandeler)
+        self.socketServer = socketserver.UnixStreamServer(self.addr, self.ServerHandeler)
 
     def __del__(self):
         """
@@ -131,12 +96,12 @@ class Server:
         Returns:
             ServerStatus/Enum: Zodat je kan zien of hij goed is gestart!
         """
-        if self.get_server_status() > self.ServerStatus.UNSET:
+        if self.get_server_status() < self.ServerStatus.ON:
             if os.path.exists(self.addr):
                 os.remove(self.addr)
             open(self.addr, "w+")
             try:
-                self.sock.serve_forever()
+                self.socketServer.serve_forever()
                 self._set_server_status(ON)
             except socket.error as msg:
                 log.error("failed to open server: %s. Current serverstatus: ", msg, self.get_server_status())
@@ -153,7 +118,7 @@ class Server:
             ServerStatus/Enum: Zodat je kan zien of hij wel goed is afgesloten
         """
         try:
-            self.sock.server_close()
+            self.socketServer.server_close()
             os.remove(self.addr)
             self._set_server_status(OFF)
         except socket.error as msg:
@@ -164,6 +129,7 @@ class Server:
         Returns:
             ServerStatus/Enum: Krijg de status van de server (UNSET, ERROR, OFF, ON)
         """
+        # TODO omzetten naar een @property https://www.programiz.com/python-programming/property
         return self._serverStatus
 
     def _set_server_status(self, value: ServerStatus) -> ServerStatus:
@@ -177,8 +143,38 @@ class Server:
         Returns:
             ServerStatus/Enum: Zodat je kan kijken of het wel goed hebt gedaan.
         """
+        # TODO omzetten naar een @property https://www.programiz.com/python-programming/property
         self._serverStatus = self.ServerStatus.value
         return self._serverStatus
 
-    def send(self, param):
-        self.send(param)
+    @staticmethod
+    def send(fricp: FRICP) -> FRICP:
+        """
+        Stuur data volgends het FRICP, raised ook een socket.error als er iets mis gaat
+        Args:
+            fricp: FRICP object met alle data die je wilt versturen
+
+        Returns:
+            FRICP: Het antwoord van de server
+        """
+        try:
+            # TODO: check for open connection
+            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            sock.connect(fricp.address)
+            sock.send(fricp.to_binary())
+
+            # TODO: error handeling
+            received = str(sock.recv(fricp.buffer_size), "utf-8")
+            received = pickle.load(received)
+
+            if not fricp.open:
+                sock.close()
+
+            return received
+        except socket.error as msg:
+            log.error("Failed to send data: %s.", msg)
+            raise socket.error
+
+
+if __name__ == "__main__":
+    log.debug("server running in debug mode")
