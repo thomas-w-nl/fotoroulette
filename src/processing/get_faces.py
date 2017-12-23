@@ -27,6 +27,9 @@ OPENCV_WEIGHT = 0.7
 RANGE_SENSOR_WEIGHT = 1 - OPENCV_WEIGHT
 OPENCV_MAX_FACE_CONFIDENCE = 10  # er is geen documentatie voor, het lijkt er op dat dit de max wel is
 
+HAAR_CASCADE_PATH = "haarCascades/haarcascade_frontalface_default.xml"
+DEBUG = True
+
 
 class Face:
     def __init__(self, face_pos: List[int], angle: float, confidence: float, face_image: np.array):
@@ -78,17 +81,22 @@ def get_faces(photos_with_data: PhotoData) -> List[np.array]:
     #              for photo in photos_with_data]
     all_faces = []
 
-    for photos, range_sensor in photos_with_data:
-        for photo in photos:
+    photos, range_sensor = photos_with_data.get()
 
-            for opencv_face in _opencv_get_faces(photo):
+    for photo, angle in photos:
+        if DEBUG:
+            print("looping trough photo's!")
+        for opencv_face in _opencv_get_faces(photo):
 
-                if not _confident(opencv_face, range_sensor):
-                    continue
+            if DEBUG:
+                print("grabbing face!")
 
-                head = _cut_out_head(opencv_face, photo)
+            if not _confident(opencv_face, range_sensor):
+                continue
 
-                _append_or_replace(all_faces, head, len(photo))
+            head = _cut_out_head(opencv_face, photo)
+
+            _append_or_replace(all_faces, head, len(photo))
 
 
     return all_faces
@@ -149,16 +157,18 @@ def _opencv_get_faces(photo: np.array):
     Returns:
        Een list met de coordinaten van de gezichten en een lijst met confidence scores
     """
-    img_gray = cv2.cvtColor(photo.get_photo(), cv2.COLOR_BGR2GRAY)
+    img_gray = cv2.cvtColor(photo, cv2.COLOR_BGR2GRAY)
 
-    # TODO Deze shizzel moet vanuit de git-root, niet twee mapjes terug. Dit is error prone!
-    face_cascade = cv2.CascadeClassifier("../haarCascades/haarcascade_frontalface_default.xml")
+
+    face_cascade = cv2.CascadeClassifier(HAAR_CASCADE_PATH)
 
     if face_cascade is None:
         message = "Face cascade failed to load!"
         log.error(message)
         raise FileNotFoundError(message)
 
+    if DEBUG:
+        print("about to use opencv!")
     # https://stackoverflow.com/questions/20801015/recommended-values-for-opencv-detectmultiscale-parameters
     faces, _, confidences = face_cascade.detectMultiScale3(
         img_gray,
@@ -167,6 +177,11 @@ def _opencv_get_faces(photo: np.array):
         minSize=(OPENCV_MIN_FACE_SIZE, OPENCV_MIN_FACE_SIZE),
         outputRejectLevels=True
     )
+
+    if DEBUG:
+        print("used opencv!")
+    if DEBUG and faces:
+        print("got a face!")
 
     # Moet een tuple zijn
     return zip(faces, confidences)

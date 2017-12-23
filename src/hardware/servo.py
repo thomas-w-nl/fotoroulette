@@ -11,9 +11,10 @@ pwm = GPIO.PWM(18, 50)
 pwm.start(0)
 
 
-def goto_position(graden: int):
+def goto_position(graden: int, sleep=0.4):
     """
     Send servo to specific position
+    :param sleep:
     :param graden: de positie waar de servo heen moet draaien
     """
     global _position
@@ -22,7 +23,7 @@ def goto_position(graden: int):
     _position = graden
     duty = calculate_angle(graden)
     pwm.ChangeDutyCycle(duty)
-    time.sleep(0.4)
+    time.sleep(sleep)
     pwm.ChangeDutyCycle(0)
 
 

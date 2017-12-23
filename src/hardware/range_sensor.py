@@ -3,9 +3,12 @@ from functools import partial
 import RPi.GPIO as GPIO
 import time
 
+DEBUG = False
+
 TRIG = 23
 ECHO = 24
 
+#: cm per seconde
 GELUIDSSNELHEID = 34300
 
 global_time_start = 0
@@ -61,13 +64,14 @@ def _get_distance_uncorrected() -> int:
     time.sleep(0.00001)
     GPIO.output(TRIG, False)
 
-    completed = event.wait(timeout=1)  # wacht op de pulse event tot maximaal 1 seconde
+    if DEBUG:
+        print("Waiting for callbacks")
+    completed = event.wait(timeout=0.1)  # wacht op de pulse event tot maximaal 1 seconde
+    GPIO.remove_event_detect(ECHO)
 
     pulse_duration = global_time_end - global_time_start
     if pulse_duration < 0 or not completed:
         return -1
-
-    GPIO.remove_event_detect(ECHO)
 
     distance = (pulse_duration * GELUIDSSNELHEID) / 2  # delen door twee omdat het geluid heen en terug gaat
 
@@ -82,15 +86,19 @@ def edge_callback(event, _):
 
     if GPIO.input(ECHO):
         global_time_start = time.time()
+        if DEBUG:
+            print("high callback")
     else:
         global_time_end = time.time()
-
+        if DEBUG:
+            print("low callback")
         # debounce door alleen te stoppen als we gestart zijn
         if global_time_start:
             event.set()
 
 
 if __name__ == "__main__":
-    print(_get_distance_uncorrected())
+    print("measureing")
+    print(get_distance())
 
     GPIO.cleanup()

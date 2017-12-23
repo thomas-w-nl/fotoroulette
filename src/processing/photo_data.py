@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Iterator
 
 import cv2
 import numpy as np
@@ -24,8 +24,8 @@ class PhotoData:
     def append_distance(self, distance: float, distance_angle: float):
         self.rs.append(distance, distance_angle)
 
-    def __iter__(self) -> Tuple[Photo, RangeSensor]:
-        yield self.p, self.rs
+    def get(self):
+        return self.p, self.rs
 
 
 class RangeSensor:
@@ -120,5 +120,5 @@ class Photo:
         self._photo.append(photo)
         self._photo_angle.append(photo_angle)
 
-    def __iter__(self) -> Tuple[np.array, float]:
-        yield self._photo, self._photo_angle
+    def __iter__(self):
+        return zip(self._photo, self._photo_angle)
