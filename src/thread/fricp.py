@@ -6,6 +6,9 @@ class FRICP:
     # Foto Roulette Internal Communication Protocol
 
     class Response(Enum):
+        """
+        Het response van de server, is 0 als het een request is
+        """
         REQUEST = 0
         # 100-199 is success range
         SUCCESS = 100
@@ -15,7 +18,7 @@ class FRICP:
         UNKNOWN_ERROR = 200
         UNKNOWN_OWNER = 201
         UNKNOWN_REQUEST = 202
-        UNKNOWN_RESPONSE = 203  # heeft dit wel nut?
+        UNKNOWN_RESPONSE = 203  # TODO: implementeren
 
         #
         REJECTED = 210
@@ -23,6 +26,10 @@ class FRICP:
         INVALID_VALUE_COMBINATION = 212
         LOOPBACK_DETECTED = 213
         UNABLE_TO_HANDLE_REQUEST = 214
+
+        # TODO: deze data dingen controleren in validate_package()
+        UNEXPECTED_DATA = 215
+        INVALID_DATA = 216
 
         # 220-229 connection
         CONNECTION_LOST = 220  # heeft dit wel nut?
@@ -32,6 +39,9 @@ class FRICP:
         CLOSE_CONNECTION = 301
 
     class Request(Enum):
+        """
+        Wat voor request is het? 0 als het een response is
+        """
         RESPONSE = 0
         # 100-199 hardware
         HARDWARE_GET_CAMERA = 100
@@ -43,16 +53,24 @@ class FRICP:
 
         # 300-399 gui
 
-
     class Owner(Enum):
-        HARDWARE = 1
-        PROCESSING = 2
-        GUI = 3
+        """
+        Het address van de sockets, kan ook vervangen worden door ip, port.
+        Samen met de request ranges voor validatie
+        """
+        HARDWARE = ("hardware_unixSocket", 100, 199)
+        PROCESSING = ("processing_unixSocket", 200, 299)
+        GUI = ("gui_unixSocket", 300, 399)
+
+        def __init__(self, address, min_request_range, max_request_range):
+            self.address = address
+            self.min_request_range = min_request_range
+            self.max_request_range = max_request_range
 
     current_version = 1
 
     def __init__(self, request: Request, owner: Owner, address: Owner, response: Response = Response.REQUEST, data=None,
-                 open: bool = false, buffer_size: int = 1024, version: float = 1):
+                 open: bool = False, buffer_size: int = 1024, version: float = 1):
         """
         Foto Roulette Internal Communication Protocol
         Protocol voor de communicatie tussen de processing; hardware en gui
@@ -61,7 +79,7 @@ class FRICP:
             owner (Owner/Enum): "HARDWARE/GUI/PROCESSING" Wie het bericht verstuurd
             address (Owner/Enum): "HARDWARE/GUI/PROCESSING" waar moet het naartoe?
             response (:obj: `Response/Enum`, optional): "UNDEFINED" Voor een request.
-            data (Any): De data die je verstuurd.
+            data (:obj: `Any`, optional): De data die je verstuurd. Default is None
                 Bij een response staat de status van het bericht. Default is "UNDEFINED"
             open (:obj: `bool`, optional): true voor een continuous verbinding. Default is false
             buffer_size (:obj: `int`, optional): Hoegroot de buffer moet zijn. Default is 1024
@@ -80,25 +98,15 @@ class FRICP:
         # self.binaryData =
 
     def __del__(self):
+        """
+        Destructor, doet nog niks.
+        """
         pass
 
-    def to_dictionary(self):
-        """
-        Krijg de directionary van het fricp object met alle data. Zodat je er wat nuttige dingen mee kan doen.
-        Returns:
-            dictionary: Dirtionary van het FRICP
-
-        """
-        # TODO: een @property hiervan maken
-        # TODO: testen of __dict__ niet gewoon hetzelfde doet.
-        # TODO: Strip address
-        return {'request': self.request, 'owner': self.owner, 'address': self.address, 'response': self.response,
-                'data': self.data, 'open': self.open, 'buffer_size': self.buffer_size, 'version': self.version}
-
+    @property
     def to_binary(self):
         """
         Returns:
-            binary: Krijg de dirtionary in een pickle pakketje zodat je het kan versturen
+            binary: Krijg het object in een pickle pakketje zodat je het kan versturen
         """
-        # TODO: een @property hiervan maken
-        return pickle.dumps(self.to_dictionary())
+        return pickle.dumps(self)
