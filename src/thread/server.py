@@ -14,58 +14,18 @@ class Server:
         client.
         """
 
-        class ValidationError(Exception):
-            def __init__(self, error: FRICP.Response, fricp: FRICP):
-                """
-                FRICP validation exception object.
-                Args:
-                    error (FRICP.Response): de error code
-                    fricp (FRICP): Het object waar het omgaat
-                """
-                self.error = error
-                self.fricp = fricp
-
-            def __str__(self):
-                """
-                Returns:
-                    String: error-naam
-                """
-                return self.error.name
-
-            @property
-            def code(self):
-                """
-                Returns:
-                    int: error-code
-                """
-                return self.error.value
-
-            @property
-            def response(self) -> FRICP:
-                """
-                Het correcte response wat je naar de verstuurder moet sturen
-                Returns:
-                    FRICP: object met de error code en juist addres etc.
-                """
-                # TODO: Owner word nu bepaald door adres van binnenkomende FRICP, niet heel netjes.
-                response = FRICP(FRICP.Request.RESPONSE, self.fricp.address, self.fricp.owner, self.error)
-                return response
-
         def handle(self):
             """
             Standaard functie van socketserver, word automatich geroepen waneer er een request naar de server word gedaan.
             Returns:
                 Void
             """
-            # TODO: is data global maken wel handig? Maak er geen gebruik van namelijk
             self.data = pickle.load(self.rfile)
-            # TODO: owner word nu bepaald door de adres van het binnenkomende fricp pakketjes, dat moet eigenlijk anders
-            self.owner = self.data.address
             log.debug("recieved: %s", self.data.__dict__)
             try:
-                self.validate_package(self.data)
+                FRICP.validate(self.data, "REQUEST")
                 log.debug("validation complete, no errors found!")
-            except self.ValidationError as error:
+            except FRICP.ValidationError as error:
                 log.error("failed to validate incoming fricp package: %s", error)
                 self.reply(error.response)
                 return -1
@@ -78,49 +38,9 @@ class Server:
             log.debug("handeling request...")
             # TODO: er word eigenlijk niks gehandeled, moet wel.
             # TODO: response is gehardcoded, dat mag natuurlijk helemaal niet.
+            # TODO: Hier moet een object van michel z'n handeling worden gecalled. En die moet een response returnen
             response = FRICP(FRICP.Request.RESPONSE, FRICP.Owner.HARDWARE, self.data.owner, FRICP.Response.SUCCESS)
             self.reply(response)
-
-        def validate_package(self, fricp: FRICP):
-            """
-            Valideren van het binnengekomen FRICP object.
-            Er word gecontroleerd op:
-                * onbekende waardes
-                * onmogelijke combinaties
-                * loopback
-                * of het request wel kan worden uitgevoerd
-            Geeft een ValidationError exception als er iets niet valid is
-            Args:
-                fricp (FRICP): het object wat moet worden gecontroleerd
-            """
-            # TODO: moet validate niet deel zijn van FRICP object?
-
-
-            # valideren of er geen onbekende waardes inzitten
-            if fricp.version is not FRICP.current_version:
-                raise self.ValidationError(FRICP.Response.VERSION_MISMATCH, self.data)
-            if fricp.request not in FRICP.Request:
-                raise self.ValidationError(FRICP.Response.UNKNOWN_REQUEST, self.data)
-            if fricp.owner not in FRICP.Owner:
-                raise self.ValidationError(FRICP.Response.UNKNOWN_OWNER, self.data)
-
-            # valideren of er geen onmogelijke combinaties inzitten.
-            if fricp.request == FRICP.Request.RESPONSE and fricp.response == FRICP.Response.REQUEST:
-                raise self.ValidationError(FRICP.Response.INVALID_VALUE_COMBINATION, self.data)
-
-            # Wanneer je data naar jezelf verstuurd
-            # TODO: uitzoeken hoe ik erachter kom wie ik ben. Owner word nu afgeleid van het addres.
-            # TODO: hij controleerd nu het pakketjes met zichzelf, dus deze error validatie slaat eigenlijk nergens op
-            # TODO: Dit moet bij de Server.send() methode al gecontroleerd worden, niet hier
-            if fricp.owner == self.owner:
-                raise self.ValidationError(FRICP.Response.LOOPBACK_DETECTED, self.data)
-
-            # valideren of het request wel uit kan worden gevoert.
-            if not FRICP.Owner[self.owner.name].min_request_range <= fricp.request.value <= FRICP.Owner[
-                self.owner.name].max_request_range:
-                raise self.ValidationError(FRICP.Response.UNABLE_TO_HANDLE_REQUEST, self.data)
-
-                # TODO: Er moet eigenlijk ook worden gecontroleerd of de waardes wel deugen (geen data als er wel data word verwacht, request is response bij eerste connectie etc.)
 
         def reply(self, fricp: FRICP):
             """
@@ -138,7 +58,7 @@ class Server:
 
     def __init__(self, owner: FRICP.Owner):
         """
-        Server class (zit ook de client in). Gebruikt door de hardware; gui en processing om met elkaar te praten door middel van PRICPv1
+        Server class. Gebruikt door de hardware; gui en processing om met elkaar te praten door middel van PRICPv1
         Returns:
             Helemaal niks, jonguh BAM!
         """
@@ -216,42 +136,15 @@ class Server:
     def server_status(self, value: ServerStatus):
         """
         Deze functie moet eigenlijk private zijn.
-        Roep deze methode dan ook absoluut niet aan buiten de Server class!
-        Dingen kunnen serieus hard kapot gaan als je dat wel doet.
+        schakelt ook de server uit, als je hem op off zet. Om zombie processen tegen te gaan.
+        Het is nog steeds niet de bedoeling dat je deze setter gebruikt
         Args:
             value (ServerStatus/Emum): de waarde dat de server moet hebben
         """
         self._serverStatus = value
-
-    @staticmethod
-    def send(fricp: FRICP) -> FRICP:
-        """
-        Stuur data volgends het FRICP, raised ook een socket.error als er iets mis gaat
-        Args:
-            fricp: FRICP object met alle data die je wilt versturen
-
-        Returns:
-            FRICP: Het antwoord van de server
-        """
-        # TODO: Is het handiger als deze deel is van het FRICP object?
-        try:
-            # TODO: check for open connection
-            log.debug("sending: %s", fricp.__dict__)
-            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            sock.connect(fricp.address.address)
-            sock.send(fricp.to_binary)
-
-            # TODO: error handeling
-            received = sock.recv(fricp.buffer_size)
-            received = pickle.loads(received)
-            log.debug("recieved: %s", received.__dict__)
-            if not fricp.open:
-                sock.close()
-
-            return received
-        except socket.error as msg:
-            log.error("Failed to send data: %s.", msg)
-            # raise socket.error
+        # Server uitzetten zodat je geen zombie processen kan krijgen
+        if value == self.ServerStatus.OFF:
+            self.close_server()
 
 
 if __name__ == "__main__":

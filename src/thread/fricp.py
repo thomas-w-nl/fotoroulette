@@ -1,9 +1,47 @@
-import pickle
+import pickle, socket
 from enum import Enum
+from src.common.log import *
 
 
 class FRICP:
     # Foto Roulette Internal Communication Protocol
+
+    class ValidationError(Exception):
+        def __init__(self, error, fricp):
+            """
+            FRICP validation exception object.
+            Args:
+                error (FRICP.Response): de error code
+                fricp (FRICP): Het object waar het omgaat
+            """
+            # error type = FRICP.Response en fricp is type FRICP, Maar op run-time herkend hij dat niet.
+            self.error = error
+            self.fricp = fricp
+
+        def __str__(self):
+            """
+            Returns:
+                String: error-naam
+            """
+            return self.error.name
+
+        @property
+        def code(self):
+            """
+            Returns:
+                int: error-code
+            """
+            return self.error.value
+
+        @property
+        def response(self):
+            """
+            Het correcte response wat je naar de afzender moet sturen
+            Returns:
+                FRICP: object met de error code en juist addres etc.
+            """
+            response = FRICP(FRICP.Request.RESPONSE, self.fricp.address, self.fricp.owner, self.error)
+            return response
 
     class Response(Enum):
         """
@@ -18,7 +56,7 @@ class FRICP:
         UNKNOWN_ERROR = 200
         UNKNOWN_OWNER = 201
         UNKNOWN_REQUEST = 202
-        UNKNOWN_RESPONSE = 203  # TODO: implementeren
+        UNKNOWN_RESPONSE = 203
 
         #
         REJECTED = 210
@@ -26,32 +64,41 @@ class FRICP:
         INVALID_VALUE_COMBINATION = 212
         LOOPBACK_DETECTED = 213
         UNABLE_TO_HANDLE_REQUEST = 214
+        INVALID_DATA = 215
+        INVALID_TYPE = 216  # wanneer request een response is bij eerste verbinding
 
-        # TODO: deze data dingen controleren in validate_package()
-        UNEXPECTED_DATA = 215
-        INVALID_DATA = 216
+        # client error
+        FAILED_TO_RECEIVE = 217
 
         # 220-229 connection
-        CONNECTION_LOST = 220  # heeft dit wel nut?
-        CONNECTION_TIMEOUT = 221  # heeft dit wel nut?
+        CONNECTION_LOST = 220  # heeft dit wel nut? # TODO: implementeren
+        CONNECTION_TIMEOUT = 221  # heeft dit wel nut? # TODO: implementeren
+        UNABLE_TO_SEND = 222
 
         # 300-399 is de opdracht range
-        CLOSE_CONNECTION = 301
+        CLOSE_CONNECTION = 301  # TODO deze kunnen denk ik weg
+        KEEP_CONNECTION_OPEN = 302
 
     class Request(Enum):
         """
         Wat voor request is het? 0 als het een response is
+            int: request nr
+            Any: Type data, wat bij de request hoort
         """
-        RESPONSE = 0
+        RESPONSE = (0, None)
+        # SHUTDOWN = 1 is dit handig?
         # 100-199 hardware
-        HARDWARE_GET_CAMERA = 100
-        HARDWARE_GET_RANGE_SENSOR = 101
-        HARDWARE_GET_SERVO_POSITION = 102
-        HARDWARE_POST_SERVO_POSITION = 103
+        HARDWARE_GET_CAMERA = (100, None)
+        HARDWARE_GET_RANGE_SENSOR = (101, None)
+        HARDWARE_GET_SERVO_POSITION = (102, None)
+        HARDWARE_POST_SERVO_POSITION = (103, int)
 
         # 200-299 processing
 
         # 300-399 gui
+        def __init__(self, request, data_type):
+            self.request = request
+            self.data_type = data_type
 
     class Owner(Enum):
         """
@@ -110,3 +157,96 @@ class FRICP:
             binary: Krijg het object in een pickle pakketje zodat je het kan versturen
         """
         return pickle.dumps(self)
+
+    @staticmethod
+    def validate(fricp, expected):
+        """
+        Valideren van het binnengekomen FRICP object.
+        Er word gecontroleerd op:
+            * onbekende waardes
+            * onmogelijke combinaties
+            * loopback
+            * of het request wel kan worden uitgevoerd
+            * correcte data
+            * request/response controleren
+        Geeft een ValidationError exception als er iets niet valid is
+        Args:
+            fricp (FRICP): het object wat moet worden gecontroleerd
+            expected (String): "REQUEST" of "RESPONSE", wat je verwacht wat voor paketje het is
+        """
+        # fricp type is FRICP, maar op run-time geeft hij een error dat hij niet defined is.
+        # valideren of er geen onbekende waardes inzitten
+        if fricp.version is not FRICP.current_version:
+            raise FRICP.ValidationError(FRICP.Response.VERSION_MISMATCH, fricp)
+        if fricp.request not in FRICP.Request:
+            raise FRICP.ValidationError(FRICP.Response.UNKNOWN_REQUEST, fricp)
+        if fricp.owner not in FRICP.Owner:
+            raise FRICP.ValidationError(FRICP.Response.UNKNOWN_OWNER, fricp)
+        if fricp.response not in FRICP.Response:
+            raise FRICP.ValidationError(FRICP.Response.UNKNOWN_RESPONSE, fricp)
+
+        # valideren of er geen onmogelijke combinaties inzitten.
+        if fricp.request == FRICP.Request.RESPONSE and fricp.response == FRICP.Response.REQUEST:
+            raise FRICP.ValidationError(FRICP.Response.INVALID_VALUE_COMBINATION, fricp)
+
+        # Wanneer je data naar jezelf verstuurd
+        if fricp.owner == fricp.address:
+            raise FRICP.ValidationError(FRICP.Response.LOOPBACK_DETECTED, fricp)
+
+        # valideren of het request wel uit kan worden gevoert.
+        if not FRICP.Owner[fricp.address.name].min_request_range <= fricp.request.request <= FRICP.Owner[
+            fricp.address.name].max_request_range and expected == "REQUEST":
+            raise FRICP.ValidationError(FRICP.Response.UNABLE_TO_HANDLE_REQUEST, fricp)
+
+        # check of er data moet zijn
+        if type(fricp.data) is not FRICP.Request[fricp.request.name].data_type and expected is not "RESPONSE":
+            raise FRICP.ValidationError(FRICP.Response.INVALID_DATA, fricp)
+
+        # als je een request verwacht maar een response krijg en visa versa
+        if (fricp.request == FRICP.Request.RESPONSE and expected == "REQUEST") or (
+                        fricp.response == FRICP.Response.REQUEST and expected == "RESPONSE"):
+            raise FRICP.ValidationError(FRICP.Response.INVALID_TYPE, fricp)
+
+    def send(self):
+        """
+        Stuur data volgends het FRICP, raised ook een FRICP.ValidationError als er iets mis gaat
+        Returns:
+            FRICP: Het antwoord van de server
+        """
+        try:
+            # TODO: check for open connection
+            log.debug("sending: %s", self.__dict__)
+            # TODO: makkelijk kunnen switchen tussen unix socket en ip/poort
+            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            sock.connect(self.address.address)
+            sock.send(self.to_binary)
+
+        except socket.error as error:
+            log.error("Failed to send data: %s.", error)
+            raise FRICP.ValidationError(FRICP.Response.UNABLE_TO_SEND, self)
+            # TODO: een validationError expection doen en een fricp response returen
+
+        try:
+            received = self
+            received = sock.recv(self.buffer_size)
+            received = pickle.loads(received)
+            log.debug("recieved: %s", received.__dict__)
+        except EOFError as err:
+            log.error("Failed to receive data: %s", err)
+            raise FRICP.ValidationError(FRICP.Response.FAILED_TO_RECEIVE, received)
+            # TODO: een validationError expection doen en een fricp response returen
+
+        try:
+            FRICP.validate(received, "RESPONSE")
+            log.debug("validation complete, no errors found!")
+        except FRICP.ValidationError as error:
+            log.error("failed to validate package: %s", error)
+        # TODO: exeption raisen
+        if not (
+                    self.open or received.Response is FRICP.Response.KEEP_CONNECTION_OPEN) or received.Response is FRICP.Response.CLOSE_CONNECTION:
+            sock.close()
+
+            # finally:
+            #     pass
+            #     # return received
+            #     # TODO: er moet altijd een fricp terug gegooid worden
