@@ -53,19 +53,19 @@ class FRICP:
 
         # 200-299 is de error range
         # 200-209 unknown
-        UNKNOWN_ERROR = 200
+        UNKNOWN_ERROR = 200  # unused
         UNKNOWN_OWNER = 201
         UNKNOWN_REQUEST = 202
         UNKNOWN_RESPONSE = 203
 
         #
-        REJECTED = 210
+        REJECTED = 210  # unused
         VERSION_MISMATCH = 211
         INVALID_VALUE_COMBINATION = 212
         LOOPBACK_DETECTED = 213
         UNABLE_TO_HANDLE_REQUEST = 214
         INVALID_DATA = 215
-        INVALID_TYPE = 216  # wanneer request een response is bij eerste verbinding
+        UNEXPECTED_REQUEST_OR_RESPONSE = 216
 
         # client error
         FAILED_TO_RECEIVE = 217
@@ -76,8 +76,7 @@ class FRICP:
         UNABLE_TO_SEND = 222
 
         # 300-399 is de opdracht range
-        CLOSE_CONNECTION = 301  # TODO deze kunnen denk ik weg
-        KEEP_CONNECTION_OPEN = 302
+        CLOSE_CONNECTION = 301
 
     class Request(Enum):
         """
@@ -159,7 +158,7 @@ class FRICP:
         return pickle.dumps(self)
 
     @staticmethod
-    def validate(fricp, expected):
+    def validate(fricp, expected: str):
         """
         Valideren van het binnengekomen FRICP object.
         Er word gecontroleerd op:
@@ -199,13 +198,18 @@ class FRICP:
             raise FRICP.ValidationError(FRICP.Response.UNABLE_TO_HANDLE_REQUEST, fricp)
 
         # check of er data moet zijn
-        if type(fricp.data) is not FRICP.Request[fricp.request.name].data_type and expected is not "RESPONSE":
+        # "None" Moet anders worden gecontroleerd, anders controleerd hij NoneType met None, en daar komt dan false uit.
+        required_data_type = FRICP.Request[fricp.request.name].data_type
+        data_received_type = fricp.data if required_data_type is None else type(fricp.data)
+        if data_received_type is not required_data_type and expected is not "RESPONSE":
             raise FRICP.ValidationError(FRICP.Response.INVALID_DATA, fricp)
 
         # als je een request verwacht maar een response krijg en visa versa
         if (fricp.request == FRICP.Request.RESPONSE and expected == "REQUEST") or (
-                        fricp.response == FRICP.Response.REQUEST and expected == "RESPONSE"):
-            raise FRICP.ValidationError(FRICP.Response.INVALID_TYPE, fricp)
+                        fricp.response == FRICP.Response.REQUEST and expected == "RESPONSE") or (
+                        fricp.response is not FRICP.Response.REQUEST and expected == "REQUEST"
+        ):
+            raise FRICP.ValidationError(FRICP.Response.UNEXPECTED_REQUEST_OR_RESPONSE, fricp)
 
     def send(self):
         """
@@ -213,6 +217,7 @@ class FRICP:
         Returns:
             FRICP: Het antwoord van de server
         """
+        # Verbinding maken en data versturen
         try:
             # TODO: check for open connection
             log.debug("sending: %s", self.__dict__)
@@ -220,33 +225,42 @@ class FRICP:
             sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             sock.connect(self.address.address)
             sock.send(self.to_binary)
-
         except socket.error as error:
             log.error("Failed to send data: %s.", error)
+            sock.close()
             raise FRICP.ValidationError(FRICP.Response.UNABLE_TO_SEND, self)
-            # TODO: een validationError expection doen en een fricp response returen
 
+        # data ontvangen en uitpakken
         try:
-            received = self
             received = sock.recv(self.buffer_size)
             received = pickle.loads(received)
             log.debug("recieved: %s", received.__dict__)
-        except EOFError as err:
-            log.error("Failed to receive data: %s", err)
+        except EOFError as error:
+            log.error("Failed to receive data: %s", error)
+            # controleren of we wel een bruikbare object hebben ontvangen
+            if type(received) is not FRICP:
+                received = self
+            sock.close()
             raise FRICP.ValidationError(FRICP.Response.FAILED_TO_RECEIVE, received)
-            # TODO: een validationError expection doen en een fricp response returen
 
+        # ontvangen data valideren
         try:
             FRICP.validate(received, "RESPONSE")
             log.debug("validation complete, no errors found!")
         except FRICP.ValidationError as error:
             log.error("failed to validate package: %s", error)
-        # TODO: exeption raisen
-        if not (
-                    self.open or received.Response is FRICP.Response.KEEP_CONNECTION_OPEN) or received.Response is FRICP.Response.CLOSE_CONNECTION:
+            sock.close()
+            raise FRICP.ValidationError(error.error, error.fricp)
+
+        # controleren of de server wel normaal antwoord geeft
+        if received.response is not FRICP.Response.SUCCESS:
+            log.error("Server responded with error: %s", received.response.name)
+            sock.close()
+            raise FRICP.ValidationError(received.response, received)
+
+        # sluit de verbinding als dat wenselijk is.
+        if (not self.open or received.Response is FRICP.Response.CLOSE_CONNECTION) and not received.open:
             sock.close()
 
-            # finally:
-            #     pass
-            #     # return received
-            #     # TODO: er moet altijd een fricp terug gegooid worden
+        # als alles welletjes is gegaan geef dan het response terug
+        return received
