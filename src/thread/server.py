@@ -2,7 +2,8 @@ import socket, socketserver, pickle, os, threading
 from src.common.log import *
 from enum import Enum
 from src.thread.fricp import FRICP
-
+from src.hardware.camera import Camera
+from src.hardware import servo, range_sensor
 
 class Server:
     class ServerHandeler(socketserver.StreamRequestHandler):
@@ -36,10 +37,21 @@ class Server:
             Het handelen van de request
             """
             log.debug("handeling request...")
-            # TODO: er word eigenlijk niks gehandeled, moet wel.
-            # TODO: response is gehardcoded, dat mag natuurlijk helemaal niet.
-            # TODO: Hier moet een object van michel z'n handeling worden gecalled. En die moet een response returnen
-            response = FRICP(FRICP.Request.RESPONSE, FRICP.Owner.HARDWARE, self.data.owner, FRICP.Response.SUCCESS)
+
+            if self.data.request == FRICP.Request.HARDWARE_GET_CAMERA:
+                camera = Camera()
+                data = camera.get_dummy_frame()
+
+            if self.data.request == FRICP.Request.HARDWARE_POST_SERVO_POSITION:
+                data = servo.goto_position(self.data.data)
+
+            if self.data.request == FRICP.Request.HARDWARE_GET_SERVO_POSITION:
+                data = servo.get_position()
+
+            if self.data.request == FRICP.Request.HARDWARE_GET_RANGE_SENSOR:
+                data = range_sensor.get_distance()
+
+            response = FRICP(FRICP.Request.RESPONSE, self.data.address, self.data.owner, FRICP.Response.SUCCESS, data)
             self.reply(response)
 
         def reply(self, fricp: FRICP):
