@@ -206,7 +206,9 @@ class FRICP:
 
         # als je een request verwacht maar een response krijg en visa versa
         if (fricp.request == FRICP.Request.RESPONSE and expected == "REQUEST") or (
-                        fricp.response == FRICP.Response.REQUEST and expected == "RESPONSE"):
+                        fricp.response == FRICP.Response.REQUEST and expected == "RESPONSE") or (
+                        fricp.response is not FRICP.Response.REQUEST and expected == "REQUEST"
+        ):
             raise FRICP.ValidationError(FRICP.Response.UNEXPECTED_REQUEST_OR_RESPONSE, fricp)
 
     def send(self):
@@ -227,7 +229,6 @@ class FRICP:
             log.error("Failed to send data: %s.", error)
             sock.close()
             raise FRICP.ValidationError(FRICP.Response.UNABLE_TO_SEND, self)
-            # TODO: een validationError expection doen en een fricp response returen
 
         # data ontvangen en uitpakken
         try:
@@ -241,7 +242,6 @@ class FRICP:
                 received = self
             sock.close()
             raise FRICP.ValidationError(FRICP.Response.FAILED_TO_RECEIVE, received)
-            # TODO: een validationError expection doen en een fricp response returen
 
         # ontvangen data valideren
         try:
@@ -258,11 +258,9 @@ class FRICP:
             sock.close()
             raise FRICP.ValidationError(received.response, received)
 
+        # sluit de verbinding als dat wenselijk is.
         if (not self.open or received.Response is FRICP.Response.CLOSE_CONNECTION) and not received.open:
             sock.close()
-            # TODO: deze sock moet altijd geclosed worden
-            # finally:
-            #     pass
-            #     # return received
-            #     # TODO: er moet altijd een fricp terug gegooid worden
+
+        # als alles welletjes is gegaan geef dan het response terug
         return received
