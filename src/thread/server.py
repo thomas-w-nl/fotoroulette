@@ -63,7 +63,6 @@ class Server:
             Helemaal niks, jonguh BAM!
         """
 
-        # Deze moet je overwriten als je deze class extend
         # TODO: eigenlijk moet er ook een flag staan of het een socketserver of TCP/IP address is zodat je ook over internet dingen kan sturen. Unix socket is nu gehardcoded
         self.owner = owner
         self.server_address = owner.address
