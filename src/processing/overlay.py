@@ -15,19 +15,23 @@ def generate_overlay(game):
     for i, face in enumerate(game.faces):
         face_offset = game.offsets[i]
 
-        face.face_image = _resize_fit(face.face_image, int(overlay_width / 2) - face_offset['minus_image_width'], overlay_height - face_offset['minus_image_width'])
+        face.face_image = _resize_fit(face.face_image, int(overlay_width / 2) - face_offset['minus_image_width'],
+                                      overlay_height - face_offset['minus_image_width'])
 
-        overlay = _apply_overlay(overlay, face.face_image, face_offset['offset_x'], face_offset['offset_y'], game.on_top)
+        overlay = _apply_overlay(i, overlay, face.face_image, face_offset['offset_x'], face_offset['offset_y'],
+                                 game.on_top, game.extra_background)
 
     return overlay
 
 
-def _apply_overlay(bg, fg, offset_x, offset_y, on_top=True):
+def _apply_overlay(index, bg, fg, offset_x, offset_y, on_top=True, extra_background=None):
     rows_fg, cols_fg, channels_fg = fg.shape
     rows_bg, cols_bg, channels_bg = bg.shape
 
     # create new image to use as base
     background = np.zeros((rows_bg, cols_bg, 3), np.uint8)
+    if extra_background is not None and index is 0:
+        background = bg
 
     if (offset_x < -100) or (offset_x < -100):
         raise ValueError('offset more than 100%')
