@@ -1,5 +1,4 @@
 import sys
-sys.path.extend(['/media/sf_Projects/raspberry-pi'])
 from src.thread.server import *
 from src.thread.fricp import *
 
