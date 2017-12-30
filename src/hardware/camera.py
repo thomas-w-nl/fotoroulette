@@ -9,7 +9,7 @@ from picamera.array import PiRGBArray
 # from src.common.log import *
 
 CAMERA_H_FOV = 62.2
-CAMERA_RESOLUTION = [1640, 922]  # [3280, 2464] [1640, 1232] [1640x922], de rest is partial fov
+CAMERA_RESOLUTION = [1640, 1232]  # [3280, 2464] [1640, 1232] [1640x922], de rest is partial fov
 
 
 class Camera:
@@ -22,10 +22,6 @@ class Camera:
         """
         width, height = CAMERA_RESOLUTION
 
-        # grab an image from the camera
-        self.camera.resolution = (width, height)
-        self.camera.framerate = 24
-
         # The horizontal resolution is rounded up to the nearest multiple of 32 pixels.
         buffer_width = int(np.math.ceil(width / 32) * 32)
         # The vertical resolution is rounded up to the nearest multiple of 16 pixels.
@@ -35,13 +31,17 @@ class Camera:
         image = np.empty((buffer_height * buffer_width * 3,), dtype=np.uint8)
 
         self.camera.capture(image, 'bgr')
-        # reshape buffer to requested resolution
-        image = image.reshape((height, width, 3))
+
+        # reshape buffer to image dimensions
+        image = image.reshape((buffer_height, buffer_width, 3))
 
         if image is None:
             message = "Failed to get feed from camera!"
             # log.error(message)
             raise ValueError(message)
+
+        # reshape buffer to requested resolution
+        image = image[:height, :width, :]
 
         return image
 
@@ -51,7 +51,8 @@ class Camera:
         Start de camera
         """
         self.camera = PiCamera()
-        self.rawCapture = PiRGBArray(self.camera)
+        # dit is redundant volgens mij
+        # self.rawCapture = PiRGBArray(self.camera)
         self.camera.resolution = CAMERA_RESOLUTION
         # allow camera to warm up
         time.sleep(2)
@@ -69,7 +70,10 @@ class Camera:
 
 
 if __name__ == "__main__":
-    cam = Camera()
+    print("test")
 
+
+    cam = Camera()
     img = cam.get_frame()
-    cv2.imwrite('photo.png', img)
+    cv2.imshow("photo", img)
+    cv2.waitKey()
