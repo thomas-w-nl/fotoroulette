@@ -1,4 +1,3 @@
-import sys
 from src.thread.server import *
 from src.thread.fricp import *
 
