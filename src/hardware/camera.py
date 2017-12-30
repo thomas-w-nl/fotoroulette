@@ -39,7 +39,7 @@ class Camera:
 
     def get_dummy_frame(self, index=0) -> np.array:
         print(getcwd())
-        img_path = "../img"
+        img_path = "img"
 
         # Crasht het hier? Check je working dir in run config!
         image_list = listdir(img_path)

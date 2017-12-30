@@ -1,4 +1,4 @@
-import socket, socketserver, pickle, os, threading
+import socket, socketserver, pickle, sys, threading
 from src.common.log import *
 from enum import Enum
 from src.thread.fricp import FRICP
@@ -27,6 +27,7 @@ class Server:
                 Void
             """
             self.data = pickle.load(self.rfile)
+            self.buffer_size = self.data.buffer_size
             log.debug("recieved: %s", self.data.__dict__)
             try:
                 FRICP.validate(self.data, "REQUEST")
@@ -66,11 +67,13 @@ class Server:
                 data = get_faces
 
             if self.data.request == FRICP.Request.PROCESSING_GET_PHOTOS:
+                # TODO: deze shizzel right here
                 pass
             if self.data.request == FRICP.Request.PROCESSING_UPLOAD_NETWORK:
                 data = send_photos("fotodata")
 
-            response = FRICP(FRICP.Request.RESPONSE, self.data.address, self.data.owner, FRICP.Response.SUCCESS, data)
+            response = FRICP(FRICP.Request.RESPONSE, self.data.address, self.data.owner, FRICP.Response.SUCCESS, data,
+                             buffer_size=self.buffer_size)
             self.reply(response)
 
         def reply(self, fricp: FRICP):
@@ -80,7 +83,8 @@ class Server:
                 fricp (FRICP): Het object dat moet worden verstuurd
             """
             log.debug("Sending reply: %s", fricp.__dict__)
-            self.wfile.write(fricp.to_binary)
+            self.request.sendall(fricp.to_binary)
+            # self.wfile.write(fricp.to_binary)
 
     class ServerStatus(Enum):
         ERROR = -2

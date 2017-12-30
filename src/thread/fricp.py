@@ -227,7 +227,7 @@ class FRICP:
             # TODO: makkelijk kunnen switchen tussen unix socket en ip/poort
             sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             sock.connect(self.address.address)
-            sock.send(self.to_binary)
+            sock.sendall(self.to_binary)
         except socket.error as error:
             log.error("Failed to send data: %s.", error)
             sock.close()
@@ -235,10 +235,16 @@ class FRICP:
 
         # data ontvangen en uitpakken
         try:
-            received = sock.recv(self.buffer_size)
+            received = bytearray()
+            while True:
+                incoming = sock.recv(self.buffer_size)
+                received += incoming
+                log.debug(incoming)
+                if not incoming:
+                    break
             received = pickle.loads(received)
             log.debug("recieved: %s", received.__dict__)
-        except EOFError as error:
+        except (EOFError, pickle.UnpicklingError) as error:
             log.error("Failed to receive data: %s", error)
             # controleren of we wel een bruikbare object hebben ontvangen
             if type(received) is not FRICP:
