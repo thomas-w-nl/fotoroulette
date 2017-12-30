@@ -2,11 +2,13 @@ import socket, socketserver, pickle, os, threading
 from src.common.log import *
 from enum import Enum
 from src.thread.fricp import FRICP
+
 from src.hardware.camera import Camera
 from src.hardware import servo, range_sensor
 from src.processing.collect_photos import collect_photos
 from src.processing.get_faces import get_faces
 from src.processing.netwerk import *
+
 
 class Server:
     class ServerHandeler(socketserver.StreamRequestHandler):
@@ -64,7 +66,7 @@ class Server:
                 data = get_faces
 
             if self.data.request == FRICP.Request.PROCESSING_GET_PHOTOS:
-
+                pass
             if self.data.request == FRICP.Request.PROCESSING_UPLOAD_NETWORK:
                 data = send_photos("fotodata")
 

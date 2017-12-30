@@ -5,8 +5,8 @@ from src.common.log import *
 if __name__ == "__main__":
     log.debug("running in debug mode")
     package = FRICP(request=FRICP.Request.HARDWARE_GET_CAMERA,
-                    owner=FRICP.Owner.PROCESSING,
-                    address=FRICP.Owner.HARDWARE)
+                    owner=FRICP.Owner.HARDWARE,
+                    address=FRICP.Owner.PROCESSING)
     try:
         response = FRICP.send(package)
         log.debug("succesvol verzonden en ontvangen YES!")

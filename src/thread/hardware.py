@@ -1,5 +1,5 @@
-from src.thread.server import *
-from src.thread.fricp import *
+from src.thread.server import Server
+from src.thread.fricp import FRICP
 
-Server(FRICP.Owner.HARDWARE)
-server.open_server()
+hardware_server = Server(FRICP.Owner.HARDWARE)
+hardware_server.open_server()

@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 
 # y = -1/((130^2)*1.3)(x - 130)^2 + 1
-from hardware import range_sensor
+from src.hardware import range_sensor
 
 SWEETSPOT = 130  # cm
 SWEETSPOT_WIDTH_FACTOR = 1.3

@@ -1,12 +1,12 @@
 import cv2
 import numpy as np
 
-from common.log import *
-from hardware import camera
-from processing.collect_photos import collect_photos
-from processing.photo_data import PhotoData
+from src.common.log import *
+from src.hardware import camera
+from src.processing.collect_photos import collect_photos
+from src.processing.photo_data import PhotoData
 from typing import List
-from common import tools
+from src.common import tools
 
 # face confidence drempelwaard
 # 0.65 is voor de huidige fotos een goede waarde

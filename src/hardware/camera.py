@@ -3,7 +3,7 @@ from os import listdir, getcwd
 
 import numpy as np
 import cv2
-from common.log import *
+from src.common.log import *
 
 CAMERA_H_FOV = 62.2
 
