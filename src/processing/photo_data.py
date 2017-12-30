@@ -11,6 +11,7 @@ from src.hardware import range_sensor
 SWEETSPOT = 130  # cm
 SWEETSPOT_WIDTH_FACTOR = 1.3
 MAX_CONFIDENCE = 1
+DEBUG = True
 
 
 class PhotoData:
@@ -88,6 +89,7 @@ class RangeSensor:
         RANGE_SENSOR_FOV_HALF = range_sensor.SENSOR_FOV / 2
 
         # als deze buiten berijk is return error
+
         if angle < (self._distance_angle[0] - RANGE_SENSOR_FOV_HALF):
             return -1
 

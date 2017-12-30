@@ -9,7 +9,7 @@ from picamera.array import PiRGBArray
 # from src.common.log import *
 
 CAMERA_H_FOV = 62.2
-CAMERA_RESOLUTION = [1664, 928]  # [3280, 246]  # (2592, 1952) (1920, 1080)
+CAMERA_RESOLUTION = [1640, 922]  # [3280, 2464] [1640, 1232] [1640x922], de rest is partial fov
 
 
 class Camera:
@@ -25,15 +25,17 @@ class Camera:
         # grab an image from the camera
         self.camera.resolution = (width, height)
         self.camera.framerate = 24
-        time.sleep(2)
 
         # The horizontal resolution is rounded up to the nearest multiple of 32 pixels.
         buffer_width = int(np.math.ceil(width / 32) * 32)
         # The vertical resolution is rounded up to the nearest multiple of 16 pixels.
         buffer_height = int(np.math.ceil(height / 16) * 16)
 
+        # create an empty buffer, with accommodation for image resolution rounding
         image = np.empty((buffer_height * buffer_width * 3,), dtype=np.uint8)
+
         self.camera.capture(image, 'bgr')
+        # reshape buffer to requested resolution
         image = image.reshape((height, width, 3))
 
         if image is None:
@@ -54,7 +56,7 @@ class Camera:
         # allow camera to warm up
         time.sleep(2)
 
-        if self.camera == None:
+        if self.camera is None:
             # log.error("Could not open camera")
             print("Error opening camera and log is broken")
 
