@@ -93,6 +93,9 @@ class FRICP:
         HARDWARE_POST_SERVO_POSITION = (103, int)
 
         # 200-299 processing
+        PROCESSING_MAKE_PHOTOS = (200, None)
+        PROCESSING_GET_PHOTOS = (201, None)
+        PROCESSING_UPLOAD_NETWORK = (202, None)
 
         # 300-399 gui
         def __init__(self, request, data_type):

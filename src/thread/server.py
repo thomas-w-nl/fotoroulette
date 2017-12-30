@@ -4,6 +4,9 @@ from enum import Enum
 from src.thread.fricp import FRICP
 from src.hardware.camera import Camera
 from src.hardware import servo, range_sensor
+from src.processing.collect_photos import collect_photos
+from src.processing.get_faces import get_faces
+from src.processing.netwerk import *
 
 class Server:
     class ServerHandeler(socketserver.StreamRequestHandler):
@@ -50,6 +53,20 @@ class Server:
 
             if self.data.request == FRICP.Request.HARDWARE_GET_RANGE_SENSOR:
                 data = range_sensor.get_distance()
+
+            if self.data.request == FRICP.Request.PROCESSING_MAKE_PHOTOS:
+                data = collect_photos()
+
+                for photo in data._photos:
+                    cv2.imshow("Input photo's", photo)
+                    cv2.waitKey()
+
+                data = get_faces
+
+            if self.data.request == FRICP.Request.PROCESSING_GET_PHOTOS:
+
+            if self.data.request == FRICP.Request.PROCESSING_UPLOAD_NETWORK:
+                data = send_photos("fotodata")
 
             response = FRICP(FRICP.Request.RESPONSE, self.data.address, self.data.owner, FRICP.Response.SUCCESS, data)
             self.reply(response)
