@@ -1,5 +1,4 @@
 import configparser
-
 import RPi.GPIO as GPIO
 import time
 
@@ -22,20 +21,25 @@ def goto_position(graden: int, sleep=0.4):
     :param graden: de positie waar de servo heen moet draaien
     """
     global _position
-    if (graden > MAX_SERVO_POS or graden < MIN_SERVO_POS):
+    if graden > MAX_SERVO_POS or graden < MIN_SERVO_POS:
         raise IndexError("Servo: " + str(graden))
     _position = graden
-    duty = calculate_angle(graden)
+    duty = _calculate_angle(graden)
     pwm.ChangeDutyCycle(duty)
     time.sleep(sleep)
     pwm.ChangeDutyCycle(0)
 
 
 def get_position() -> int:
+    """
+    Vraag de huidige positie van de servo op
+    Returns:
+        De positie in graden
+    """
     return _position
 
 
-def calculate_angle(angle: float) -> float:
+def _calculate_angle(angle: float) -> float:
     """
     Zet een hoek in graden om naar een duty cycle
     Args:
@@ -47,13 +51,11 @@ def calculate_angle(angle: float) -> float:
     """
     servo_max = 10.5
     servo_min = 2.5
-    angle_max = MAX_SERVO_POS
-    angle_min = MIN_SERVO_POS
 
     servo_range = (servo_max - servo_min)
-    angle_range = angle_max - angle_min
+    angle_range = MAX_SERVO_POS - MIN_SERVO_POS
 
-    servo_angle = (((angle - angle_min) * servo_range) / angle_range) + servo_min
+    servo_angle = (((angle - MIN_SERVO_POS) * servo_range) / angle_range) + servo_min
 
     return round(servo_angle, 1)
 
