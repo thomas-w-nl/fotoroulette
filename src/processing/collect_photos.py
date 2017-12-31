@@ -1,58 +1,77 @@
-from hardware import range_sensor, servo, camera
-from hardware.camera import Camera
-from processing import photo_data
-from processing.photo_data import PhotoData
+import configparser
+import cv2
 
-START_ANGLE = 0
-STOP_ANGLE = 180  # todo should be 180
-TOTAL_ANGLE = STOP_ANGLE - START_ANGLE
+from src.hardware import range_sensor, servo
+from src.hardware.camera import Camera
+from src.processing.photo_data import PhotoData
 
-# de step size voor de volgende meeting
-RANGE_SENSOR_STEP_SIZE = range_sensor.SENSOR_ANGLE
-CAMERA_STEP_SIZE = int(camera.CAMERA_H_FOV / 2)
+DEBUG = False
+FAKE = False
 
 
-def collect_photos() -> photo_data:
+def collect_photos() -> PhotoData:
     """
     Maakt de fotos en meet de afstand om een bepaald aantal graden
 
     Return:
       Alle fotos met range sensor data
     """
-    data = PhotoData(RANGE_SENSOR_STEP_SIZE)
+    data = PhotoData()
     cam = Camera()
 
-    cam_step = 0
-    range_step = 0
+    config = configparser.ConfigParser()
+    config.read('fotoroulette.conf')
 
-    next_pic_angle = 0
-    next_range_angle = 0
+    start_angle = config['Servo'].getint('MIN_SERVO_POS')
+    stop_angle = config['Servo'].getint('MAX_SERVO_POS')
 
-    current_pos = START_ANGLE
+    # de step size voor de volgende meeting
+    RANGE_SENSOR_STEP_SIZE = config['RangeSensor'].getint('SENSOR_FOV')
+    CAMERA_STEP_SIZE = int(config['Camera'].getfloat('CAMERA_H_FOV') / 2)
+
+    if FAKE:
+        import os
+        cam = iter(os.listdir("/home/pi/Documents/python/raspberry-pi/img/"))
+
+    current_pos = start_angle
+    next_pic_angle = current_pos
+    next_range_angle = current_pos
+
+    servo.goto_position(current_pos)
 
     # while we can still collect images or sensor data
-    while next_range_angle <= STOP_ANGLE or next_pic_angle <= STOP_ANGLE:
+    while next_range_angle <= stop_angle or next_pic_angle <= stop_angle:
 
         # move for picture
         if next_pic_angle <= next_range_angle:
+
+            if DEBUG:
+                print("pic at ", next_pic_angle)
+
             servo.goto_position(next_pic_angle)
             current_pos = next_pic_angle
 
-            cam_step += 1
+            photo = cam.get_frame()
 
-            photo = cam.get_dummy_frame()
-            data.set_photo(photo, current_pos)
+            if FAKE:
+                photo = cv2.imread(next(cam))
+
+            data.append_photo(photo, current_pos)
+            next_pic_angle += CAMERA_STEP_SIZE
 
         # move for range
         if next_range_angle <= next_pic_angle:
-            servo.goto_position(next_range_angle)
 
-            range_step += 1
+            if DEBUG:
+                print("range at ", next_range_angle)
+
+            servo.goto_position(next_range_angle)
+            current_pos = next_range_angle
+
+            next_range_angle += RANGE_SENSOR_STEP_SIZE
 
             distance = range_sensor.get_distance()
-            data.set_sensor_data(distance)
+            data.append_distance(distance, current_pos)
 
-        next_pic_angle = CAMERA_STEP_SIZE * cam_step
-        next_range_angle = RANGE_SENSOR_STEP_SIZE * range_step
-
+    servo.goto_position(start_angle, 1)
     return data

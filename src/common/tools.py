@@ -1,16 +1,11 @@
+import os
+
 import cv2
 
 
 # Tools die gewoon handig zijn
 
 
-# TODO: Gebruik of geen type annotations of ALLEEN type annotations.
-def select_random(source, amount: int):
-    """
-    Select 'amount' random uit de array en returnt deze.
-    """
-    # pick = random.randrange(0, len(image_list))
-    pass
 
 
 # TODO: Wat is de punt van deze functie?
@@ -43,19 +38,6 @@ def draw_text(frame, string: str, rect):
        Een frame (:obj:`cv2.Mat`) met het teksts
     """
     pass
-
-
-# TODO: De punt hiervan?
-def get_image(path: str):
-    """
-    laad een plaatje in!
-
-
-    :arg: dir naar het plaatje
-    :rtype: cv2.Mat
-    :return: Het plaatje
-    """
-    return cv2.imread(path)
 
 
 def draw_image(img):
