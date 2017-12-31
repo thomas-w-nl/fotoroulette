@@ -1,10 +1,8 @@
 import configparser
-
 import cv2
 
-from src.hardware import range_sensor, servo, camera
+from src.hardware import range_sensor, servo
 from src.hardware.camera import Camera
-from src.processing import photo_data
 from src.processing.photo_data import PhotoData
 
 DEBUG = False
@@ -21,7 +19,8 @@ def collect_photos() -> PhotoData:
     data = PhotoData()
     cam = Camera()
 
-    config = configparser.ConfigParser().read('fotoroulette.conf')
+    config = configparser.ConfigParser()
+    config.read('fotoroulette.conf')
 
     start_angle = config['Servo'].getint('MIN_SERVO_POS')
     stop_angle = config['Servo'].getint('MAX_SERVO_POS')

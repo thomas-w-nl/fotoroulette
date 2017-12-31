@@ -2,9 +2,10 @@ import configparser
 import RPi.GPIO as GPIO
 import time
 
-servo_config = configparser.ConfigParser().read('fotoroulette.conf')['Servo']
-MAX_SERVO_POS = servo_config['MAX_SERVO_POS']
-MIN_SERVO_POS = servo_config['MIN_SERVO_POS']
+config = configparser.ConfigParser()
+config.read('fotoroulette.conf')
+MAX_SERVO_POS = config['Servo']['MAX_SERVO_POS']
+MIN_SERVO_POS = config['Servo']['MIN_SERVO_POS']
 
 _position = 0
 

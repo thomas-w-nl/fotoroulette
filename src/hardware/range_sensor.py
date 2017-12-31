@@ -6,11 +6,12 @@ import time
 
 DEBUG = False
 
-config = configparser.ConfigParser().read('fotoroulette.conf')['RangeSensor']
-TRIG = config.getint('TRIG')
-ECHO = config.getint('ECHO')
-GELUIDSSNELHEID = config.getint('GELUIDSSNELHEID')
-SENSOR_FOV = config.getint('SENSOR_FOV')
+config = configparser.ConfigParser()
+config.read('fotoroulette.conf')
+TRIG = config['RangeSensor'].getint('TRIG')
+ECHO = config['RangeSensor'].getint('ECHO')
+GELUIDSSNELHEID = config['RangeSensor'].getint('GELUIDSSNELHEID')
+SENSOR_FOV = config['RangeSensor'].getint('SENSOR_FOV')
 
 global_time_start = 0
 global_time_end = 0

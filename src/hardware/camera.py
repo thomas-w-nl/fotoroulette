@@ -1,14 +1,9 @@
 import configparser
 import time
-
 import cv2
 import numpy as np
 from picamera import PiCamera
-# import the necessary packages
-from picamera.array import PiRGBArray
-
-
-# from src.common.log import *
+from src.common import log
 
 
 class Camera:
@@ -19,9 +14,11 @@ class Camera:
         Returns:
            Een plaatje van de camera.
         """
-        camera_config = configparser.ConfigParser().read('fotoroulette.conf')['Camera']
-        width = camera_config.getint('CAMERA_RESOLUTION_H')
-        height = camera_config.getint('CAMERA_RESOLUTION_V')
+        config = configparser.ConfigParser()
+        config.read('fotoroulette.conf')
+
+        width = config['Camera'].getint('CAMERA_RESOLUTION_H')
+        height = config['Camera'].getint('CAMERA_RESOLUTION_V')
 
         # The horizontal resolution is rounded up to the nearest multiple of 32 pixels.
         buffer_width = int(np.math.ceil(width / 32) * 32)
@@ -29,17 +26,15 @@ class Camera:
         buffer_height = int(np.math.ceil(height / 16) * 16)
 
         # create an empty buffer, with accommodation for image resolution rounding
-        image = np.empty((buffer_height * buffer_width * 3,), dtype=np.uint8)
+        buffer = np.empty((buffer_height * buffer_width * 3,), dtype=np.uint8)
 
-        self.camera.capture(image, 'bgr')
+        self.camera.capture(buffer, 'bgr')
 
         # reshape buffer to image dimensions
-        image = image.reshape((buffer_height, buffer_width, 3))
+        image = buffer.reshape((buffer_height, buffer_width, 3))
 
         if image is None:
-            message = "Failed to get feed from camera!"
-            # log.error(message)
-            raise ValueError(message)
+            log.error("Failed to get feed from camera!")
 
         # reshape buffer to requested resolution
         image = image[:height, :width, :]
@@ -54,9 +49,11 @@ class Camera:
 
         # self.rawCapture = PiRGBArray(self.camera)  # dit is redundant volgens mij
 
-        camera_config = configparser.ConfigParser().read('fotoroulette.conf')['Camera']
-        width = camera_config.getint('CAMERA_RESOLUTION_H')
-        height = camera_config.getint('CAMERA_RESOLUTION_V')
+        config = configparser.ConfigParser()
+        config.read('fotoroulette.conf')
+
+        width = config['Camera'].getint('CAMERA_RESOLUTION_H')
+        height = config['Camera'].getint('CAMERA_RESOLUTION_V')
         self.camera.resolution = [width, height]
         # allow camera to warm up
         time.sleep(2)

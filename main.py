@@ -1,25 +1,19 @@
-# from common import tools, log ?
 import os
-
 import pickle
+
+import cv2
 
 os.chdir("/mnt/project/")
 
-from src.common.log import *
-from src.hardware.camera import Camera
 from src.processing.collect_photos import collect_photos
 from src.processing.get_faces import get_faces
 
-import src.common.tools as tools
-import cv2
-
 if __name__ == "__main__":
 
-    # data = collect_photos()
-    # with open('real_data_2_personen.pkl', 'wb') as output:
-    #
-    #
-    #     pickle.dump(data, output, pickle.HIGHEST_PROTOCOL)
+    data = collect_photos()
+    with open('dump.pkl', 'wb') as output:
+
+        pickle.dump(data, output, pickle.HIGHEST_PROTOCOL)
 
     with open('real_data_2_personen.pkl', 'rb') as input:
         data = pickle.load(input)

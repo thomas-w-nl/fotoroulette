@@ -1,14 +1,10 @@
 import configparser
-import random
-from typing import List, Tuple, Iterator
+from typing import Tuple
 
-import cv2
 import numpy as np
 
-# y = -1/((130^2)*1.3)(x - 130)^2 + 1
-from src.hardware import range_sensor
-
-range_sensor_config = configparser.ConfigParser().read('fotoroulette.conf')['RangeSensor']
+config = configparser.ConfigParser()
+config.read('fotoroulette.conf')
 
 DEBUG = True
 
@@ -19,12 +15,29 @@ class PhotoData:
         self.p = Photo()
 
     def append_photo(self, photo: np.array, photo_angle: float):
+        """
+        Voeg een foto toe
+        Args:
+            photo: De foto als numpy array
+            photo_angle: De hoek waarop de foto is genomen
+        """
         self.p.append(photo, photo_angle)
 
     def append_distance(self, distance: float, distance_angle: float):
+        """
+        Voeg een gemeten aftand toe
+        Args:
+            distance: De afstand
+            distance_angle: De hoek waarop de afstand gemeten is
+        """
         self.rs.append(distance, distance_angle)
 
-    def get(self):
+    def get(self) -> Tuple(Photo, RangeSensor):
+        """
+        Vraag de RangeSensor en Photos op
+        Returns:
+            Een Photo object en RangeSensor object
+        """
         return self.p, self.rs
 
 
@@ -34,6 +47,12 @@ class RangeSensor:
         self._distance_angle = []
 
     def append(self, distance: float, distance_angle: float):
+        """
+        Voeg een gemeten aftand toe
+        Args:
+            distance: De afstand
+            distance_angle: De hoek waarop de afstand gemeten is
+        """
         self._distance.append(distance)
         self._distance_angle.append(distance_angle)
 
@@ -45,7 +64,7 @@ class RangeSensor:
            angle: De hoek ten opzichte van het startpunt van de camera
 
         Returns:
-           De zekerheid of er iemand voor staat in floats
+           De zekerheid of er iemand voor staat als float van 0 tot 1
         """
 
         distance = self._angle_to_distance(angle)
@@ -57,9 +76,9 @@ class RangeSensor:
 
         return confidence
 
-    def _calculate_confidence(self, distance: float, sweetspot: float = range_sensor_config.getfloat('SWEETSPOT'),
-                              width_factor: float = range_sensor_config.getfloat('SWEETSPOT_WIDTH_FACTOR'),
-                              max_confidence: float = range_sensor_config.getfloat('MAX_CONFIDENCE')) -> float:
+    def _calculate_confidence(self, distance: float, sweetspot: float = config['RangeSensor'].getfloat('SWEETSPOT'),
+                              width_factor: float = config['RangeSensor'].getfloat('SWEETSPOT_WIDTH_FACTOR'),
+                              max_confidence: float = config['RangeSensor'].getfloat('MAX_CONFIDENCE')) -> float:
         """
         Bereken een parabool voor de confidence score.
 
@@ -85,7 +104,7 @@ class RangeSensor:
             De afstand als float of -1 als die niet beschikbaar is
         """
 
-        RANGE_SENSOR_FOV_HALF = range_sensor_config.getfloat('SENSOR_FOV') / 2
+        RANGE_SENSOR_FOV_HALF = config['RangeSensor'].getfloat('SENSOR_FOV') / 2
 
         # als deze buiten berijk is return error
 
@@ -118,6 +137,12 @@ class Photo:
         self._photo_angle = []
 
     def append(self, photo: np.array, photo_angle: float):
+        """
+        Voeg een foto toe
+        Args:
+            photo: De foto als numpy array
+            photo_angle: De hoek waarop de foto is genomen
+        """
         self._photo.append(photo)
         self._photo_angle.append(photo_angle)
 
