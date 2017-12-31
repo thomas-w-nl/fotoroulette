@@ -7,6 +7,7 @@ from picamera import PiCamera
 # import the necessary packages
 from picamera.array import PiRGBArray
 
+
 # from src.common.log import *
 
 
@@ -45,14 +46,13 @@ class Camera:
 
         return image
 
-    # open camera
     def __init__(self):
         """
         Start de camera
         """
         self.camera = PiCamera()
-        # dit is redundant volgens mij
-        # self.rawCapture = PiRGBArray(self.camera)
+
+        # self.rawCapture = PiRGBArray(self.camera)  # dit is redundant volgens mij
 
         camera_config = configparser.ConfigParser().read('fotoroulette.conf')['Camera']
         width = camera_config.getint('CAMERA_RESOLUTION_H')
@@ -62,20 +62,17 @@ class Camera:
         time.sleep(2)
 
         if self.camera is None:
-            # log.error("Could not open camera")
-            print("Error opening camera and log is broken")
+            log.error("Could not open camera")
 
-    # TODO: destruction close camera
     def close_camera(self):
         """
-        destructor
+        Destructor
         """
         self.camera.close()
 
 
 if __name__ == "__main__":
     print("test")
-
 
     cam = Camera()
     img = cam.get_frame()
