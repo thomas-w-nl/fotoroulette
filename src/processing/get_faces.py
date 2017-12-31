@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-
+import configparser
 from src.common.log import *
 from src.hardware import camera
 from src.processing.collect_photos import collect_photos
@@ -8,36 +8,17 @@ from src.processing.photo_data import PhotoData, Photo
 from typing import List, Tuple
 from src.common import tools
 
-# todo dit moet vanuit git config
-
 from src.processing.photo_data import RangeSensor
 
-#: De drempelwaarde voor gezichts herkenning. 0.65 is voor de huidige fotos een goede waarde.
-MIN_FACE_CONFIDENCE = 0.2
 
-#: OpenCV gezichts detectie instellingen
-OPENCV_MIN_FACE_SIZE = 50
-OPENCV_SCALE_FACTOR = 1.1
-OPENCV_MIN_NEIGHBORS = 4
-
-#: Het maximum verschil waarbij twee gezichten als een wordt gezien in graden
-NEARBY_FACE_ANGLE_DIFF_MAX = 2
-
-#: De waarde van opencv vs de range sensor en is een waarde van :math:`1.0 <= x <= 0.0`.
-OPENCV_WEIGHT = 0.7
-RANGE_SENSOR_WEIGHT = 1 - OPENCV_WEIGHT
-OPENCV_MAX_FACE_CONFIDENCE = 10  # er is geen documentatie voor, het lijkt er op dat dit de max wel is
-
-HAAR_CASCADE_PATH = "haarCascades/haarcascade_frontalface_default.xml"
 DEBUG = True
 
-CUTOUT_PADDING_FACTOR = 0.2
-
+opencv_config = configparser.ConfigParser().read('fotoroulette.conf')['FaceDetection']
 
 class Face:
     def __init__(self, opencv_face, photo_angle: float, face_image: np.array):
         """
-        Een datatype voor een gezicht
+        Een datatype voor een gezicht uit een foto
 
         Args:
             face_pos: positie van het gezicht (x, y, w, h)
@@ -45,6 +26,8 @@ class Face:
             confidence: De zekerheid of het een gezicht is
             face_image: De uitgeknipte foto
         """
+        OPENCV_MAX_FACE_CONFIDENCE = 10  # er is geen documentatie voor, het lijkt er op dat dit de max wel is
+
         face_pos, opencv_confidence = opencv_face
         avg_pos = round(face_pos[0] + (face_pos[2] / 2))
         self.pos = face_pos
@@ -114,9 +97,14 @@ def _confident(face: Face, range_sensor: RangeSensor) -> bool:
     # scale opencv confidence naar 0 tot 1
     opencv_confidence = face.confidence
 
+    OPENCV_WEIGHT = opencv_config['OPENCV_SCALE_FACTOR']
+
+    range_sensor_weight = 1 - OPENCV_WEIGHT
+
+    MIN_FACE_CONFIDENCE = opencv_config['MIN_FACE_CONFIDENCE']
     range_confidence = range_sensor.get_confidence(face.avg_pos)
 
-    total_confidence = (range_confidence * RANGE_SENSOR_WEIGHT) + (opencv_confidence * OPENCV_WEIGHT)
+    total_confidence = (range_confidence * range_sensor_weight) + (opencv_confidence * OPENCV_WEIGHT)
 
     if total_confidence > MIN_FACE_CONFIDENCE:
         return True
@@ -142,13 +130,13 @@ def _append_or_replace(all_faces: List[Face], cur_face: Face) -> bool:
     """
 
     photo_width, _ = camera.CAMERA_RESOLUTION
-
+    nearby_face_angle_diff_max = opencv_config['NEARBY_FACE_ANGLE_DIFF_MAX']
     for other_face in all_faces:
 
         if DEBUG:
             print("Comparing: other:", other_face.angle, "current:", cur_face.angle)
         # if het huidige gezicht dicht bij een oud gezicht zit
-        if abs(other_face.angle - cur_face.angle) < NEARBY_FACE_ANGLE_DIFF_MAX:
+        if abs(other_face.angle - cur_face.angle) < nearby_face_angle_diff_max:
             if DEBUG:
                 print("> Face might get replaced")
 
@@ -185,19 +173,22 @@ def _opencv_get_faces(photo: np.array):
     """
     img_gray = cv2.cvtColor(photo, cv2.COLOR_BGR2GRAY)
 
-    face_cascade = cv2.CascadeClassifier(HAAR_CASCADE_PATH)
+    face_cascade = cv2.CascadeClassifier(str(opencv_config['HAAR_CASCADE_PATH']))
 
     if face_cascade is None:
         message = "Face cascade failed to load!"
         log.error(message)
         raise FileNotFoundError(message)
 
-    # https://stackoverflow.com/questions/20801015/recommended-values-for-opencv-detectmultiscale-parameters
+    opencv_min_face_size = opencv_config['OPENCV_MIN_FACE_SIZE']
+    opencv_scale_factor = opencv_config['OPENCV_SCALE_FACTOR']
+    opencv_min_neighbors = opencv_config['OPENCV_MIN_NEIGHBORS']
+
     faces, _, confidences = face_cascade.detectMultiScale3(
         img_gray,
-        scaleFactor=OPENCV_SCALE_FACTOR,
-        minNeighbors=OPENCV_MIN_NEIGHBORS,
-        minSize=(OPENCV_MIN_FACE_SIZE, OPENCV_MIN_FACE_SIZE),
+        scaleFactor=opencv_scale_factor,
+        minNeighbors=opencv_min_neighbors,
+        minSize=(opencv_min_face_size, opencv_min_face_size),
         outputRejectLevels=True
     )
 
@@ -238,6 +229,7 @@ def _cut_out_head(face: Face, photo: Photo) -> np.array:
     Returns:
         De gezicht als een aparte foto
     """
+    CUTOUT_PADDING_FACTOR = opencv_config['CUTOUT_PADDING_FACTOR']
     x, y, w, h = face.pos
     padding = int(round(w * CUTOUT_PADDING_FACTOR))
     cutout = _crop_image(photo, face.pos, padding)
@@ -271,7 +263,6 @@ def _location_to_angle(photo_angle: float, position: int) -> float:
         print("face pos", position)
         print("photo angle:", photo_angle)
         print("result:", angle)
-
         print("==stop angle decoding==\n")
 
     return angle

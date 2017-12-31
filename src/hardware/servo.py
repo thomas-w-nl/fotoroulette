@@ -1,9 +1,13 @@
+import configparser
+
 import RPi.GPIO as GPIO
 import time
 
+servo_config = configparser.ConfigParser().read('fotoroulette.conf')['Servo']
+MAX_SERVO_POS = servo_config['MAX_SERVO_POS']
+MIN_SERVO_POS = servo_config['MIN_SERVO_POS']
+
 _position = 0
-MAX_SERVO_POS = 180
-MIN_SERVO_POS = 0
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(18, GPIO.OUT)
@@ -28,30 +32,19 @@ def goto_position(graden: int, sleep=0.4):
 
 
 def get_position() -> int:
-    """
-    Get current servo position
-    :return de positie van de servo
-    """
     return _position
 
 
-def increase_position(graden: int) -> int:
+def calculate_angle(angle: float) -> float:
     """
-    Increase position of servo by amount of degrees
-    :param graden: aantal graden waarbij de servo moet gaan draaien
-    :return de nieuwe positie in graden
-    """
-    goto_position(get_position() + graden)
-    return get_position()
+    Zet een hoek in graden om naar een duty cycle
+    Args:
+        angle: De hoek waar de servo heen moet draaien
 
+    Returns:
+        De duty cycle in procenten
 
-def calculate_angle(angle):
     """
-    Calculation of degrees
-    :param angle: De hoek die omgezet moet worden
-    :return de waarde die de servo verwacht
-    """
-
     servo_max = 10.5
     servo_min = 2.5
     angle_max = MAX_SERVO_POS
@@ -63,6 +56,7 @@ def calculate_angle(angle):
     servo_angle = (((angle - angle_min) * servo_range) / angle_range) + servo_min
 
     return round(servo_angle, 1)
+
 
 if __name__ == "__main__":
     while True:

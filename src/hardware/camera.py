@@ -1,3 +1,4 @@
+import configparser
 import time
 
 import cv2
@@ -8,9 +9,6 @@ from picamera.array import PiRGBArray
 
 # from src.common.log import *
 
-CAMERA_H_FOV = 62.2
-CAMERA_RESOLUTION = [1640, 1232]  # [3280, 2464] [1640, 1232] [1640x922], de rest is partial fov
-
 
 class Camera:
     def get_frame(self):
@@ -20,7 +18,9 @@ class Camera:
         Returns:
            Een plaatje van de camera.
         """
-        width, height = CAMERA_RESOLUTION
+        camera_config = configparser.ConfigParser().read('fotoroulette.conf')['Camera']
+        width = camera_config.getint('CAMERA_RESOLUTION_H')
+        height = camera_config.getint('CAMERA_RESOLUTION_V')
 
         # The horizontal resolution is rounded up to the nearest multiple of 32 pixels.
         buffer_width = int(np.math.ceil(width / 32) * 32)
@@ -53,7 +53,11 @@ class Camera:
         self.camera = PiCamera()
         # dit is redundant volgens mij
         # self.rawCapture = PiRGBArray(self.camera)
-        self.camera.resolution = CAMERA_RESOLUTION
+
+        camera_config = configparser.ConfigParser().read('fotoroulette.conf')['Camera']
+        width = camera_config.getint('CAMERA_RESOLUTION_H')
+        height = camera_config.getint('CAMERA_RESOLUTION_V')
+        self.camera.resolution = [width, height]
         # allow camera to warm up
         time.sleep(2)
 

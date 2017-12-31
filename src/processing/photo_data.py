@@ -1,3 +1,4 @@
+import configparser
 import random
 from typing import List, Tuple, Iterator
 
@@ -7,10 +8,8 @@ import numpy as np
 # y = -1/((130^2)*1.3)(x - 130)^2 + 1
 from src.hardware import range_sensor
 
-# todo get from config
-SWEETSPOT = 130  # cm
-SWEETSPOT_WIDTH_FACTOR = 1.3
-MAX_CONFIDENCE = 1
+range_sensor_config = configparser.ConfigParser().read('fotoroulette.conf')['RangeSensor']
+
 DEBUG = True
 
 
@@ -58,9 +57,9 @@ class RangeSensor:
 
         return confidence
 
-    def _calculate_confidence(self, distance: float, sweetspot: float = SWEETSPOT,
-                              width_factor: float = SWEETSPOT_WIDTH_FACTOR,
-                              max_confidence: float = MAX_CONFIDENCE) -> float:
+    def _calculate_confidence(self, distance: float, sweetspot: float = range_sensor_config.getfloat('SWEETSPOT'),
+                              width_factor: float = range_sensor_config.getfloat('SWEETSPOT_WIDTH_FACTOR'),
+                              max_confidence: float = range_sensor_config.getfloat('MAX_CONFIDENCE')) -> float:
         """
         Bereken een parabool voor de confidence score.
 
@@ -86,7 +85,7 @@ class RangeSensor:
             De afstand als float of -1 als die niet beschikbaar is
         """
 
-        RANGE_SENSOR_FOV_HALF = range_sensor.SENSOR_FOV / 2
+        RANGE_SENSOR_FOV_HALF = range_sensor_config.getfloat('SENSOR_FOV') / 2
 
         # als deze buiten berijk is return error
 
