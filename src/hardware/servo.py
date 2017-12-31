@@ -4,8 +4,8 @@ import time
 
 config = configparser.ConfigParser()
 config.read('fotoroulette.conf')
-MAX_SERVO_POS = config['Servo']['MAX_SERVO_POS']
-MIN_SERVO_POS = config['Servo']['MIN_SERVO_POS']
+MAX_SERVO_POS = config['Servo'].getint('MAX_SERVO_POS')
+MIN_SERVO_POS = config['Servo'].getint('MIN_SERVO_POS')
 
 _position = 0
 

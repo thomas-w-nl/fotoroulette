@@ -258,10 +258,10 @@ def _location_to_angle(photo_angle: float, position: int) -> float:
        De hoek van de locatie ten opzichte van het startpunt van de camera
     """
 
-    CAMERA_H_FOV = config['camera'].getint('CAMERA_H_FOV')
+    CAMERA_H_FOV = config['Camera'].getfloat('CAMERA_H_FOV')
 
     # scale van range(0, img_width) naar range(-CAMERA_H_FOV/2, CAMERA_H_FOV/2) met offset photo_angle
-    OldRange = config['camera'].getint('CAMERA_RESOLUTION_H')
+    OldRange = config['Camera'].getint('CAMERA_RESOLUTION_H')
     NewRange = CAMERA_H_FOV
     NewMin = photo_angle - int(CAMERA_H_FOV / 2)
     angle = ((position * NewRange) / OldRange) + NewMin
@@ -269,7 +269,7 @@ def _location_to_angle(photo_angle: float, position: int) -> float:
 
     if DEBUG:
         print("\n==start angle decoding==")
-        print("image width:", config['camera'].getint('CAMERA_RESOLUTION_H'))
+        print("image width:", config['Camera'].getint('CAMERA_RESOLUTION_H'))
         print("face pos", position)
         print("photo angle:", photo_angle)
         print("result:", angle)

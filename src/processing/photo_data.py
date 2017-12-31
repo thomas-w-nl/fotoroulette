@@ -32,7 +32,7 @@ class PhotoData:
         """
         self.rs.append(distance, distance_angle)
 
-    def get(self) -> Tuple(Photo, RangeSensor):
+    def get(self):
         """
         Vraag de RangeSensor en Photos op
         Returns:
