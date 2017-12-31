@@ -31,7 +31,7 @@ OPENCV_MAX_FACE_CONFIDENCE = 10  # er is geen documentatie voor, het lijkt er op
 HAAR_CASCADE_PATH = "haarCascades/haarcascade_frontalface_default.xml"
 DEBUG = True
 
-CUTOUT_PADDING_FACTOR = 3.5
+CUTOUT_PADDING_FACTOR = 0.2
 
 
 class Face:
@@ -220,6 +220,10 @@ def _crop_image(img: np.array, rect: list, padding: int) -> np.array:
        De uitgeknipte foto.
     """
     x, y, w, h = rect
+    x -= padding
+    y -= padding
+    w += (padding * 2)
+    h += (padding * 2)
     return img[y:(y + h), x:(x + w)]
 
 
