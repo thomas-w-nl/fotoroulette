@@ -10,12 +10,12 @@ from src.processing.get_faces import get_faces
 
 if __name__ == "__main__":
 
-    data = collect_photos()
-    with open('dump.pkl', 'wb') as output:
+    # data = collect_photos()
+    # with open('real_2_personen_new.pkl', 'wb') as output:
+    #
+    #     pickle.dump(data, output, pickle.HIGHEST_PROTOCOL)
 
-        pickle.dump(data, output, pickle.HIGHEST_PROTOCOL)
-
-    with open('real_data_2_personen.pkl', 'rb') as input:
+    with open('real_2_personen_new.pkl', 'rb') as input:
         data = pickle.load(input)
 
         photos_with_angels, range_sensor = data.get()
