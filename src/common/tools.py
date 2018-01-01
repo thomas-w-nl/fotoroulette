@@ -6,12 +6,9 @@ import cv2
 # Tools die gewoon handig zijn
 
 
-
-
-# TODO: Wat is de punt van deze functie?
-def draw_rectangle(frame, rect):
+def draw_rectangle(frame, rect, texts=("")):
     """
-    draw een vierkantje op de gewenste lokatie
+    draw een vierkantje op de gewenste lokatie, voor debug info
 
     Args:
        frame (:obj:`cv2.Mat`): Een foto om op te tekenen
@@ -20,8 +17,31 @@ def draw_rectangle(frame, rect):
     Returns:
        Een plaatje (:obj:`cv2.Mat`) met een vierkantje
     """
-    for (x, y, w, h) in rect:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+    height, width, _ = frame.shape
+    x, y, w, h = rect
+    letter_size_px = 25
+    text_margin_px = 2
+
+    # float text left or right of rect, based on the longest text
+
+    longest_text = 0
+    for text in texts:
+        if len(text) > longest_text:
+            longest_text = len(text)
+
+    text_size = letter_size_px * longest_text
+    text_offset = int(x + w + text_margin_px)
+    if width - text_offset < text_size:
+        text_offset = int(x - text_size - text_margin_px)
+
+    text_nr = 1
+    for text in texts:
+        frame = draw_text(frame, text, (text_offset, int(y + (text_nr * letter_size_px))))
+        text_nr += 1
+
+    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
     return frame
 
 
@@ -38,7 +58,7 @@ def draw_image(img):
 def draw_text(img, text, pos, size=1):
     font = cv2.FONT_HERSHEY_DUPLEX
     thickness = 1
-    cv2.putText(img, text, pos, font, size, (255, 255, 255), thickness, cv2.LINE_AA)
+    cv2.putText(img, text, pos, font, size, (0, 0, 255), thickness, cv2.LINE_AA)
     return img
 
 
@@ -49,5 +69,5 @@ def visualize_angle_in_image(img, offset, angle):
         text_offset = offset - (25 * len(str(angle)))
 
     cv2.line(img, (offset, 0), (offset, v), (255, 0, 0), 2)
-    img = draw_text(img, str(angle), (text_offset + 4, 100))
+    img = draw_text(img, str(angle), (text_offset + 4, 30))
     return img

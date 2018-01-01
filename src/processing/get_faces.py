@@ -27,12 +27,12 @@ class Face:
             confidence: De zekerheid of het een gezicht is
             face_image: De uitgeknipte foto
         """
-        OPENCV_MAX_FACE_CONFIDENCE = 10  # er is geen documentatie voor, het lijkt er op dat dit de max wel is
+        OPENCV_MAX_FACE_CONFIDENCE = 12  # er is geen documentatie voor, het lijkt er op dat dit de max wel is
 
         face_pos, opencv_confidence = opencv_face
         avg_pos = round(face_pos[0] + (face_pos[2] / 2))
         self.pos = face_pos
-        self.confidence = opencv_confidence / OPENCV_MAX_FACE_CONFIDENCE
+        self.confidence = opencv_confidence[0] / OPENCV_MAX_FACE_CONFIDENCE
         self.angle = _location_to_angle(photo_angle, avg_pos)
         self.avg_pos = avg_pos
         self.image = face_image
@@ -72,9 +72,32 @@ def get_faces(photos_with_data: PhotoData) -> List[np.array]:
 
     photos, range_sensor = photos_with_data.get()
 
+    if DEBUG >= 2:
+        first = True
+        for photo, angle in photos:
+            # print center line in image
+            v, h, _ = photo.shape
+            h = int(h / 2)
+            calculated_angle = _location_to_angle(angle, h)
+            calculated_angle = int(round(calculated_angle, 0))
+            visualize_angle_in_image(photo, h, calculated_angle)
+
+            # print minimum face size and scale factor
+            if first:
+                first = False
+                min_face_size = config['FaceDetection'].getint('OPENCV_MIN_FACE_SIZE')
+                scale_factor = config['FaceDetection'].getfloat('OPENCV_SCALE_FACTOR')
+                photo = draw_rectangle(photo, (0, 0, min_face_size, min_face_size),
+                                       ("  min face size (" + str(min_face_size) + ")", ""))
+                photo = draw_rectangle(photo,
+                                       (0, 0, int(min_face_size * scale_factor), int(min_face_size * scale_factor)),
+                                       ("", " detection step size (" + str(scale_factor) + ")"))
+
+
+
     for photo, angle in photos:
         if DEBUG:
-            print("\n----- next photo ----- \n")
+            print("\n----- next photo ----- ")
 
         for opencv_face in _opencv_get_faces(photo):
 
@@ -88,34 +111,22 @@ def get_faces(photos_with_data: PhotoData) -> List[np.array]:
 
             # mark a detected face
             if DEBUG >= 2:
-                photo = visualize_angle_in_image(photo, int(face.avg_pos), int(face.angle))
-
-                # todo mark
-
                 x, y, w, h = face.pos
-                measuring = x
-                left_bound = _location_to_angle(angle, measuring)
+                photo = draw_rectangle(photo, face.pos, (
+                str(face.angle) + "deg", str(round(face.confidence, 2)), str(w) + "x" + str(h) + " px"))
 
-                measuring = x + w
-                right_bound = _location_to_angle(angle, measuring)
-                size = abs(left_bound - right_bound)
-                print("Face size (in degrees):", size)
+                # calculate face size in degrees
+                left_bound = _location_to_angle(angle, x)
+                right_bound = _location_to_angle(angle, x + w)
+                print("Face size (in degrees):", abs(left_bound - right_bound))
 
-    # print center line in image
-    if DEBUG >= 2:
-        for photo, angle in photos:
-            v, h, _ = photo.shape
-            h = int(h / 2)
-            calculated_angle = _location_to_angle(angle, h)
-            calculated_angle = int(round(calculated_angle, 0))
-            photo = visualize_angle_in_image(photo, h, calculated_angle)
-
-    if DEBUG >= 2:
+    # display debug info with photos
+    if DEBUG >= 1:
         for photo, angle in photos:
             cv2.imshow("img", photo)
             cv2.waitKey()
 
-    if DEBUG:
+    if DEBUG >= 1:
         print("number of faces found:", len(all_faces))
     return all_faces
 
@@ -145,7 +156,7 @@ def _confident(face: Face, range_sensor: RangeSensor) -> bool:
     if total_confidence > MIN_FACE_CONFIDENCE:
         return True
 
-    if DEBUG:
+    if DEBUG >= 1:
         print("discarding a face, not confident enough (", total_confidence, ")")
     return False
 
@@ -168,28 +179,29 @@ def _append_or_replace(all_faces: List[Face], cur_face: Face) -> bool:
     photo_width = config['Camera'].getint('CAMERA_RESOLUTION_H')
     nearby_face_angle_diff_max = config['FaceDetection'].getfloat('NEARBY_FACE_ANGLE_DIFF_MAX')
 
+    if DEBUG >= 1:
+        print("- Comparing", len(all_faces), " faces to current face -")
+
     for other_face in all_faces:
 
-        if DEBUG:
-            print("Comparing: other:", other_face.angle, "current:", cur_face.angle)
+        if DEBUG >= 2:
+            print("Comparing face: other:", other_face.angle, "current:", cur_face.angle)
         # if het huidige gezicht dicht bij een oud gezicht zit
         if abs(other_face.angle - cur_face.angle) < nearby_face_angle_diff_max:
-            if DEBUG:
-                print("> Face might get replaced")
 
             # if het huidige gezicht dichter bij het midden van de camera is, vervang het oude gezicht
             other_face_dist_to_photo_center = abs(other_face.avg_pos - (photo_width / 2))
             cur_face_dist_to_photo_center = abs(cur_face.avg_pos - (photo_width / 2))
 
             if other_face_dist_to_photo_center > cur_face_dist_to_photo_center:
-                if DEBUG:
-                    print("Replacing face")
+                if DEBUG >= 2:
+                    print("Nearby faces: Replacing face")
                 all_faces.remove(other_face)
                 all_faces.append(cur_face)
                 return True
 
-            if DEBUG:
-                print("Skipping face, not best position")
+            if DEBUG >= 2:
+                print("Nearby faces: Skipping face, not best position")
             return False
 
     # als er geen andere gezichten zijn of die zijn allemaal ver dan voegen we het gezicht toe
