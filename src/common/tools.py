@@ -7,16 +7,6 @@ import cv2
 
 
 def draw_rectangle(frame, rect, texts=("")):
-    """
-    draw een vierkantje op de gewenste lokatie, voor debug info
-
-    Args:
-       frame (:obj:`cv2.Mat`): Een foto om op te tekenen
-       rect: De coordinaten om te rekenen
-
-    Returns:
-       Een plaatje (:obj:`cv2.Mat`) met een vierkantje
-    """
 
     height, width, _ = frame.shape
     x, y, w, h = rect

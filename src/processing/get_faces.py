@@ -93,8 +93,6 @@ def get_faces(photos_with_data: PhotoData) -> List[np.array]:
                                        (0, 0, int(min_face_size * scale_factor), int(min_face_size * scale_factor)),
                                        ("", " detection step size (" + str(scale_factor) + ")"))
 
-
-
     for photo, angle in photos:
         if DEBUG:
             print("\n----- next photo ----- ")
@@ -113,7 +111,7 @@ def get_faces(photos_with_data: PhotoData) -> List[np.array]:
             if DEBUG >= 2:
                 x, y, w, h = face.pos
                 photo = draw_rectangle(photo, face.pos, (
-                str(face.angle) + "deg", str(round(face.confidence, 2)), str(w) + "x" + str(h) + " px"))
+                    str(face.angle) + "deg", str(round(face.confidence, 2)), str(w) + "x" + str(h) + " px"))
 
                 # calculate face size in degrees
                 left_bound = _location_to_angle(angle, x)
