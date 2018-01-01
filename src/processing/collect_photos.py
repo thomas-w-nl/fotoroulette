@@ -27,7 +27,7 @@ def collect_photos() -> PhotoData:
 
     # de step size voor de volgende meeting
     RANGE_SENSOR_STEP_SIZE = config['RangeSensor'].getint('SENSOR_FOV')
-    CAMERA_STEP_SIZE = int(config['Camera'].getfloat('CAMERA_H_FOV') / 2)
+    CAMERA_STEP_SIZE = config['General'].getint('CAMERA_STEP_SIZE')
 
     if FAKE:
         import os

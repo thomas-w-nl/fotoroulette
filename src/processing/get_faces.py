@@ -2,15 +2,15 @@ import cv2
 import numpy as np
 import configparser
 from src.common.log import *
+from src.common.tools import *
 from src.hardware import camera
 from src.processing.collect_photos import collect_photos
 from src.processing.photo_data import PhotoData, Photo
 from typing import List, Tuple
-from src.common import tools
 
 from src.processing.photo_data import RangeSensor
 
-DEBUG = True
+DEBUG = 2
 
 config = configparser.ConfigParser()
 config.read('fotoroulette.conf')
@@ -84,12 +84,36 @@ def get_faces(photos_with_data: PhotoData) -> List[np.array]:
                 continue
 
             face.image = _cut_out_head(face, photo)
-
-            if DEBUG:
-                cv2.imshow(str(face.angle), face.image)
-                cv2.waitKey()
-
             _append_or_replace(all_faces, face)
+
+            # mark a detected face
+            if DEBUG >= 2:
+                photo = visualize_angle_in_image(photo, int(face.avg_pos), int(face.angle))
+
+                # todo mark
+
+                x, y, w, h = face.pos
+                measuring = x
+                left_bound = _location_to_angle(angle, measuring)
+
+                measuring = x + w
+                right_bound = _location_to_angle(angle, measuring)
+                size = abs(left_bound - right_bound)
+                print("Face size (in degrees):", size)
+
+    # print center line in image
+    if DEBUG >= 2:
+        for photo, angle in photos:
+            v, h, _ = photo.shape
+            h = int(h / 2)
+            calculated_angle = _location_to_angle(angle, h)
+            calculated_angle = int(round(calculated_angle, 0))
+            photo = visualize_angle_in_image(photo, h, calculated_angle)
+
+    if DEBUG >= 2:
+        for photo, angle in photos:
+            cv2.imshow("img", photo)
+            cv2.waitKey()
 
     if DEBUG:
         print("number of faces found:", len(all_faces))
@@ -258,21 +282,20 @@ def _location_to_angle(photo_angle: float, position: int) -> float:
        De hoek van de locatie ten opzichte van het startpunt van de camera
     """
 
+    # todo misschien de foto mee geven en photo.shape gebruiken
     CAMERA_H_FOV = config['Camera'].getfloat('CAMERA_H_FOV')
 
     # scale van range(0, img_width) naar range(-CAMERA_H_FOV/2, CAMERA_H_FOV/2) met offset photo_angle
     OldRange = config['Camera'].getint('CAMERA_RESOLUTION_H')
     NewRange = CAMERA_H_FOV
-    NewMin = photo_angle - int(CAMERA_H_FOV / 2)
+    NewMin = 0 - int(CAMERA_H_FOV / 2)
     angle = ((position * NewRange) / OldRange) + NewMin
     angle = round(angle, 1)
 
-    if DEBUG:
-        print("\n==start angle decoding==")
-        print("image width:", config['Camera'].getint('CAMERA_RESOLUTION_H'))
-        print("face pos", position)
-        print("photo angle:", photo_angle)
-        print("result:", angle)
-        print("==stop angle decoding==\n")
+    # 0px wordt 31 en 1600px wordt -31, dus flippen
+    angle = 0 - angle
 
-    return angle
+    # van local angle in de foto (30
+    global_angle = photo_angle + angle
+
+    return global_angle
