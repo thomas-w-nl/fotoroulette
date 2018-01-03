@@ -12,9 +12,7 @@ FAKE = False
 def collect_photos() -> PhotoData:
     """
     Maakt de fotos en meet de afstand om een bepaald aantal graden
-
-    Return:
-      Alle fotos met range sensor data
+    :return: Alle fotos met range sensor data
     """
     data = PhotoData()
     cam = Camera()
