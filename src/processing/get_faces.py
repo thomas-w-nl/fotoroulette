@@ -250,6 +250,7 @@ def _crop_image(img: np.array, rect: list, padding: int) -> np.array:
     Returns:
        De uitgeknipte foto.
     """
+    # Todo padding may be out side of image
     x, y, w, h = rect
     x -= padding
     y -= padding
