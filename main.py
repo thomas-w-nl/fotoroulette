@@ -1,11 +1,12 @@
-import os
+
 import pickle
 
 import cv2
 
-os.chdir("/mnt/project/")
+# import os
+# os.chdir("/mnt/project/")
 
-from src.processing.collect_photos import collect_photos
+# from src.processing.collect_photos import collect_photos
 from src.processing.get_faces import get_faces
 
 if __name__ == "__main__":

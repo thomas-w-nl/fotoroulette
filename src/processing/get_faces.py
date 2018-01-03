@@ -1,14 +1,11 @@
-import cv2
-import numpy as np
 import configparser
+from typing import List
+
+import numpy as np
+
 from src.common.log import *
 from src.common.tools import *
-from src.hardware import camera
-from src.processing.collect_photos import collect_photos
-from src.processing.photo_data import PhotoData, Photo
-from typing import List, Tuple
-
-from src.processing.photo_data import RangeSensor
+from src.processing.photo_data import PhotoData, Photo, RangeSensor
 
 DEBUG = 2
 
