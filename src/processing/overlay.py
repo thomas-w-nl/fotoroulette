@@ -5,8 +5,12 @@ import cv2
 def generate_overlay(game):
     """
     Generate the overlay with the given parameters
-    :param game: the [Game] object
-    :return: returns the created overlay
+
+    Args:
+         game: the [Game] object
+
+    Returns:
+        returns the created overlay
     """
     overlay = cv2.imread(game.overlay)
 
@@ -18,19 +22,35 @@ def generate_overlay(game):
         face.image = _resize_fit(face.image, int(overlay_width / 2) - face_offset['minus_image_width'],
                                  overlay_height - face_offset['minus_image_width'])
 
-        overlay = _apply_overlay(i, overlay, face.image, face_offset['offset_x'], face_offset['offset_y'],
-                                 game.on_top, game.extra_background)
+        overlay = _apply_overlay(i, overlay, face.image, face_offset['offset_x'], face_offset['offset_y'], game)
 
     return overlay
 
 
-def _apply_overlay(index, bg, fg, offset_x, offset_y, on_top=True, extra_background=None):
+def _apply_overlay(index, bg, fg, offset_x, offset_y, game):
+    """
+    Adds each face and background to the image
+
+    Args:
+        index: the index of the current image in the game faces
+        bg: the image background/ overlay. The is mostly the returned image for the previous call
+        fg: the current face
+        offset_x: the x-axis offset for the face
+        offset_y: the y-axis offset for the face
+        game: the game type itself
+
+    Returns:
+        returns the modified image
+    """
     rows_fg, cols_fg, channels_fg = fg.shape
     rows_bg, cols_bg, channels_bg = bg.shape
 
     # create new image to use as base
-    background = np.zeros((rows_bg, cols_bg, 3), np.uint8)
-    if extra_background is not None and index is 0:
+    background = np.empty((rows_bg, cols_bg, 3), np.uint8)
+
+    if game.background_color is not None and index is 0:
+        background[rows_bg - 1, cols_bg - 1] = game.background_color
+    elif game.extra_background is not None and index is 0:
         background = bg
 
     if (offset_x < -100) or (offset_x < -100):
@@ -56,7 +76,7 @@ def _apply_overlay(index, bg, fg, offset_x, offset_y, on_top=True, extra_backgro
 
     # if the overlay has transparent parts (on top of the faces)
     # else, just add the faces
-    if on_top:
+    if game.on_top:
         # Create mask, remove mask and place overlay on [background]
         background[offset_y:roi_rows_end, offset_x:roi_cols_end] = fg
 
@@ -80,10 +100,14 @@ def _apply_overlay(index, bg, fg, offset_x, offset_y, on_top=True, extra_backgro
 def _resize_fit(image: np.array, max_width: int, max_height: int) -> np.array:
     """
     Resize [image] to fit the [max_width] and [max_height] params
-    :param image: np.array image
-    :param max_width: max width in pixels
-    :param max_height: max height in pixels
-    :return: resized image
+
+    Args:
+        image: np.array image
+        max_width: max width in pixels
+        max_height: max height in pixels
+
+    Returns:
+        resized image
     """
     height, width, channels = image.shape
 

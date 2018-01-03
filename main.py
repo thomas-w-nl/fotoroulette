@@ -8,7 +8,7 @@ import cv2
 
 # from src.processing.collect_photos import collect_photos
 from src.processing.get_faces import get_faces
-from src.processing.overlay import generate_overlay
+# from src.processing.overlay import generate_overlay
 from src.processing.spel import *
 
 if __name__ == "__main__":
@@ -31,8 +31,8 @@ if __name__ == "__main__":
 
         games = []
 
-        games.append(Wanted(faces).gen_overlay())
-        games.append(LoveMeter(faces).gen_overlay())
+        games.append(game_by_type(Games.WANTED, faces).gen_overlay())
+        games.append(game_by_type(Games.LOVEMETER, faces).gen_overlay())
         # game.append(Versus(faces).gen_overlay())
 
 

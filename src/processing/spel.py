@@ -20,10 +20,17 @@ class Game:
         self._game_id = uuid.uuid4()
         self.overlay = None
         self.on_top = False
+        self.background_color = None
         self.faces = faces
         self.player_count = 2
         self.offsets = []
         self.extra_background = None
+
+    def gen_overlay(self):
+        """
+        Just for auto-completion purposes
+        """
+        pass
 
     def _random_images(self):
         """
@@ -42,10 +49,32 @@ class Game:
         self.faces = self.faces[diff:]
 
 
+def game_by_type(game_type, faces) -> Game:
+    """
+    This returns the [Game] object associated with the [game_type]
+
+    Args:
+        game_type: a [Games] type which represents the game type
+        faces: the collected faces
+
+    Returns:
+         the corresponding [Game] object
+    """
+    if game_type is Games.VERSUS:
+        return Versus(faces)
+    elif game_type is Games.SUPERHEROES:
+        return Superheroes(faces)
+    elif game_type is Games.LOVEMETER:
+        return LoveMeter(faces)
+    elif game_type is Games.WANTED:
+        return Wanted(faces)
+
+
 class Versus(Game):
     def __init__(self, faces):
         super(Versus, self).__init__(faces)
 
+        self.on_top = True
         self.overlay = "assets/overlays/versus.png"
         self.player_count = 2
         self.offsets = [
@@ -128,12 +157,12 @@ class Superheroes(Game):
                 'minus_image_width': 275
             },
             {
-                'offset_y': -51.5,
-                'offset_x': -79.5,
+                'offset_y': -50,
+                'offset_x': -80,
                 'minus_image_width': 280
             },
             {
-                'offset_y': -65,
+                'offset_y': -64,
                 'offset_x': -91,
                 'minus_image_width': 275
             },
@@ -160,6 +189,7 @@ class LoveMeter(Game):
         super(LoveMeter, self).__init__(faces)
 
         self.overlay = "assets/overlays/lovemeter.png"
+        self.background_color = [249, 81, 161]
         self.on_top = True
         self.player_count = 2
         self.offsets = [
