@@ -15,10 +15,10 @@ def generate_overlay(game):
     for i, face in enumerate(game.faces):
         face_offset = game.offsets[i]
 
-        face.face_image = _resize_fit(face.face_image, int(overlay_width / 2) - face_offset['minus_image_width'],
-                                      overlay_height - face_offset['minus_image_width'])
+        face.image = _resize_fit(face.image, int(overlay_width / 2) - face_offset['minus_image_width'],
+                                 overlay_height - face_offset['minus_image_width'])
 
-        overlay = _apply_overlay(i, overlay, face.face_image, face_offset['offset_x'], face_offset['offset_y'],
+        overlay = _apply_overlay(i, overlay, face.image, face_offset['offset_x'], face_offset['offset_y'],
                                  game.on_top, game.extra_background)
 
     return overlay

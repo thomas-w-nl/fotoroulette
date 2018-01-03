@@ -7,7 +7,7 @@ from src.common.log import *
 from src.common.tools import *
 from src.processing.photo_data import PhotoData, Photo, RangeSensor
 
-DEBUG = 2
+DEBUG = 0  # 2
 
 config = configparser.ConfigParser()
 config.read('fotoroulette.conf')

@@ -8,6 +8,8 @@ import cv2
 
 # from src.processing.collect_photos import collect_photos
 from src.processing.get_faces import get_faces
+from src.processing.overlay import generate_overlay
+from src.processing.spel import *
 
 if __name__ == "__main__":
 
@@ -23,9 +25,22 @@ if __name__ == "__main__":
 
         faces = get_faces(data)
 
+        list_of_face_images = []
+        for face in faces:
+            list_of_face_images.append(face)
+
+
         print("======END======")
         print("Number of faces found:", len(faces))
+
+        game = Wanted(list_of_face_images).gen_overlay()
+
+
+
 
         for face in faces:
             cv2.imshow("output", face.image)
             cv2.waitKey()
+
+        cv2.imshow("output", game)
+        cv2.waitKey()
