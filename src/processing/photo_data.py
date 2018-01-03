@@ -5,7 +5,7 @@ import numpy as np
 config = configparser.ConfigParser()
 config.read('fotoroulette.conf')
 
-DEBUG = True
+DEBUG = False
 
 
 class PhotoData:

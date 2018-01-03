@@ -15,7 +15,41 @@ class Games(Enum):
     WANTED = 3
 
 
-def game_by_type(game_type, faces):
+class Game:
+    def __init__(self, faces):
+        self._game_id = uuid.uuid4()
+        self.overlay = None
+        self.on_top = False
+        self.background_color = None
+        self.faces = faces
+        self.player_count = 2
+        self.offsets = []
+        self.extra_background = None
+
+    def gen_overlay(self):
+        """
+        Just for auto-completion purposes
+        """
+        pass
+
+    def _random_images(self):
+        """
+        This will pick 2 different random indexes of the [_face] property
+
+        Returns:
+             tuple with the 2 indexes
+        """
+        if self.player_count > len(self.faces):
+            raise ValueError("To few faces to generate an overlay")
+
+        random.shuffle(self.faces)
+
+        diff = len(self.faces) - self.player_count
+
+        self.faces = self.faces[diff:]
+
+
+def game_by_type(game_type, faces) -> Game:
     """
     This returns the [Game] object associated with the [game_type]
 
@@ -34,34 +68,6 @@ def game_by_type(game_type, faces):
         return LoveMeter(faces)
     elif game_type is Games.WANTED:
         return Wanted(faces)
-
-
-class Game:
-    def __init__(self, faces):
-        self._game_id = uuid.uuid4()
-        self.overlay = None
-        self.on_top = False
-        self.background_color = None
-        self.faces = faces
-        self.player_count = 2
-        self.offsets = []
-        self.extra_background = None
-
-    def _random_images(self):
-        """
-        This will pick 2 different random indexes of the [_face] property
-
-        Returns:
-             tuple with the 2 indexes
-        """
-        if self.player_count > len(self.faces):
-            raise ValueError("To few faces to generate an overlay")
-
-        random.shuffle(self.faces)
-
-        diff = len(self.faces) - self.player_count
-
-        self.faces = self.faces[diff:]
 
 
 class Versus(Game):

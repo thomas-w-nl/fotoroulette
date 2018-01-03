@@ -1,16 +1,13 @@
-import cv2
-import numpy as np
 import configparser
+from typing import List
+
+import numpy as np
+
 from src.common.log import *
 from src.common.tools import *
-from src.hardware import camera
-from src.processing.collect_photos import collect_photos
-from src.processing.photo_data import PhotoData, Photo
-from typing import List, Tuple
+from src.processing.photo_data import PhotoData, Photo, RangeSensor
 
-from src.processing.photo_data import RangeSensor
-
-DEBUG = 2
+DEBUG = 0  # 2
 
 config = configparser.ConfigParser()
 config.read('fotoroulette.conf')
@@ -253,6 +250,7 @@ def _crop_image(img: np.array, rect: list, padding: int) -> np.array:
     Returns:
        De uitgeknipte foto.
     """
+    # Todo padding may be out side of image
     x, y, w, h = rect
     x -= padding
     y -= padding
