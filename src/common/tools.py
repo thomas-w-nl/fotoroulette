@@ -1,61 +1,38 @@
+import os
+
 import cv2
 
 
 # Tools die gewoon handig zijn
 
 
-# TODO: Gebruik of geen type annotations of ALLEEN type annotations.
-def select_random(source, amount: int):
-    """
-    Select 'amount' random uit de array en returnt deze.
-    """
-    # pick = random.randrange(0, len(image_list))
-    pass
+def draw_rectangle(frame, rect, texts=("")):
 
+    height, width, _ = frame.shape
+    x, y, w, h = rect
+    letter_size_px = 25
+    text_margin_px = 2
 
-# TODO: Wat is de punt van deze functie?
-def draw_rectangle(frame, rect):
-    """
-    draw een vierkantje op de gewenste lokatie
+    # float text left or right of rect, based on the longest text
 
-    Args:
-       frame (:obj:`cv2.Mat`): Een foto om op te tekenen
-       rect: De coordinaten om te rekenen
+    longest_text = 0
+    for text in texts:
+        if len(text) > longest_text:
+            longest_text = len(text)
 
-    Returns:
-       Een plaatje (:obj:`cv2.Mat`) met een vierkantje
-    """
-    for (x, y, w, h) in rect:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    text_size = letter_size_px * longest_text
+    text_offset = int(x + w + text_margin_px)
+    if width - text_offset < text_size:
+        text_offset = int(x - text_size - text_margin_px)
+
+    text_nr = 1
+    for text in texts:
+        frame = draw_text(frame, text, (text_offset, int(y + (text_nr * letter_size_px))))
+        text_nr += 1
+
+    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
     return frame
-
-
-# TODO:
-def draw_text(frame, string: str, rect):
-    """
-
-    Args:
-       frame (:obj:`cv2.Mat`): Een plaatje waarom getekent moet worden
-       rect: coordinaten (x, y, w, h)
-       string(str): De tekst die op het plaatje moet worden geprint
-
-    Returns:
-       Een frame (:obj:`cv2.Mat`) met het teksts
-    """
-    pass
-
-
-# TODO: De punt hiervan?
-def get_image(path: str):
-    """
-    laad een plaatje in!
-
-
-    :arg: dir naar het plaatje
-    :rtype: cv2.Mat
-    :return: Het plaatje
-    """
-    return cv2.imread(path)
 
 
 def draw_image(img):
@@ -66,3 +43,21 @@ def draw_image(img):
     """
     cv2.imshow("FYS", img)
     cv2.waitKey()
+
+
+def draw_text(img, text, pos, size=1):
+    font = cv2.FONT_HERSHEY_DUPLEX
+    thickness = 1
+    cv2.putText(img, text, pos, font, size, (0, 0, 255), thickness, cv2.LINE_AA)
+    return img
+
+
+def visualize_angle_in_image(img, offset, angle):
+    v, h, _ = img.shape
+    text_offset = offset
+    if h - offset < 30:
+        text_offset = offset - (25 * len(str(angle)))
+
+    cv2.line(img, (offset, 0), (offset, v), (255, 0, 0), 2)
+    img = draw_text(img, str(angle), (text_offset + 4, 30))
+    return img
