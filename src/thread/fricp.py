@@ -43,7 +43,6 @@ class FRICP:
 
         # 300-399 gui
 
-
     class Owner(Enum):
         HARDWARE = 1
         PROCESSING = 2
@@ -60,7 +59,7 @@ class FRICP:
             request (Request/Enum): De request of response die je doet.
             owner (Owner/Enum): "HARDWARE/GUI/PROCESSING" Wie het bericht verstuurd
             address (Owner/Enum): "HARDWARE/GUI/PROCESSING" waar moet het naartoe?
-            response (:obj: `Response/Enum`, optional): "UNDEFINED" Voor een request.
+            response (:obj: `Response/Enum`, optional): "REQUEST" Voor een request.
             data (Any): De data die je verstuurd.
                 Bij een response staat de status van het bericht. Default is "UNDEFINED"
             open (:obj: `bool`, optional): true voor een continuous verbinding. Default is false
