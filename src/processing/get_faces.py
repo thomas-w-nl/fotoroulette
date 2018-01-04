@@ -8,7 +8,7 @@ from src.processing.photo_data import PhotoData
 from typing import List
 from src.common import tools
 
-# face confidence drempelwaarde
+# face confidence drempelwaard
 # 0.65 is voor de huidige fotos een goede waarde
 MIN_FACE_CONFIDENCE = 0.65
 
@@ -31,10 +31,12 @@ class Face:
     def __init__(self, face_pos: List[int], angle: float, confidence: float, face_image: np.array):
         """
         Een datatype voor een gezicht
-        :param face_pos: De positie van het gezicht in (x,y,w,h)
-        :param angle: De hoek ten opzichte van het startpunt van de camera in graden
-        :param confidence: De zekerheid of het een gezicht is
-        :param face_image: De uitgeknipte foto
+
+        Args:
+            face_pos: positie van het gezicht (x, y, w, h)
+            angle: hoek ten opzichte van het start van de camera in graden
+            confidence: De zekerheid of het een gezicht is
+            face_image: De uitgeknipte foto
         """
         self.face_pos = face_pos
         self.confidence = confidence
@@ -45,9 +47,13 @@ class Face:
 
 def get_faces(photos_with_data: PhotoData) -> List[Face]:
     """
-    Returned de uniek gezichten uit meerder fotos die voldoen aan een bepaalde drempelwaarde
-    :param photos_with_data: de fotos met sensor en orientatie data
-    :return: De gezichten als List[Face]
+    Returned de uniek gezichten uit meerder fotos die voldoen aan een bepaalde drempelwaarde.
+
+    Args:
+       photos_with_data: De fotos met sensor en orientatie data
+
+    Returns:
+       Een lijst met de gezichten.
     """
 
     all_faces = []
@@ -75,11 +81,14 @@ def get_faces(photos_with_data: PhotoData) -> List[Face]:
 
 def _append_face_if_unique_and_centered(all_faces: List[Face], cur_face: Face, photo_width: int):
     """
-    Voegt een gezicht toe aan all_faces als het gezicht uniek is.
-    Als het gezicht beter in beeld is dan een oud gezicht wordt deze vervangen
-    :param all_faces: Een list met alle gezichten
-    :param cur_face: Het gezicht om toe te voegen
-    :param photo_width: De breedte van de foto
+    Voegt een gezicht toe aan all_faces als het gezicht uniek is. Als
+    het gezicht beter in beeld is dan een oud gezicht wordt deze
+    vervangen
+
+    Args:
+       all_faces: list met alle gezichten
+       cur_face: Het gezicht om toe te voegen
+       photo_width: De breedte van de foto
     """
 
     added_face = False
@@ -104,10 +113,14 @@ def _append_face_if_unique_and_centered(all_faces: List[Face], cur_face: Face, p
 def _get_total_confidence(photos_with_data: PhotoData, current_face_angle: float, cv_confidence: float) -> float:
     """
     Voeg de opencv en range sensor confidence score samen to een confidence score
-    :param photos_with_data: De fotos met data in PhotoData class
-    :param current_face_angle: De hoek ten opzichte van het startpunt van de camera in graden
-    :param cv_confidence: De confidence score van opencv
-    :return: De totale confidence score
+
+    Args:
+       photos_with_data: fotos met de data
+       current_face_angle: De hoek ten opzichte van het startpunt van de camera in graden
+       cv_confidence: De confidence van openCV
+
+    Returns:
+       De totale confidence als float
     """
     sensor_confidence = photos_with_data.get_sensor_confidence(current_face_angle)
     opencv_confidence = cv_confidence / OPENCV_MAX_FACE_CONFIDENCE
@@ -123,13 +136,17 @@ def _get_total_confidence(photos_with_data: PhotoData, current_face_angle: float
 
 def _opencv_get_faces(photo: np.array) -> list:
     """
-    Returnt alle gezichten die door opencv gevonden worden in de foto, met de confidence score voor elk gezicht
-    :param photo: De foto met gezichten
-    :return: Een list met de coordinaten van de gezichten en een list met confidence scores
+    Geeft alle gezichten terug die door opencv gevonden worden in de foto, met de confidence score voor elk gezicht
+
+    Args:
+       photo: De foto met gezichten
+
+    Returns:
+       Een list met de coordinaten van de gezichten en een lijst met confience scores
     """
     img_gray = cv2.cvtColor(photo, cv2.COLOR_BGR2GRAY)
-    # TODO Deze shizzel moet vanuit de git-root, niet twee mapjes terug. Dit is error prone!
 
+    # TODO Deze shizzel moet vanuit de git-root, niet twee mapjes terug. Dit is error prone!
     face_cascade = cv2.CascadeClassifier("haarCascades/haarcascade_frontalface_default.xml")
 
     if face_cascade is None:
@@ -146,15 +163,20 @@ def _opencv_get_faces(photo: np.array) -> list:
         outputRejectLevels=True
     )
 
+    # Moet een tuple zijn
     return [cv_faces, cv_confidences]
 
 
 def _crop_image(img: np.array, rect: list) -> np.array:
     """
     Knip een vierkant uit een array zoals aangegeven in rect
-    :param img: De foto
-    :param rect: (x,y,w,h)
-    :return: De uitgeknipte foto
+
+    Args:
+       img: foto
+       rect: (x,y,w,h) (?)
+
+    Returns:
+       De uitgeknipte foto.
     """
     x = rect[0]
     y = rect[1]
@@ -166,11 +188,15 @@ def _crop_image(img: np.array, rect: list) -> np.array:
 
 def _location_to_angle(img_width: int, photo_angle: float, rect: list) -> float:
     """
-    Zet een locatie op een foto gemaakt op hoek photo_angle om naar de hoek van de locatie
-    :param img_width: De breedte van de foto
-    :param photo_angle: De hoek waarop de foto is gemaakt
-    :param rect: De locatie als (x,y,w,h)
-    :return: De hoek van de locatie ten opzichte van het startpunt van de camera
+    Zet een locatie op een foto gemaakt op hoek photo_angle om naar de hoek van de locatie.
+
+    Args:
+       img_width: De breedte van de foto
+       photo_angle: De hoek waarop de foto is gemaakt
+       rect: De locatie als (x, y, w, h)
+
+    Returns:
+       De hoek van de locatie ten opzichte van het startpunt van de camera
     """
 
     # scale van range(0, img_width) naar range(-camera.CAMERA_H_FOV/2, camera.CAMERA_H_FOV/2) met offset photo_angle

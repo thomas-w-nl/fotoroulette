@@ -1,7 +1,13 @@
-import socket, socketserver, pickle, os
+import socket, socketserver, pickle, sys, threading
 from src.common.log import *
 from enum import Enum
 from src.thread.fricp import FRICP
+
+from src.hardware.camera import Camera
+from src.hardware import servo, range_sensor
+from src.processing.collect_photos import collect_photos
+from src.processing.get_faces import get_faces
+from src.processing.netwerk import *
 
 
 class Server:
@@ -14,75 +20,89 @@ class Server:
         client.
         """
 
-        class ValidationError(Exception):
-            def __init__(self, error: FRICP.Response, fricp: FRICP):
-                self.error = error
-                self.fricp = fricp
-
-            def __str__(self):
-                return self.error.name
-
-            def response(self) -> FRICP:
-                # TODO: een @property hiervan maken
-                # TODO: uitvogelen hoe ik dynamich de owner toekan voegen, het is nu altijd hardware...
-                response = FRICP(FRICP.Request.RESPONSE, self.fricp.owner, FRICP.Owner.HARDWARE, self.error)
-                return response
-
         def handle(self):
-            # TODO: is data global maken wel handig? Maak er geen gebruik van namelijk
+            """
+            Standaard functie van socketserver, word automatich geroepen waneer er een request naar de server word gedaan.
+            Returns:
+                Void
+            """
             self.data = pickle.load(self.rfile)
+            self.buffer_size = self.data.buffer_size
+            log.debug("recieved: %s", self.data.__dict__)
             try:
-                self.validate_package(self.data)
-            except self.ValidationError as error:
-                self.reply(error.response().to_binary())
-                log.error("failed to validate incoming fricp package: ", error)
+                FRICP.validate(self.data, "REQUEST")
+                log.debug("validation complete, no errors found!")
+            except FRICP.ValidationError as error:
+                log.error("failed to validate incoming fricp package: %s", error)
+                self.reply(error.response)
                 return -1
+            self.handle_request()
 
-        def validate_package(self, fricp: FRICP):
-            # TODO: moet validate niet deel zijn van FRICP object?
-            # valideren of er geen onbekende waardes inzitten
-            if fricp.version is not FRICP.current_version:
-                raise self.ValidationError(FRICP.Response.VERSION_MISMATCH, self.data)
-            if fricp.request not in FRICP.Request:
-                raise self.ValidationError(FRICP.Response.UNKNOWN_REQUEST, self.data)
-            if fricp.owner not in FRICP.Owner:
-                raise self.ValidationError(FRICP.Response.UNKNOWN_OWNER, self.data)
+        def handle_request(self):
+            """
+            Het handelen van de request
+            """
+            log.debug("handeling request...")
 
-            # valideren of er geen onmogelijke combinaties inzitten.
-            if fricp.request == FRICP.Request.RESPONSE and fricp.response == FRICP.Response.REQUEST:
-                raise self.ValidationError(FRICP.Response.INVALID_VALUE_COMBINATION, self.data)
+            if self.data.request == FRICP.Request.HARDWARE_GET_CAMERA:
+                camera = Camera()
+                data = camera.get_dummy_frame()
 
-            # Wanneer je data naar jezelf verstuurd
-            # TODO: uitzoeken hoe ik erachter kom wie ik ben. Owner is nu HARDWARE
-            if fricp.owner == FRICP.Owner.HARDWARE:
-                raise self.ValidationError(FRICP.Response.LOOPBACK_DETECTED, self.data)
+            if self.data.request == FRICP.Request.HARDWARE_POST_SERVO_POSITION:
+                data = servo.goto_position(self.data.data)
 
-            # valideren of het request wel uit kan worden gevoert.
-            # TODO: owner is nu gehard-coded op HARDWARE. Moet natuurlijk dynamich worden
-            if 100 > fricp.request > 199:
-                raise self.ValidationError(FRICP.Response.UNABLE_TO_HANDLE_REQUEST, self.data)
+            if self.data.request == FRICP.Request.HARDWARE_GET_SERVO_POSITION:
+                data = servo.get_position()
+
+            if self.data.request == FRICP.Request.HARDWARE_GET_RANGE_SENSOR:
+                data = range_sensor.get_distance()
+
+            if self.data.request == FRICP.Request.PROCESSING_MAKE_PHOTOS:
+                data = collect_photos()
+
+                for photo in data._photos:
+                    cv2.imshow("Input photo's", photo)
+                    cv2.waitKey()
+
+                data = get_faces
+
+            if self.data.request == FRICP.Request.PROCESSING_GET_PHOTOS:
+                # TODO: deze shizzel right here
+                pass
+            if self.data.request == FRICP.Request.PROCESSING_UPLOAD_NETWORK:
+                data = send_photos("fotodata")
+
+            response = FRICP(FRICP.Request.RESPONSE, self.data.address, self.data.owner, FRICP.Response.SUCCESS, data,
+                             buffer_size=self.buffer_size)
+            self.reply(response)
 
         def reply(self, fricp: FRICP):
-            self.wfile.write(fricp)
+            """
+            Geef antwoord aan de process die je iets heeft gestuurd.
+            Args:
+                fricp (FRICP): Het object dat moet worden verstuurd
+            """
+            log.debug("Sending reply: %s", fricp.__dict__)
+            self.request.sendall(fricp.to_binary)
+            # self.wfile.write(fricp.to_binary)
 
     class ServerStatus(Enum):
         ERROR = -2
         OFF = -1
         ON = 0
 
-    def __init__(self):
+    def __init__(self, owner: FRICP.Owner):
         """
-        Server class (zit ook de client in). Gebruikt door de hardware; gui en processing om met elkaar te praten door middel van PRICPv1
+        Server class. Gebruikt door de hardware; gui en processing om met elkaar te praten door middel van PRICPv1
         Returns:
             Helemaal niks, jonguh BAM!
         """
 
-        # Deze moet je overwriten als je deze class extend
-        self.addr = "unixSocket"
-        self.owner = FRICP.Owner.invalid_names
-
-        self._serverStatus = self._set_server_status(OFF)
-        self.socketServer = socketserver.UnixStreamServer(self.addr, self.ServerHandeler)
+        # TODO: eigenlijk moet er ook een flag staan of het een socketserver of TCP/IP address is zodat je ook over internet dingen kan sturen. Unix socket is nu gehardcoded
+        self.owner = owner
+        self.server_address = owner.address
+        self._serverStatus = self.server_status = self.ServerStatus.OFF
+        self.socketServer = None
 
     def __del__(self):
         """
@@ -96,20 +116,31 @@ class Server:
         Returns:
             ServerStatus/Enum: Zodat je kan zien of hij goed is gestart!
         """
-        if self.get_server_status() < self.ServerStatus.ON:
-            if os.path.exists(self.addr):
-                os.remove(self.addr)
-            open(self.addr, "w+")
+        if self.server_status is not self.ServerStatus.ON:
+            if os.path.exists(self.server_address):
+                # log.debug("%s, path exists. Removing.", self.server_address)
+                os.remove(self.server_address)
             try:
-                self.socketServer.serve_forever()
-                self._set_server_status(ON)
+                self.socketServer = socketserver.UnixStreamServer(self.server_address, self.ServerHandeler)
+
+                # Start the server in een thread zodat de code daarna nogsteeds word uitgevoerd.
+                threading.Thread(target=self.socketServer.serve_forever).start()
+
+                self.server_status = self.ServerStatus.ON
+                log.debug("Running %s server", self.owner.name)
+            except OSError as error:
+                log.error("failed to open server, OSError: %s. Current serverstatus: %s", error.strerror,
+                          self.server_status.name)
+                self.server_status = self.ServerStatus.ERROR
             except socket.error as msg:
-                log.error("failed to open server: %s. Current serverstatus: ", msg, self.get_server_status())
-            self._set_server_status(ERROR)
+                # TODO: Kan deze exception wel voorkomen of doet socketserver alleen OSError?
+                log.error("failed to open server, socketError: %s. Current serverstatus: %s", msg,
+                          self.server_status.name)
+                self.server_status = self.ServerStatus.ERROR
         else:
             log.error("failed to open server, server already running. Current serverstatus: %s",
-                      self.get_server_status())
-        return self.get_server_status()
+                      self.server_status.name)
+        return self.server_status
 
     def close_server(self):
         """
@@ -119,61 +150,35 @@ class Server:
         """
         try:
             self.socketServer.server_close()
-            os.remove(self.addr)
-            self._set_server_status(OFF)
+            os.remove(self.server_address)
+            self.server_status = self.ServerStatus.OFF
         except socket.error as msg:
-            log.error("Failed to close server: %s. Current serverstatus: ", msg, self.get_server_status())
+            # TODO: geeft dit ding wel een socket.error als het mis gaat? Is het geen OSError?
+            log.error("Failed to close server: %s. Current serverstatus: %s", msg, self.server_status.name)
+        finally:
+            return self.server_status
 
-    def get_server_status(self) -> ServerStatus:
+    @property
+    def server_status(self) -> ServerStatus:
         """
         Returns:
             ServerStatus/Enum: Krijg de status van de server (UNSET, ERROR, OFF, ON)
         """
-        # TODO omzetten naar een @property https://www.programiz.com/python-programming/property
         return self._serverStatus
 
-    def _set_server_status(self, value: ServerStatus) -> ServerStatus:
+    @server_status.setter
+    def server_status(self, value: ServerStatus):
         """
-        Deze functie moet eigenlijk private zijn. Maar omdat dat niet kan met Python zit er een schattig underscortje "_" voor.
-        Roep deze methode dan ook absoluut niet aan buiten de Server class!
-        Dingen kunnen serieus hard kapot gaan als je dat wel doet.
+        Deze functie moet eigenlijk private zijn.
+        schakelt ook de server uit, als je hem op off zet. Om zombie processen tegen te gaan.
+        Het is nog steeds niet de bedoeling dat je deze setter gebruikt
         Args:
             value (ServerStatus/Emum): de waarde dat de server moet hebben
-
-        Returns:
-            ServerStatus/Enum: Zodat je kan kijken of het wel goed hebt gedaan.
         """
-        # TODO omzetten naar een @property https://www.programiz.com/python-programming/property
-        self._serverStatus = self.ServerStatus.value
-        return self._serverStatus
-
-    @staticmethod
-    def send(fricp: FRICP) -> FRICP:
-        """
-        Stuur data volgends het FRICP, raised ook een socket.error als er iets mis gaat
-        Args:
-            fricp: FRICP object met alle data die je wilt versturen
-
-        Returns:
-            FRICP: Het antwoord van de server
-        """
-        try:
-            # TODO: check for open connection
-            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            sock.connect(fricp.address)
-            sock.send(fricp.to_binary())
-
-            # TODO: error handeling
-            received = str(sock.recv(fricp.buffer_size), "utf-8")
-            received = pickle.load(received)
-
-            if not fricp.open:
-                sock.close()
-
-            return received
-        except socket.error as msg:
-            log.error("Failed to send data: %s.", msg)
-            raise socket.error
+        self._serverStatus = value
+        # Server uitzetten zodat je geen zombie processen kan krijgen
+        if value == self.ServerStatus.OFF:
+            self.close_server()
 
 
 if __name__ == "__main__":
