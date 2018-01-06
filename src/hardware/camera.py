@@ -1,26 +1,12 @@
-import random
-from os import listdir, getcwd
-
-import numpy as np
+import configparser
+import time
 import cv2
-from src.common.log import *
-
-CAMERA_H_FOV = 62.2
+import numpy as np
+from picamera import PiCamera
+from src.common import log
 
 
 class Camera:
-    photo = 0
-
-    # open camera
-    def __init__(self):
-        """
-        Start de camera
-        """
-        self._cap = cv2.VideoCapture(0)
-
-        if self._cap.isOpened() == None:
-            log.error("Could not open camera")
-
     def get_frame(self):
         """
         Krijg de current frame van de camera.
@@ -28,44 +14,64 @@ class Camera:
         Returns:
            Een plaatje van de camera.
         """
+        config = configparser.ConfigParser()
+        config.read('fotoroulette.conf')
 
-        ret, frame = self._cap.read()
-        if frame is None:
-            message = "Failed to get feed from cam!"
-            log.error(message)
-            raise ValueError(message)
+        width = config['Camera'].getint('CAMERA_RESOLUTION_H')
+        height = config['Camera'].getint('CAMERA_RESOLUTION_V')
 
-        return frame
+        # The horizontal resolution is rounded up to the nearest multiple of 32 pixels.
+        buffer_width = int(np.math.ceil(width / 32) * 32)
+        # The vertical resolution is rounded up to the nearest multiple of 16 pixels.
+        buffer_height = int(np.math.ceil(height / 16) * 16)
 
-    def get_dummy_frame(self, index=0) -> np.array:
-        print(getcwd())
-        img_path = "img"
+        # create an empty buffer, with accommodation for image resolution rounding
+        buffer = np.empty((buffer_height * buffer_width * 3,), dtype=np.uint8)
 
-        # Crasht het hier? Check je working dir in run config!
-        image_list = listdir(img_path)
+        self.camera.capture(buffer, 'bgr')
 
-        if self.photo == (len(image_list) - 1):
-            self.photo = 0
-        else:
-            self.photo += 1
+        # reshape buffer to image dimensions
+        image = buffer.reshape((buffer_height, buffer_width, 3))
 
-        pick = self.photo
+        if image is None:
+            log.error("Failed to get feed from camera!")
 
-        if index != 0:
-            pick = index
+        # reshape buffer to requested resolution
+        image = image[:height, :width, :]
 
-        frame = cv2.imread(img_path + "/" + str(image_list[pick]))
+        return image
 
-        if frame is None:
-            log.error("Failed to load image!")
+    def __init__(self):
+        """
+        Start de camera
+        """
+        self.camera = PiCamera()
 
-        return frame
+        # self.rawCapture = PiRGBArray(self.camera)  # dit is redundant volgens mij
 
+        config = configparser.ConfigParser()
+        config.read('fotoroulette.conf')
 
+        width = config['Camera'].getint('CAMERA_RESOLUTION_H')
+        height = config['Camera'].getint('CAMERA_RESOLUTION_V')
+        self.camera.resolution = [width, height]
+        # allow camera to warm up
+        time.sleep(2)
 
-    # TODO: destruction close camera
+        if self.camera is None:
+            log.error("Could not open camera")
+
     def close_camera(self):
         """
-        destructor
+        Destructor
         """
-        self._cap = None
+        self.camera.close()
+
+
+if __name__ == "__main__":
+    print("test")
+
+    cam = Camera()
+    img = cam.get_frame()
+    cv2.imshow("photo", img)
+    cv2.waitKey()
