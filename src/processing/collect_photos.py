@@ -1,8 +1,7 @@
 import configparser
 import cv2
 
-from src.hardware import range_sensor, servo
-from src.hardware.camera import Camera
+from src.thread.ClientHandling.hardware import range_sensor, servo, Camera
 from src.processing.photo_data import PhotoData
 
 DEBUG = False
@@ -15,7 +14,6 @@ def collect_photos() -> PhotoData:
     :return: Alle fotos met range sensor data
     """
     data = PhotoData()
-    cam = Camera()
 
     config = configparser.ConfigParser()
     config.read('fotoroulette.conf')
@@ -49,10 +47,10 @@ def collect_photos() -> PhotoData:
             servo.goto_position(next_pic_angle)
             current_pos = next_pic_angle
 
-            photo = cam.get_frame()
+            photo = Camera.get_frame()
 
             if FAKE:
-                photo = cv2.imread(next(cam))
+                photo = cv2.imread(next(Camera))
 
             data.append_photo(photo, current_pos)
             next_pic_angle += CAMERA_STEP_SIZE

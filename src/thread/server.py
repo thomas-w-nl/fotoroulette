@@ -3,11 +3,8 @@ from src.common.log import *
 from enum import Enum
 from src.thread.fricp import FRICP
 
-from src.hardware.camera import Camera
-from src.hardware import servo, range_sensor
-from src.processing.collect_photos import collect_photos
-from src.processing.get_faces import get_faces
-from src.processing.netwerk import *
+from src.thread.ServerHandling.hardware import HardwareHandler
+from src.thread.ServerHandling.processing import ProcessingHandler
 
 
 class Server:
@@ -44,33 +41,11 @@ class Server:
             """
             log.debug("handeling request...")
 
-            if self.data.request == FRICP.Request.HARDWARE_GET_CAMERA:
-                camera = Camera()
-                data = camera.get_dummy_frame()
+            if self.data.owner == FRICP.Owner.HARDWARE:
+                data = HardwareHandler.handle(self.data)
 
-            if self.data.request == FRICP.Request.HARDWARE_POST_SERVO_POSITION:
-                data = servo.goto_position(self.data.data)
-
-            if self.data.request == FRICP.Request.HARDWARE_GET_SERVO_POSITION:
-                data = servo.get_position()
-
-            if self.data.request == FRICP.Request.HARDWARE_GET_RANGE_SENSOR:
-                data = range_sensor.get_distance()
-
-            if self.data.request == FRICP.Request.PROCESSING_MAKE_PHOTOS:
-                data = collect_photos()
-
-                for photo in data._photos:
-                    cv2.imshow("Input photo's", photo)
-                    cv2.waitKey()
-
-                data = get_faces
-
-            if self.data.request == FRICP.Request.PROCESSING_GET_PHOTOS:
-                # TODO: deze shizzel right here
-                pass
-            if self.data.request == FRICP.Request.PROCESSING_UPLOAD_NETWORK:
-                data = send_photos("fotodata")
+            if self.data.owner == FRICP.Owner.PROCESSING:
+                data = ProcessingHandler.handle(self.data)
 
             response = FRICP(FRICP.Request.RESPONSE, self.data.address, self.data.owner, FRICP.Response.SUCCESS, data,
                              buffer_size=self.buffer_size)
