@@ -240,7 +240,7 @@ class FRICP:
             while True:
                 incoming = sock.recv(self.buffer_size)
                 received += incoming
-                log.debug(incoming)
+                # log.debug(incoming)
                 if not incoming:
                     break
             received = pickle.loads(received)

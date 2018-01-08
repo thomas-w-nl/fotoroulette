@@ -41,10 +41,10 @@ class Server:
             """
             log.debug("handeling request...")
 
-            if self.data.owner == FRICP.Owner.HARDWARE:
+            if self.data.address == FRICP.Owner.HARDWARE:
                 data = HardwareHandler.handle(self.data)
 
-            if self.data.owner == FRICP.Owner.PROCESSING:
+            if self.data.address == FRICP.Owner.PROCESSING:
                 data = ProcessingHandler.handle(self.data)
 
             response = FRICP(FRICP.Request.RESPONSE, self.data.address, self.data.owner, FRICP.Response.SUCCESS, data,
