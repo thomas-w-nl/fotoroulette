@@ -2,9 +2,7 @@ import socket, socketserver, pickle, sys, threading
 from src.common.log import *
 from enum import Enum
 from src.thread.fricp import FRICP
-
-from src.thread.ServerHandling.hardware import HardwareHandler
-from src.thread.ServerHandling.processing import ProcessingHandler
+from src.thread import hardware, processing
 
 
 class Server:
@@ -41,14 +39,23 @@ class Server:
             """
             log.debug("handeling request...")
 
-            if self.data.address == FRICP.Owner.HARDWARE:
-                data = HardwareHandler.handle(self.data)
+            try:
+                if self.data.address == FRICP.Owner.HARDWARE:
+                    response_data = hardware.handle(self.data)
 
-            if self.data.address == FRICP.Owner.PROCESSING:
-                data = ProcessingHandler.handle(self.data)
+                if self.data.address == FRICP.Owner.PROCESSING:
+                    response_data = processing.handle(self.data)
 
-            response = FRICP(FRICP.Request.RESPONSE, self.data.address, self.data.owner, FRICP.Response.SUCCESS, data,
-                             buffer_size=self.buffer_size)
+                if self.data.address == FRICP.Owner.GUI:
+                    # TODO: GUI handeler met FRICP
+                    raise FRICP.ValidationError(FRICP.Response.UNABLE_TO_HANDLE_REQUEST, self.data)
+
+                response = FRICP(FRICP.Request.RESPONSE, self.data.address, self.data.owner, FRICP.Response.SUCCESS,
+                                 response_data,
+                                 buffer_size=self.buffer_size)
+            except FRICP.ValidationError as error:
+                log.error("Error while handeling request: %s", error)
+                response = error.response
             self.reply(response)
 
         def reply(self, fricp: FRICP):

@@ -2,6 +2,8 @@ from src.thread.fricp import FRICP
 from src.common.log import *
 import src.common.tools as tool
 
+# TODO: alles alles getest is en werkt, moet deze boi verwijderd worden.
+
 # test client
 if __name__ == "__main__":
     log.debug("running in debug mode")

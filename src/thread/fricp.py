@@ -57,6 +57,7 @@ class FRICP:
         UNKNOWN_OWNER = 201
         UNKNOWN_REQUEST = 202
         UNKNOWN_RESPONSE = 203
+        UNKNOWN_HANDLING_ERROR = 204
 
         #
         REJECTED = 210  # unused
@@ -66,9 +67,7 @@ class FRICP:
         UNABLE_TO_HANDLE_REQUEST = 214
         INVALID_DATA = 215
         UNEXPECTED_REQUEST_OR_RESPONSE = 216
-
-        # client error
-        FAILED_TO_RECEIVE = 217
+        FAILED_TO_RECEIVE = 217  # client error
 
         # 220-229 connection
         CONNECTION_LOST = 220  # heeft dit wel nut? # TODO: implementeren
@@ -76,7 +75,7 @@ class FRICP:
         UNABLE_TO_SEND = 222
 
         # 300-399 is de opdracht range
-        CLOSE_CONNECTION = 301
+        CLOSE_CONNECTION = 301  # unused
 
     class Request(Enum):
         """
@@ -88,20 +87,19 @@ class FRICP:
         # SHUTDOWN = 1 is dit handig?
         # 100-199 hardware
         HARDWARE_GET_CAMERA = (100, None)
-        HARDWARE_GET_RANGE_SENSOR = (101, None)
+        HARDWARE_GET_RANGE_SENSOR_DISTANCE = (101, None)
         HARDWARE_GET_SERVO_POSITION = (102, None)
-        HARDWARE_POST_SERVO_POSITION = (103, int)
+        HARDWARE_SET_SERVO_POSITION = (103, int)
 
         # 200-299 processing
         PROCESSING_MAKE_PHOTOS = (200, None)
-        PROCESSING_GET_PHOTOS = (201, None)
+        PROCESSING_GET_PHOTOS = (201, None)  # unused # TODO: impleneteren
         PROCESSING_UPLOAD_NETWORK = (202, None)
 
         # 300-399 gui
         def __init__(self, request, data_type):
             self.request = request
             self.data_type = data_type
-
 
     class Owner(Enum):
         """
@@ -210,8 +208,8 @@ class FRICP:
 
         # als je een request verwacht maar een response krijg en visa versa
         if (fricp.request == FRICP.Request.RESPONSE and expected == "REQUEST") or (
-                        fricp.response == FRICP.Response.REQUEST and expected == "RESPONSE") or (
-                        fricp.response is not FRICP.Response.REQUEST and expected == "REQUEST"
+                fricp.response == FRICP.Response.REQUEST and expected == "RESPONSE") or (
+                fricp.response is not FRICP.Response.REQUEST and expected == "REQUEST"
         ):
             raise FRICP.ValidationError(FRICP.Response.UNEXPECTED_REQUEST_OR_RESPONSE, fricp)
 
