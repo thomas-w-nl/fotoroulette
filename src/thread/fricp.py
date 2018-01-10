@@ -132,6 +132,9 @@ class FRICP:
             open (:obj: `bool`, optional): true voor een continuous verbinding. Default is false
             buffer_size (:obj: `int`, optional): Hoegroot de buffer moet zijn. Default is 1024
             version (:obj: `float`, optional): De FRICP versie nummer. Default is 1
+
+        Returns:
+            object:
         """
         self.request = request
         self.owner = owner
