@@ -6,8 +6,9 @@ import numpy as np
 from src.common import log
 try:
     from picamera import PiCamera
-except ModuleNotFoundError:
+except Exception:
     print("Skip loading the camera since we're in a fake environment")
+    print("This is very dangerous regarding to errors. Please debug using ImportError and ModuleNotFound exeptions")
 
 
 

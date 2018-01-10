@@ -23,8 +23,9 @@ from src.processing.overlay import generate_overlay
 # Check whether we're in a raspberry pi or not
 try:
     import RPi.GPIO as GPIO
-except (ImportError, ModuleNotFoundError):
+except Exception:
     print("Running in a fake environment")
+    print("This is very dangerous regarding to errors. Please debug using ImportError and ModuleNotFound exeptions")
     import pickle
 
     FAKE_ENV = True
@@ -117,6 +118,7 @@ if __name__ == "__main__":
     path = Path("/tmp/python-processing-ipc")
     if path.exists():
         path.unlink()
+    server = IPCServer("/tmp/python-processing-ipc", IPCHandler)
 
-    with IPCServer("/tmp/python-processing-ipc", IPCHandler) as server:
-        server.serve_forever()
+    server.serve_forever()
+    server.shutdown()

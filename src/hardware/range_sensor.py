@@ -30,8 +30,9 @@ def _init():
 try:
     import RPi.GPIO as GPIO
     _init()
-except ModuleNotFoundError:
+except Exception:
     print("Skip loading the range sensor since we're in a fake environment")
+    print("This is very dangerous regarding to errors. Please debug using ImportError and ModuleNotFound exeptions")
 
 
 def get_distance() -> int:

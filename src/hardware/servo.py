@@ -18,8 +18,9 @@ try:
     GPIO.setup(18, GPIO.OUT)
     pwm = GPIO.PWM(18, 50)
     pwm.start(0)
-except ModuleNotFoundError:
+except Exception:
     print("Skip loading the servo since we're in a fake environment")
+    print("This is very dangerous regarding to errors. Please debug using ImportError and ModuleNotFound exeptions")
 
 
 def goto_position(graden: int, sleep=0.4):
