@@ -2,15 +2,8 @@ import configparser
 import time
 import cv2
 import numpy as np
-
+from picamera import PiCamera
 from src.common import log
-try:
-    from picamera import PiCamera
-except Exception:
-    print("Skip loading the camera since we're in a fake environment")
-    print("This is very dangerous regarding to errors. Please debug using ImportError and ModuleNotFound exeptions")
-
-
 
 
 class Camera:
