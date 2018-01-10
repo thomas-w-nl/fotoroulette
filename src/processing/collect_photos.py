@@ -1,7 +1,7 @@
 import configparser
 import cv2
 
-from src.thread.hardware import RangeSensor, Servo
+from src.thread.hardware import RangeSensor, Servo, Camera
 from src.processing.photo_data import PhotoData
 
 DEBUG = False
