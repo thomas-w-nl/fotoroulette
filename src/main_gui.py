@@ -56,7 +56,7 @@ class MainWindow:
         self._window = self._builder.get_object("MainWindow")
         self._popup = None # shitty hack
 
-        self._set_logo("../img/corendon_logo.png", 800, 300)
+        self._set_logo("../img/corendon_logo.png", 400, 150)
         #self.get_photo()
         # Below 80 milliseconds causes it to hang
         #GObject.timeout_add(80, self.get_photo)
@@ -178,7 +178,7 @@ class Handler:
         self._show_game_popup("Love Meter", "Love Meter", "../img/versus.svg")
 
     def on_mocking_pressed(self, button):
-        self._show_game_popup("Mocking", "Love Meter", "../img/love.svg")
+        self._show_game_popup("Wanted", "Love Meter", "../img/love.svg")
 
     def on_close_clicked(self, button):
         self.window.close_popup()

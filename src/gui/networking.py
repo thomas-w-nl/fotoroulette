@@ -96,8 +96,6 @@ def create_server(path_name : str = "/tmp/python-gui-ipc"):
     if path.exists():
         path.unlink()
 
-    # Some silly test ata
-    image = cv2.imread("/tmp/malloc.png")
     server = Gio.SocketService.new()
     server.add_address(Gio.UnixSocketAddress.new(path_name), Gio.SocketType.STREAM, Gio.SocketProtocol.DEFAULT)
     server.connect("incoming", connection_handler, server)
