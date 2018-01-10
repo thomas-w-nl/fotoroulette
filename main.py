@@ -21,7 +21,7 @@ if __name__ == "__main__":
     with open('real_2_personen_new.pkl', 'rb') as input:
         data = pickle.load(input)
 
-        photos_with_angles, range_sensor = data.get()
+        photos_with_angels, range_sensor = data.get()
 
         faces = get_faces(data)
 

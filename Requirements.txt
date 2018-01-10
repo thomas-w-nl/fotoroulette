@@ -5,7 +5,7 @@ blessings==1.6
 bpython==0.16
 certifi==2017.11.5
 chardet==3.0.4
-# chrome-gnome-shell==0.0.0 # bestaat niet
+chrome-gnome-shell==0.0.0
 coloredlogs==7.3
 curtsies==0.2.11
 docutils==0.14
@@ -14,7 +14,7 @@ humanfriendly==4.4.1
 idna==2.6
 imagesize==0.7.1
 Jinja2==2.9.6
-# louis==3.2.0 # kan hij niet vinden
+louis==3.2.0
 MarkupSafe==1.0
 numpy==1.13.3
 opencv-python==3.3.0.10
@@ -24,13 +24,14 @@ powerline-status==2.6
 Pygments==2.2.0
 pygobject==3.24.1
 pyparsing==2.2.0
-# python-libtorrent==1.1.4 # kan hij niet vinden
+python-libtorrent==1.1.4
 python-vlc==2.2.6100
 pytz==2017.3
 pyxdg==0.25
 requests==2.18.4
 six==1.11.0
 snowballstemmer==1.2.1
+speedtest-cli==1.0.6
 Sphinx==1.6.5
 sphinx-autodoc-napoleon-typehints==2.1.6
 sphinx-autodoc-typehints==1.2.3
@@ -39,3 +40,4 @@ sphinxcontrib-websupport==1.0.1
 typing==3.6.2
 urllib3==1.22
 wcwidth==0.1.7
+youtube-dl==2017.8.27.1
