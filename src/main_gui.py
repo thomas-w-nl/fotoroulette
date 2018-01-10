@@ -143,10 +143,21 @@ class Handler:
         self.window._stack.set_visible_child_name("game-menu")
 
     def on_quit_clicked(self, *args):
-        Gtk.main_quit(*args)
+        self.window._stack.set_visible_child_name("splash-screen")
+        def callback(self, response):
+            self._builder.get_object("unique-code").set_text(response)
 
     def on_save_clicked(self, *args):
-        self.window._stack.set_visible_child_name("save-screen")
+        def callback(response):
+            self.window._builder.get_object("unique-code").set_text(response)
+            self.window._stack.set_visible_child_name("save-screen")
+            self.window.close_popup()
+            return True
+
+        networking.send_message("{\"message\": \"command\", \"name\": \"send_photos\"}\n", callback)
+
+    def open_save_window(self, *args):
+        self.window.show_popup("InformationDialog")
 
     def on_dialog_close(self, *args):
         print("closed")

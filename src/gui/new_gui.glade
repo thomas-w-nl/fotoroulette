@@ -128,7 +128,7 @@
                     <property name="receives_default">True</property>
                     <property name="halign">start</property>
                     <property name="valign">center</property>
-                    <signal name="clicked" handler="on_save_clicked" swapped="no"/>
+                    <signal name="clicked" handler="open_save_window" swapped="no"/>
                     <style>
                       <class name="button"/>
                     </style>
@@ -428,11 +428,10 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
+                            <property name="position">0</property>                          </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="unique-code">
                             <property name="name">unique-code</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>

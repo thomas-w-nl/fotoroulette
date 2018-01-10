@@ -5,6 +5,7 @@ Copyright (c) 2017, Valentijn van de Beek
 """
 # Import from the parent directory instead
 
+import random
 import cv2
 import json
 import socketserver
@@ -15,7 +16,7 @@ from src.common import tools, jsonserializer
 from src.common.log import *
 
 from src.processing.get_faces import get_faces
-from src.processing.netwerk import send_photos
+from src.processing.netwerk import send_photos_by_path, UploadException
 from src.processing.spel import *
 from src.processing.collect_photos import collect_photos
 from src.processing.overlay import generate_overlay
@@ -41,11 +42,8 @@ def send_message(message, address = "/tmp/python-gui-ipc"):
 
     return returned
 
-
 class IPCHandler(socketserver.StreamRequestHandler):
-    def __init__(self, request, client_address, server):
-        socketserver.StreamRequestHandler.__init__(self, request, client_address, server)
-        self.photos = []
+    photos = []
 
     def _send_response(self, message):
         self.request.sendall(bytes(json.dumps(message, default=jsonserializer.to_json), "utf-8"))
@@ -74,24 +72,43 @@ class IPCHandler(socketserver.StreamRequestHandler):
         log.info("Number of faces found: %s" % len(faces))
 
         game = (game_by_type(game_type, faces).gen_overlay())
-        #self.photos.append(game)
+        self.photos.append(game)
+
         return game
 
     def handle(self):
         # Fetch the json message
         self.data = self.rfile.readline().decode("utf-8")
+
         print(self.data)
 
         message = json.loads(self.data)
 
         if message["message"] == "command":
             if message["name"] == "start":
-                data = collect_photos()
-                faces = get_faces(data)
-                faces = [face.tostring() for face in faces]
-                self._send_response({"message": "response", "result": faces})
+                self.photos = []
             elif message["name"] == "get_image":
                 self._send_single_image("/tmp/malloc.png")
+            elif message["name"] == "send_photos":
+                # Due to the backend implementation we first need to write the photos to disk
+                directory_name = "/tmp/vakantieklieker-fotos-" + str(random.randint(0, 10000))
+                path = Path(directory_name)
+                path.mkdir()
+
+                for photo_index in range(len(self.photos)):
+                    cv2.imwrite(directory_name + "/" + str(photo_index) + '.png', self.photos[photo_index])
+
+                response = send_photos_by_path(directory_name)
+
+                # Remove the unneeded directories
+                for file_ in path.glob('*'):
+                    file_.unlink()
+                path.rmdir()
+
+                self.photos.clear()
+
+
+                self._send_response({"message": "response", "result": [response]})
             else:
                 self._return_error(404, "can't find method '{}'".format(message["name"]))
         elif message["message"] == "play_game":
