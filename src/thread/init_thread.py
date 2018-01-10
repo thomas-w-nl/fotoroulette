@@ -13,5 +13,5 @@ for owner in servers_to_start:
     command = "taskset " + str(i) + " " + str(start_server) + " " + str(owner)
     log.debug(command)
     # TODO: error: FileNotFoundError line: 16
-    log.debug(call([command]))
+    # log.debug(call([command]))
     i += 1

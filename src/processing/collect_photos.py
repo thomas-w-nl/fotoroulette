@@ -33,7 +33,7 @@ def collect_photos() -> PhotoData:
     next_pic_angle = current_pos
     next_range_angle = current_pos
 
-    Servo.goto_position(current_pos)
+    Servo.set_position(current_pos)
 
     # while we can still collect images or sensor data
     while next_range_angle <= stop_angle or next_pic_angle <= stop_angle:
@@ -44,7 +44,7 @@ def collect_photos() -> PhotoData:
             if DEBUG:
                 print("pic at ", next_pic_angle)
 
-            Servo.goto_position(next_pic_angle)
+            Servo.set_position(next_pic_angle)
             current_pos = next_pic_angle
 
             photo = Camera.get_frame()
@@ -61,7 +61,7 @@ def collect_photos() -> PhotoData:
             if DEBUG:
                 print("range at ", next_range_angle)
 
-            Servo.goto_position(next_range_angle)
+            Servo.set_position(next_range_angle)
             current_pos = next_range_angle
 
             next_range_angle += RANGE_SENSOR_STEP_SIZE
@@ -69,5 +69,5 @@ def collect_photos() -> PhotoData:
             distance = RangeSensor.get_distance()
             data.append_distance(distance, current_pos)
 
-    Servo.goto_position(start_angle, 1)
+    Servo.set_position(start_angle, 1)
     return data

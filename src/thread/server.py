@@ -2,7 +2,7 @@ import socket, os, socketserver, pickle, sys, threading
 from src.common.log import *
 from enum import Enum
 from src.thread.fricp import FRICP
-from src.thread import hardware, processing
+from src.thread import hardware_handle as hardware, processing_handle as processing
 
 
 class Server:
