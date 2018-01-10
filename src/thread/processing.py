@@ -1,4 +1,3 @@
-from src.thread.server import Server
 from src.thread.fricp import FRICP
 from src.processing.collect_photos import collect_photos
 from src.processing.get_faces import get_faces # unused # TODO: uitzoeken of dit nog nutig is

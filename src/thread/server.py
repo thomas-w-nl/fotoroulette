@@ -1,4 +1,4 @@
-import socket, socketserver, pickle, sys, threading
+import socket, os, socketserver, pickle, sys, threading
 from src.common.log import *
 from enum import Enum
 from src.thread.fricp import FRICP
@@ -100,14 +100,13 @@ class Server:
         """
         if self.server_status is not self.ServerStatus.ON:
             if os.path.exists(self.server_address):
-                # log.debug("%s, path exists. Removing.", self.server_address)
+                log.debug("%s, path exists. Removing.", self.server_address)
                 os.remove(self.server_address)
             try:
                 self.socketServer = socketserver.UnixStreamServer(self.server_address, self.ServerHandeler)
 
                 # Start the server in een thread zodat de code daarna nogsteeds word uitgevoerd.
                 threading.Thread(target=self.socketServer.serve_forever).start()
-
                 self.server_status = self.ServerStatus.ON
                 log.debug("Running %s server", self.owner.name)
             except OSError as error:
