@@ -1,0 +1,13 @@
+#splashscreen {
+    background-image: url("../img/background.png");
+    background-size: cover;
+    background-color: rgba(0, 0, 255, 0.5);
+}
+
+#start-button {
+    background-color: green;
+    font-size: 3em;
+    font-weight: bold;
+    color: white;
+    border-radius: 25px;
+}

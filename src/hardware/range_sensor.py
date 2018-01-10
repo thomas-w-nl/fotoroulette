@@ -1,7 +1,6 @@
 import configparser
 import threading
 from functools import partial
-import RPi.GPIO as GPIO
 import time
 
 DEBUG = False
@@ -28,8 +27,12 @@ def _init():
 
     GPIO.output(TRIG, False)
 
-
-_init()
+try:
+    import RPi.GPIO as GPIO
+    _init()
+except Exception:
+    print("Skip loading the range sensor since we're in a fake environment")
+    print("This is very dangerous regarding to errors. Please debug using ImportError and ModuleNotFound exeptions")
 
 
 def get_distance() -> int:

@@ -1,8 +1,7 @@
 import configparser
 import cv2
 
-from src.hardware import range_sensor, servo
-from src.hardware.camera import Camera
+from src.thread.hardware import RangeSensor, Servo
 from src.processing.photo_data import PhotoData
 
 DEBUG = False
@@ -15,7 +14,6 @@ def collect_photos() -> PhotoData:
     :return: Alle fotos met range sensor data
     """
     data = PhotoData()
-    cam = Camera()
 
     config = configparser.ConfigParser()
     config.read('fotoroulette.conf')
@@ -35,7 +33,7 @@ def collect_photos() -> PhotoData:
     next_pic_angle = current_pos
     next_range_angle = current_pos
 
-    servo.goto_position(current_pos)
+    Servo.goto_position(current_pos)
 
     # while we can still collect images or sensor data
     while next_range_angle <= stop_angle or next_pic_angle <= stop_angle:
@@ -46,13 +44,13 @@ def collect_photos() -> PhotoData:
             if DEBUG:
                 print("pic at ", next_pic_angle)
 
-            servo.goto_position(next_pic_angle)
+            Servo.goto_position(next_pic_angle)
             current_pos = next_pic_angle
 
-            photo = cam.get_frame()
+            photo = Camera.get_frame()
 
             if FAKE:
-                photo = cv2.imread(next(cam))
+                photo = cv2.imread(next(Camera))
 
             data.append_photo(photo, current_pos)
             next_pic_angle += CAMERA_STEP_SIZE
@@ -63,13 +61,13 @@ def collect_photos() -> PhotoData:
             if DEBUG:
                 print("range at ", next_range_angle)
 
-            servo.goto_position(next_range_angle)
+            Servo.goto_position(next_range_angle)
             current_pos = next_range_angle
 
             next_range_angle += RANGE_SENSOR_STEP_SIZE
 
-            distance = range_sensor.get_distance()
+            distance = RangeSensor.get_distance()
             data.append_distance(distance, current_pos)
 
-    servo.goto_position(start_angle, 1)
+    Servo.goto_position(start_angle, 1)
     return data

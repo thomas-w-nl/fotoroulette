@@ -7,6 +7,7 @@ import numpy as np
 class UploadException(Exception):
     pass
 
+
 def send_photos(photos: np.array) -> str:
     """
     Verstuur foto's naar server en verkrijg sessionID
@@ -29,7 +30,8 @@ def send_photos(photos: np.array) -> str:
 
     return content
 
-def send_photos_by_path(image_path : str) -> str:
+
+def send_photos_by_path(image_path: str) -> str:
     """
     Verstuur foto's uit een folder en stuur naar de server en verkrijg sessionID.
 
@@ -40,9 +42,8 @@ def send_photos_by_path(image_path : str) -> str:
        De sessionID die gereturned wordt van de server
     """
     files = [("image[]", open(os.path.join(image_path, file_), "rb"))
-              for file_ in os.listdir(image_path)
+             for file_ in os.listdir(image_path)
              if file_.endswith(".jpg") or file_.endswith(".png")]
-
     # Deze gare kut code moet per se van Noeel er in <-- deze comment komt uit iemand ze commit??
     index = 0
     while True:
