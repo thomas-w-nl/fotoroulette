@@ -1,4 +1,4 @@
-# from src.thread.server import Server # <-- #TODO: RP libary missing errors
+from src.thread.server import Server  # <-- #TODO: RP libary missing errors
 from src.thread.fricp import FRICP
 from src.common.log import *
 import argparse
@@ -14,5 +14,5 @@ parser.add_argument("type", metavar='FRICP.Owner', type=str, nargs=1, help="Whic
 
 args = parser.parse_args()
 type = args.type[0]
-# server = Server(FRICP.Owner[type]) # TODO: niet vergeten te uncommenten
-# server.open_server()
+server = Server(FRICP.Owner[type])  # TODO: niet vergeten te uncommenten
+server.open_server()
