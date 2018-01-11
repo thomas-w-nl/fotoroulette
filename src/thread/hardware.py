@@ -8,9 +8,10 @@ from src.thread.fricp import FRICP
 # client code
 # TODO: owner is nu altijd PROCESSING terwijl GUI het ook zou kunnen aanroepen
 class Servo:
+
     # TODO: het zou helemaal mooi zijn als dit een getter en setter was.
     @staticmethod
-    def set_position(graden: int) -> FRICP:
+    def set_position(graden: int, sleep:float=0.4) -> FRICP:
         """
         verstuurd `HARDWARE_SET_SERVO_POSITION` naar de Hardware FRICP server.
         Draai de servo naar `graden`.
@@ -21,11 +22,12 @@ class Servo:
         Returns:
             FRICP.Response: response van de server
         """
+        data = [graden, sleep]
         servo = FRICP(FRICP.Request.HARDWARE_SET_SERVO_POSITION,
                       FRICP.Owner.PROCESSING,
                       FRICP.Owner.HARDWARE,
                       FRICP.Response.REQUEST,
-                      graden)
+                      data)
         response = servo.send()
         return response.response
 

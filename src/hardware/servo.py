@@ -23,7 +23,7 @@ except Exception:
     print("This is very dangerous regarding to errors. Please debug using ImportError and ModuleNotFound exeptions")
 
 
-def goto_position(graden: int, sleep=0.4):
+def goto_position(graden: int, sleep:float=0.4):
     """
     Send servo to specific position
     :param sleep:

@@ -89,7 +89,7 @@ class FRICP:
         HARDWARE_GET_CAMERA = (100, None)
         HARDWARE_GET_RANGE_SENSOR_DISTANCE = (101, None)
         HARDWARE_GET_SERVO_POSITION = (102, None)
-        HARDWARE_SET_SERVO_POSITION = (103, int)
+        HARDWARE_SET_SERVO_POSITION = (103, list)
 
         # 200-299 processing
         PROCESSING_MAKE_PHOTOS = (200, None)
@@ -201,6 +201,8 @@ class FRICP:
         if not FRICP.Owner[fricp.address.name].min_request_range <= fricp.request.request <= FRICP.Owner[
             fricp.address.name].max_request_range and expected == "REQUEST":
             raise FRICP.ValidationError(FRICP.Response.UNABLE_TO_HANDLE_REQUEST, fricp)
+
+        log.debug(type(fricp.data))
 
         # check of er data moet zijn
         # "None" Moet anders worden gecontroleerd, anders controleerd hij NoneType met None, en daar komt dan false uit.

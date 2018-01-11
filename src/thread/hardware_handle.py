@@ -1,6 +1,31 @@
 from src.hardware.camera import Camera as hw_camera
 from src.hardware import servo as hw_servo, range_sensor as hw_range_sensor
 from src.common.log import *
+from src.thread.fricp import FRICP
+
+camera = None
+
+
+def init() -> int:
+    global camera
+    camera = hw_camera()
+
+
+    if camera is  None:
+        log.warning("Unable to open camera!")
+        return 1
+    else:
+        return 0
+
+def delete() -> int:
+    global camera
+
+    if camera is not None:
+        camera.close()
+        return 0
+    else:
+        log.warning("Camera not open!")
+        return 1
 
 
 def handle(fricp: FRICP) -> object:
@@ -16,11 +41,12 @@ def handle(fricp: FRICP) -> object:
     """
     try:
         if fricp.request == FRICP.Request.HARDWARE_GET_CAMERA:
-            camera = hw_camera()
             data = camera.get_frame()
 
         if fricp.request == FRICP.Request.HARDWARE_SET_SERVO_POSITION:
-            data = hw_servo.goto_position(fricp.data)
+            log.debug(fricp.data)
+            position, sleep = fricp.data
+            data = hw_servo.goto_position(position, sleep)
 
         if fricp.request == FRICP.Request.HARDWARE_GET_SERVO_POSITION:
             data = hw_servo.get_position()

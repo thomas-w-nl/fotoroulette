@@ -3,7 +3,7 @@ import time
 import cv2
 import numpy as np
 
-from src.common import log
+from src.common.log import log
 try:
     from picamera import PiCamera
 except Exception:
@@ -14,6 +14,7 @@ except Exception:
 
 
 class Camera:
+
     def get_frame(self):
         """
         Krijg de current frame van de camera.
@@ -52,23 +53,25 @@ class Camera:
         """
         Start de camera
         """
-        self.camera = PiCamera()
+        try:
+            self.camera = PiCamera()
 
-        # self.rawCapture = PiRGBArray(self.camera)  # dit is redundant volgens mij
+            # self.rawCapture = PiRGBArray(self.camera)  # dit is redundant volgens mij
 
-        config = configparser.ConfigParser()
-        config.read('fotoroulette.conf')
+            config = configparser.ConfigParser()
+            config.read('fotoroulette.conf')
 
-        width = config['Camera'].getint('CAMERA_RESOLUTION_H')
-        height = config['Camera'].getint('CAMERA_RESOLUTION_V')
-        self.camera.resolution = [width, height]
-        # allow camera to warm up
-        time.sleep(2)
+            width = config['Camera'].getint('CAMERA_RESOLUTION_H')
+            height = config['Camera'].getint('CAMERA_RESOLUTION_V')
+            self.camera.resolution = [width, height]
+            # allow camera to warm up
+            time.sleep(2)
 
-        if self.camera is None:
-            log.error("Could not open camera")
 
-    def close_camera(self):
+        except PiCameraError as err:
+            log.warning('Something went wrong with the camera:', err )
+
+    def close(self):
         """
         Destructor
         """

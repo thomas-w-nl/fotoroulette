@@ -35,7 +35,8 @@ except Exception:
 else:
     FAKE_ENV = False
 
-def send_message(message, address = "/tmp/python-gui-ipc"):
+
+def send_message(message, address="/tmp/python-gui-ipc"):
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
         sock.connect(address)
         sock.sendall(bytes(message + '\n', "utf-8"))
@@ -43,21 +44,23 @@ def send_message(message, address = "/tmp/python-gui-ipc"):
 
     return returned
 
+
 class IPCHandler(socketserver.StreamRequestHandler):
     photos = []
 
     def _send_response(self, message):
         self.request.sendall(bytes(json.dumps(message, default=jsonserializer.to_json), "utf-8"))
 
-    def _return_error(self, code : int, message : str) -> None:
+    def _return_error(self, code: int, message: str) -> None:
         self._send_response({"message": "error", "result": {"code": code, "message": message}})
 
-    def _encode_image(self, file_ : str, encoding : str = '.png') -> str:
-        #image = cv2.imread(file_name)
+    def _encode_image(self, file_: str, encoding: str = '.png') -> str:
+        # image = cv2.imread(file_name)
         image_string = cv2.imencode(encoding, image)[1].tostring()
         return image_string
 
-    def _send_single_image(self, photo, encoding : str = '.png') -> None:
+    def _send_single_image(self, photo, encoding: str = '.png') -> None:
+        log.debug("Sending a single image of type:", type(photo))
         self._send_response({"message": "response",
                              "result": [cv2.imencode('.png', photo)[1].tostring()]})
 
@@ -67,13 +70,16 @@ class IPCHandler(socketserver.StreamRequestHandler):
         else:
             data = collect_photos()
 
-        photos_with_angles, range_sensor = data.get()
         faces = get_faces(data)
 
         log.info("Number of faces found: %s" % len(faces))
 
-        game = (game_by_type(game_type, faces).gen_overlay())
-        self.photos.append(game)
+        try:
+            game = (game_by_type(game_type, faces).gen_overlay())
+            self.photos.append(game)
+        except ValueError as err:
+            log.warning("Not enough players to create overlay")
+            # todo warn gui and replay game
 
         return game
 
@@ -108,10 +114,10 @@ class IPCHandler(socketserver.StreamRequestHandler):
 
                 self.photos.clear()
 
-
                 self._send_response({"message": "response", "result": [response]})
             else:
                 self._return_error(404, "can't find method '{}'".format(message["name"]))
+
         elif message["message"] == "play_game":
             if message["name"] == "love_meter":
                 self._send_single_image(self._start_game(Games.LOVEMETER))
