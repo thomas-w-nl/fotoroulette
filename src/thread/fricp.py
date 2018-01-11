@@ -115,6 +115,18 @@ class FRICP:
             self.min_request_range = min_request_range
             self.max_request_range = max_request_range
 
+        @staticmethod
+        def list() -> list():
+            """
+            Krijg een array met strings met alle mogelijke owners
+            Returns:
+                array: alle owners
+            """
+            array = []
+            for owner in FRICP.Owner:
+                array.append(owner.name)
+            return array
+
     current_version = 1
 
     def __init__(self, request: Request, owner: Owner, address: Owner, response: Response = Response.REQUEST, data=None,
