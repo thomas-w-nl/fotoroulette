@@ -121,6 +121,10 @@ class Server:
         else:
             log.error("failed to open server, server already running. Current serverstatus: %s",
                       self.server_status.name)
+
+        if self.owner == FRICP.Owner.HARDWARE:
+            hardware.init()
+
         return self.server_status
 
     def close_server(self):

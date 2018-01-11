@@ -44,7 +44,6 @@ def send_photos_by_path(image_path: str) -> str:
     files = [("image[]", open(os.path.join(image_path, file_), "rb"))
              for file_ in os.listdir(image_path)
              if file_.endswith(".jpg") or file_.endswith(".png")]
-
     # Deze gare kut code moet per se van Noeel er in <-- deze comment komt uit iemand ze commit??
     index = 0
     while True:
