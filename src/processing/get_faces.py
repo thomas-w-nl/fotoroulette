@@ -236,7 +236,8 @@ def _opencv_get_faces(photo: np.array):
         outputRejectLevels=True
     )
 
-    log.debug("face confidence "+str(confidences[0]))
+    if len(confidences):
+        log.debug("face confidence "+str(confidences[0]))
 
     if DEBUG and len(faces):
         print("got " + str(len(faces)) + " faces! (in one foto)")

@@ -21,10 +21,10 @@ class Camera:
            Een plaatje van de camera.
         """
 
-        # todo fix hardware disable
-        with open('test-input-photo.pkl', 'rb') as input:
-            photo = pickle.load(input)
-            return photo
+
+        # with open('test-input-photo.pkl', 'rb') as input:
+        #     photo = pickle.load(input)
+        #     return photo
 
 
         config = configparser.ConfigParser()
