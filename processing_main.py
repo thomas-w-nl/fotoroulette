@@ -38,7 +38,14 @@ else:
     FAKE_ENV = False
 
 
-def send_message(message, address="/tmp/python-gui-ipc"):
+def send_message(message : str, address = "/tmp/python-gui-ipc") -> str:
+    """
+    Send a message to a specified UNIX socket, generally the GUI.
+
+    Args:
+       message: The message you want to send
+       address: The path to the UNIX socket
+    """
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
         sock.connect(address)
         sock.sendall(bytes(message + '\n', "utf-8"))
@@ -50,39 +57,45 @@ def send_message(message, address="/tmp/python-gui-ipc"):
 class IPCHandler(socketserver.StreamRequestHandler):
     photos = []
 
-    def _send_response(self, message):
+    def _send_response(self, message : str) -> None:
+        """
+        Send back a response over the network.
+
+        Args:
+           message: a string containing a json message
+        """
         self.request.sendall(bytes(json.dumps(message, default=jsonserializer.to_json), "utf-8"))
 
-    def _return_error(self, code: int, message: str) -> None:
+    def _send_error(self, code: int, message: str) -> None:
+        """
+        Send back an error message as a response.
+
+        Args:
+           code: The error code specifying what happened.
+           message: A message describing what happened.
+        """
         self._send_response({"message": "error", "result": {"code": code, "message": message}})
 
-    def _encode_image(self, file_: str, encoding: str = '.png') -> str:
-        # image = cv2.imread(file_name)
-        image_string = cv2.imencode(encoding, image)[1].tostring()
-        return image_string
+    def _send_single_image(self, photo : np.array, encoding: str = '.png') -> None:
+        """
+        Send a single image as response
 
-    def _send_single_image(self, photo, encoding: str = '.png') -> None:
+        Args:
+          photo: the OpenCV image you want to send
+          encoding: the type of picture you want to send, by default png
+        """
         log.debug("Sending a single image of type:" + str(type(photo)))
         self._send_response({"message": "response",
                              "result": [cv2.imencode('.png', photo)[1].tostring()]})
 
-    def _start_game(self, game_type):
+    def _start_game(self, game_type) -> None:
+        """ Play the specified game and send the picture or an error to the back"""
         if FAKE_ENV:
             data = fake_data
         else:
             data = collect_photos()
 
         faces = get_faces(data)
-
-        for face in faces:
-
-            w,h,_ = face.image.shape
-
-            if w == 0 or h == 0:
-                print("\n\n")
-                print("shape:"+str(face.image.shape))
-                print("\n\n")
-
 
         log.info("Number of faces found: %s" % len(faces))
 
@@ -91,10 +104,9 @@ class IPCHandler(socketserver.StreamRequestHandler):
             self.photos.append(game)
         except ValueError as err:
             log.warning("Not enough players to create overlay")
-            # todo warn gui and replay game
-            quit()
-
-        return game
+            self._send_error(502, "Not enough faces to generate an overlay")
+        else:
+            self._send_single_image(game)
 
     def handle(self):
         # Fetch the json message
@@ -130,21 +142,21 @@ class IPCHandler(socketserver.StreamRequestHandler):
 
                 self._send_response({"message": "response", "result": [response]})
             else:
-                self._return_error(404, "can't find method '{}'".format(message["name"]))
+                self._send_error(404, "can't find method '{}'".format(message["name"]))
 
         elif message["message"] == "play_game":
             if message["name"] == "love_meter":
-                self._send_single_image(self._start_game(Games.LOVEMETER))
+                self._start_game(Games.LOVEMETER)
             elif message["name"] == "versus":
-                self._send_single_image(self._start_game(Games.VERSUS))
+                self._start_game(Games.VERSUS)
             elif message["name"] == "superheroes":
-                self._send_single_image(self._start_game(Games.SUPERHEROES))
+                self._start_game(Games.SUPERHEROES)
             elif message["name"] == "wanted":
-                self._send_single_image(self._start_game(Games.WANTED))
+                self._start_game(Games.WANTED)
             else:
                 self._send_error(400, "game '%s' not found" % message["message"])
         else:
-            self._return_error(400, "this server doesn't support '{}'".format(message["message"]))
+            self._send_error(400, "this server doesn't support '{}'".format(message["message"]))
 
 
 class IPCServer(socketserver.ThreadingMixIn, socketserver.UnixStreamServer):

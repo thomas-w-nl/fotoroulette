@@ -16,7 +16,7 @@ from gi.repository import GLib, Gio
 from pathlib import Path
 from common import log, jsonserializer
 
-def _read_all_bytes(input_stream : Gio.IOStream, amount_of_bytes : int=16384):
+def _read_all_bytes(input_stream : Gio.IOStream, amount_of_bytes : int=16384) -> bytes:
     """
     A helper function to fetch and collect all the information from the network in one go.
 
@@ -37,7 +37,7 @@ def _read_all_bytes(input_stream : Gio.IOStream, amount_of_bytes : int=16384):
     return acc
 
 
-def send_message(message : str, callback, path : str = "/tmp/python-processing-ipc"):
+def send_message(message : str, callback, path : str = "/tmp/python-processing-ipc") -> None:
     """
     Send a message to a UNIX socket and receive the output
 
@@ -57,13 +57,10 @@ def send_message(message : str, callback, path : str = "/tmp/python-processing-i
             # todo fix error als input None is
             input_stream = connection.get_input_stream()
             bytes_ = _read_all_bytes(input_stream)
-            print("Trying to decode responce after message:", message)
-
             response = json.loads(bytes_.decode("utf-8"), object_hook=jsonserializer.from_json)
 
             if response["message"] == "response":
                 for image in response["result"]:
-                    print("callback is: "+ str(callback))
                     callback(image)
 
             elif response["message"] == "error":
@@ -77,7 +74,7 @@ def send_message(message : str, callback, path : str = "/tmp/python-processing-i
     connection.connect(server_info)
 
 
-def create_server(path_name : str = "/tmp/python-gui-ipc"):
+def create_server(path_name : str = "/tmp/python-gui-ipc") -> None:
     """
     Create a Gio server using a TCP Unix Socket on a specified address
 

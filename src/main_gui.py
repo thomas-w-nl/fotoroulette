@@ -8,58 +8,24 @@ from gi.repository import Gtk, GdkPixbuf, Gdk, GObject
 from gi.repository.GdkPixbuf import Pixbuf
 from gui import networking
 
-class PiCamera:
-    """
-    The camera and related functions
-    """
-    def __init__(self):
-        self._cam = cv2.VideoCapture(-1)
-        self._face_cascade = cv2.CascadeClassifier('../hairCascade/haarcascade_frontalface_default.xml')
-
-    def get_photo(self):
-        """
-        Gets the current frame and converts to a GTK readable format
-
-        Returns:
-           Raw data readable by Pixbuf
-        """
-        ret, frame = self._cam.read()
-
-        photo = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        faces = self._face_cascade.detectMultiScale(photo, 1.3, 5)
-
-        for (x, y, w, h) in faces:
-            edited = cv2.rectangle(photo, (x, y), (x + w, y + h), (255, 0, 0), 2)
-
-        return photo
-
-
 class MainWindow:
     """
     The GTK application that displays the photos taken by the photobooth
     """
-    def __init__(self, camera):
+    def __init__(self):
         """
         Sets up the basic logic of the GTK application
-
-        Args:
-           Camera (PiCamera): The connected camera
         """
-        self._camera = camera
         self._builder = Gtk.Builder()
         self._builder.add_from_file("gui/new_gui.glade")
         self._builder.connect_signals(Handler(self))
 
         self._stack = self._builder.get_object("WindowStack")
         self._logo = self._builder.get_object("CorendonLogo")
-        #self._photo = self._builder.get_object("Photo")
         self._window = self._builder.get_object("MainWindow")
         self._popup = None # shitty hack
 
         self._set_logo("../img/corendon_logo.png", 400, 150)
-        #self.get_photo()
-        # Below 80 milliseconds causes it to hang
-        #GObject.timeout_add(80, self.get_photo)
 
         # Use CSS for styling
         style = Gtk.CssProvider()
@@ -70,7 +36,13 @@ class MainWindow:
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-    def show_popup(self, popup_name):
+    def show_popup(self, popup_name : str) -> Gtk.Dialog:
+        """
+        Show a popup and disable the screen
+
+        Args:
+           popup_name:
+        """
         popup = self._builder.get_object(popup_name)
         popup.show_all()
         self._popup = popup
@@ -78,26 +50,29 @@ class MainWindow:
 
         return popup
 
-    def close_popup(self):
+    def close_popup(self) -> None:
+        """
+        Close currently open popup and enable the screen
+        """
         if self._popup is not None:
             self._popup.hide()
             self._window.set_sensitive(True)
             self._popup = None
 
-    def _set_logo(self, path, width, height):
+    def _set_logo(self, path : str, width : int, height : int) -> None:
         """
         Sets the logo on top of the application
 
         Args:
-           path (Str): The path to where to logo is
-           width (int): How wide the logo should be
-           Height (int): How high the logo should be
+           path: The path to where to logo is
+           width: How wide the logo should be
+           Height: How high the logo should be
         """
         photo_file = Pixbuf.new_from_file(path)
         photo_scaled = photo_file.scale_simple(width, height, GdkPixbuf.InterpType.BILINEAR)
         self._logo.set_from_pixbuf(photo_scaled)
 
-    def get_photo(self):
+    def get_photo(self) -> bool:
         """Display the current image from the webcam on screen"""
         frame = self._camera.get_photo()
         image = Pixbuf.new_from_data(frame.tostring(),
@@ -111,26 +86,22 @@ class MainWindow:
         # Maakt GTK blij
         return True
 
-    def set_photo(self, response):
+    def set_photo(self, response : str) -> bool:
+        """
+        Set the currently showed picture from a string
+
+        Args:
+          response: a string containing an (opencv) image
+        """
         picture_widget = self._builder.get_object("Picture")
         self._stack.set_visible_child_name("picture-view")
 
         nparr = np.fromstring(response, np.uint8)
-        print("Shape of the array from string" +str(nparr.shape))
-
         image_cv2 = cv2.imdecode(nparr, 1)
 
-        print("Shape of the decoded image from string" + str(image_cv2.shape))
-
-
-        # image_cv2 = cv2.resize(image_cv2, (800, 450))
-
-        print("updating transferred by network image")
         path = "transferred_by_network.png"
-        cv2.imwrite("transferred_by_network.png", image_cv2)
-
+        cv2.imwrite(path, image_cv2)
         image = Pixbuf.new_from_file(path)
-        # photo_scaled = photo_file.scale_simple(width, height, GdkPixbuf.InterpType.BILINEAR)
 
         picture_widget.set_from_pixbuf(image)
         self.close_popup()
@@ -158,6 +129,7 @@ class Handler:
             self.window._builder.get_object("unique-code").set_text(response)
             self.window._stack.set_visible_child_name("save-screen")
             self.window.close_popup()
+            print(response)
             return True
 
         networking.send_message("{\"message\": \"command\", \"name\": \"send_photos\"}\n", callback)
@@ -172,6 +144,7 @@ class Handler:
         self.window.show_popup("InformationDialog")
 
     def play_game_pressed(self, button):
+        # We need to simplify the name to something we can send over the network
         name = self.window._builder.get_object("GameTitle").get_text().lower().replace(' ', '_')
         json_message = "{\"message\": \"play_game\", \"name\": \"%s\"}\n" % name
         networking.send_message(json_message, self.window.set_photo)
@@ -203,7 +176,6 @@ class Handler:
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    camera = PiCamera()
     networking.create_server()
-    window = MainWindow(camera)
+    window = MainWindow()
     window.start()
