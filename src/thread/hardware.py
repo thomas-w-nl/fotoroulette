@@ -1,7 +1,6 @@
 from src.thread.fricp import FRICP
 
 
-# TODO: RP libary errors fixen
 # TODO code testen
 
 
@@ -11,7 +10,7 @@ class Servo:
 
     # TODO: het zou helemaal mooi zijn als dit een getter en setter was.
     @staticmethod
-    def set_position(graden: int, sleep:float=0.4) -> FRICP:
+    def set_position(graden: int, sleep:float=0.4) -> FRICP.Response:
         """
         verstuurd `HARDWARE_SET_SERVO_POSITION` naar de Hardware FRICP server.
         Draai de servo naar `graden`.
