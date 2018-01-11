@@ -60,7 +60,7 @@ class IPCHandler(socketserver.StreamRequestHandler):
         return image_string
 
     def _send_single_image(self, photo, encoding: str = '.png') -> None:
-        log.debug("Sending a single image of type:", type(photo))
+        log.debug("Sending a single image of type:" + str(type(photo)))
         self._send_response({"message": "response",
                              "result": [cv2.imencode('.png', photo)[1].tostring()]})
 
@@ -80,6 +80,7 @@ class IPCHandler(socketserver.StreamRequestHandler):
         except ValueError as err:
             log.warning("Not enough players to create overlay")
             # todo warn gui and replay game
+            quit()
 
         return game
 
