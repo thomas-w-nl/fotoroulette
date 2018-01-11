@@ -4,14 +4,11 @@ import cv2
 import numpy as np
 
 from src.common.log import log
+
 try:
     from picamera import PiCamera
-except Exception:
-    print("Skip loading the camera since we're in a fake environment")
-    print("This is very dangerous regarding to errors. Please debug using ImportError and ModuleNotFound exeptions")
-
-
-
+except ImportError as error:
+    log.error("ImportError: %s, normal if in fake environment", error)
 
 class Camera:
 
@@ -54,22 +51,24 @@ class Camera:
         Start de camera
         """
         try:
-            self.camera = PiCamera()
+            try:
+                self.camera = PiCamera()
 
-            # self.rawCapture = PiRGBArray(self.camera)  # dit is redundant volgens mij
+                # self.rawCapture = PiRGBArray(self.camera)  # dit is redundant volgens mij
 
-            config = configparser.ConfigParser()
-            config.read('fotoroulette.conf')
+                config = configparser.ConfigParser()
+                config.read('fotoroulette.conf')
 
-            width = config['Camera'].getint('CAMERA_RESOLUTION_H')
-            height = config['Camera'].getint('CAMERA_RESOLUTION_V')
-            self.camera.resolution = [width, height]
-            # allow camera to warm up
-            time.sleep(2)
+                width = config['Camera'].getint('CAMERA_RESOLUTION_H')
+                height = config['Camera'].getint('CAMERA_RESOLUTION_V')
+                self.camera.resolution = [width, height]
+                # allow camera to warm up
+                time.sleep(2)
 
-
-        except PiCameraError as err:
-            log.warning('Something went wrong with the camera:', err )
+            except PiCameraError as err:
+                log.warning('Something went wrong with the camera:', err)
+        except NameError as error:
+            log.error("NameError: %s, normal if in fake environment", error)
 
     def close(self):
         """

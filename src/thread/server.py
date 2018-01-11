@@ -137,6 +137,10 @@ class Server:
             self.socketServer.server_close()
             os.remove(self.server_address)
             self.server_status = self.ServerStatus.OFF
+
+            if self.owner == FRICP.Owner.HARDWARE:
+                hardware.delete()
+
         except socket.error as msg:
             # TODO: geeft dit ding wel een socket.error als het mis gaat? Is het geen OSError?
             log.error("Failed to close server: %s. Current serverstatus: %s", msg, self.server_status.name)

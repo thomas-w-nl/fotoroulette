@@ -3,6 +3,7 @@ from src.hardware import servo as hw_servo, range_sensor as hw_range_sensor
 from src.common.log import *
 from src.thread.fricp import FRICP
 
+# TODO: dit moet eigenlijk een class zijn.
 camera = None
 
 
@@ -10,12 +11,12 @@ def init() -> int:
     global camera
     camera = hw_camera()
 
-
-    if camera is  None:
+    if camera is None:
         log.warning("Unable to open camera!")
         return 1
     else:
         return 0
+
 
 def delete() -> int:
     global camera

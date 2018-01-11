@@ -1,7 +1,7 @@
 import configparser
 import time
 
-from src.common import log
+from src.common.log import *
 
 config = configparser.ConfigParser()
 config.read('fotoroulette.conf')
@@ -18,9 +18,8 @@ try:
     GPIO.setup(18, GPIO.OUT)
     pwm = GPIO.PWM(18, 50)
     pwm.start(0)
-except Exception:
-    print("Skip loading the servo since we're in a fake environment")
-    print("This is very dangerous regarding to errors. Please debug using ImportError and ModuleNotFound exeptions")
+except ImportError as error:
+    log.error("ImportError: %s, normal if in fake environment", error)
 
 
 def goto_position(graden: int, sleep:float=0.4):

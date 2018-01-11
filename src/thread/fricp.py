@@ -214,8 +214,6 @@ class FRICP:
             fricp.address.name].max_request_range and expected == "REQUEST":
             raise FRICP.ValidationError(FRICP.Response.UNABLE_TO_HANDLE_REQUEST, fricp)
 
-        log.debug(type(fricp.data))
-
         # check of er data moet zijn
         # "None" Moet anders worden gecontroleerd, anders controleerd hij NoneType met None, en daar komt dan false uit.
         required_data_type = FRICP.Request[fricp.request.name].data_type

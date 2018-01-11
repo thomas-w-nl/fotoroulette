@@ -20,7 +20,7 @@ def start(servers_to_start: list() = FRICP.Owner.list(), start_from_core: int = 
     i = start_from_core
     for owner in servers_to_start:
         command = ["taskset", str(i), "python3", script_location, owner]
-        log.debug(command)
+        # log.debug(command)
         succes.append(call(command))
         i += 1
     return succes

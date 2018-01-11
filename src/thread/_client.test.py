@@ -7,7 +7,7 @@ from src.thread import start as thread_start
 # test client
 if __name__ == "__main__":
     log.debug("running in debug mode")
-    log.debug(thread_start())
+    # log.debug(thread_start())
     package = FRICP(request=FRICP.Request.HARDWARE_GET_CAMERA,
                     owner=FRICP.Owner.PROCESSING,
                     address=FRICP.Owner.HARDWARE,
