@@ -116,8 +116,20 @@ class MainWindow:
         self._stack.set_visible_child_name("picture-view")
 
         nparr = np.fromstring(response, np.uint8)
-        image_cv2 = cv2.cvtColor(cv2.imdecode(nparr, 1), cv2.COLOR_BGR2RGB)
-        image_cv2 = cv2.resize(image_cv2, (800, 450))
+        print("Shape of the array from string" +str(nparr.shape))
+
+        image_cv2 = cv2.imdecode(nparr, 1)
+
+        print("Shape of the decoded image from string" + str(image_cv2.shape))
+
+
+        # image_cv2 = cv2.resize(image_cv2, (800, 450))
+
+        print("updating transferred by network image")
+        cv2.imwrite("transferred_by_network.png", image_cv2)
+
+
+        # dit doet het niet
         image = Pixbuf.new_from_data(image_cv2.tostring(),
                                      GdkPixbuf.Colorspace.RGB,
                                      False,
@@ -126,7 +138,7 @@ class MainWindow:
                                      image_cv2.shape[0],
                                      image_cv2.shape[2] * image_cv2.shape[1])
 
-        picture_widget.set_from_pixbuf(image)
+        picture_widget.set_from_pixbuf(image.copy())
         self.close_popup()
         return True
 

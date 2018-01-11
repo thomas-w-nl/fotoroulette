@@ -214,6 +214,9 @@ def _opencv_get_faces(photo: np.array):
     Returns:
        Een list met de coordinaten van de gezichten en een lijst met confidence scores
     """
+
+    log.debug("Opencv Input image size:"+ str(photo.shape))
+
     img_gray = cv2.cvtColor(photo, cv2.COLOR_BGR2GRAY)
 
     face_cascade = cv2.CascadeClassifier(config['FaceDetection']['HAAR_CASCADE_PATH'])

@@ -6,6 +6,8 @@ Copyright (c) 2017, Valentijn van de Beek
 # Import from the parent directory instead
 
 import random
+from time import sleep
+
 import cv2
 import json
 import socketserver
@@ -72,6 +74,16 @@ class IPCHandler(socketserver.StreamRequestHandler):
 
         faces = get_faces(data)
 
+        for face in faces:
+
+            w,h,_ = face.image.shape
+
+            if w == 0 or h == 0:
+                print("\n\n")
+                print("shape:"+str(face.image.shape))
+                print("\n\n")
+
+
         log.info("Number of faces found: %s" % len(faces))
 
         try:
@@ -98,6 +110,7 @@ class IPCHandler(socketserver.StreamRequestHandler):
             elif message["name"] == "get_image":
                 self._send_single_image("/tmp/malloc.png")
             elif message["name"] == "send_photos":
+                # todo gebruik cv2.imgencode
                 # Due to the backend implementation we first need to write the photos to disk
                 directory_name = "/tmp/vakantieklieker-fotos-" + str(random.randint(0, 10000))
                 path = Path(directory_name)

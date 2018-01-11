@@ -2,6 +2,7 @@ import configparser
 import time
 import cv2
 import numpy as np
+import pickle
 
 from src.common.log import log
 
@@ -10,8 +11,8 @@ try:
 except ImportError as error:
     log.error("ImportError: %s, normal if in fake environment", error)
 
-class Camera:
 
+class Camera:
     def get_frame(self):
         """
         Krijg de current frame van de camera.
@@ -19,6 +20,13 @@ class Camera:
         Returns:
            Een plaatje van de camera.
         """
+
+        # todo fix hardware disable
+        with open('test-input-photo.pkl', 'rb') as input:
+            photo = pickle.load(input)
+            return photo
+
+
         config = configparser.ConfigParser()
         config.read('fotoroulette.conf')
 
@@ -43,6 +51,10 @@ class Camera:
 
         # reshape buffer to requested resolution
         image = image[:height, :width, :]
+
+        # om debug info te maken
+        # with open('test-input-photo.pkl', 'wb') as output:
+        #     pickle.dump(image, output, pickle.HIGHEST_PROTOCOL)
 
         return image
 

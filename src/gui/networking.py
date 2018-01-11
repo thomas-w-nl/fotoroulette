@@ -54,13 +54,16 @@ def send_message(message : str, callback, path : str = "/tmp/python-processing-i
             output_stream.write_all(bytes(message, "utf-8"))
             output_stream.flush()
 
+            # todo fix error als input None is
             input_stream = connection.get_input_stream()
             bytes_ = _read_all_bytes(input_stream)
             print("Trying to decode responce after message:", message)
+
             response = json.loads(bytes_.decode("utf-8"), object_hook=jsonserializer.from_json)
 
             if response["message"] == "response":
                 for image in response["result"]:
+                    print("callback is: "+ str(callback))
                     callback(image)
 
             elif response["message"] == "error":

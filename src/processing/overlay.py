@@ -1,6 +1,8 @@
+from time import sleep
+
 import numpy as np
 import cv2
-
+from src.common.log import *
 
 def generate_overlay(game):
     """
@@ -19,7 +21,8 @@ def generate_overlay(game):
     for i, face in enumerate(game.faces):
         face_offset = game.offsets[i]
 
-        face.image = _resize_fit(face.image, int(overlay_width / 2) - face_offset['minus_image_width'],
+        face.image = _resize_fit(face.image,
+                                 int(overlay_width / 2) - face_offset['minus_image_width'],
                                  overlay_height - face_offset['minus_image_width'])
 
         overlay = _apply_overlay(i, overlay, face.image, face_offset['offset_x'], face_offset['offset_y'], game)
@@ -110,6 +113,8 @@ def _resize_fit(image: np.array, max_width: int, max_height: int) -> np.array:
         resized image
     """
     height, width, channels = image.shape
+    log.debug("RESIZE IMAGE INFO =====> width:" + str(width) + " height:" + str(height))
+
 
     scale_width = max_width / width
     scale_height = max_height / width

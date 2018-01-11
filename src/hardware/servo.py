@@ -28,14 +28,16 @@ def goto_position(graden: int, sleep:float=0.4):
     :param sleep:
     :param graden: de positie waar de servo heen moet draaien
     """
-    global _position
-    if graden > MAX_SERVO_POS or graden < MIN_SERVO_POS:
-        raise IndexError("Servo: " + str(graden))
-    _position = graden
-    duty = _calculate_angle(graden)
-    pwm.ChangeDutyCycle(duty)
-    time.sleep(sleep)
-    pwm.ChangeDutyCycle(0)
+    # todo fix hardware disable
+
+    # global _position
+    # if graden > MAX_SERVO_POS or graden < MIN_SERVO_POS:
+    #     raise IndexError("Servo: " + str(graden))
+    # _position = graden
+    # duty = _calculate_angle(graden)
+    # pwm.ChangeDutyCycle(duty)
+    # time.sleep(sleep)
+    # pwm.ChangeDutyCycle(0)
 
 
 def get_position() -> int:
