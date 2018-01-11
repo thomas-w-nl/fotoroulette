@@ -126,19 +126,13 @@ class MainWindow:
         # image_cv2 = cv2.resize(image_cv2, (800, 450))
 
         print("updating transferred by network image")
+        path = "transferred_by_network.png"
         cv2.imwrite("transferred_by_network.png", image_cv2)
 
+        image = Pixbuf.new_from_file(path)
+        # photo_scaled = photo_file.scale_simple(width, height, GdkPixbuf.InterpType.BILINEAR)
 
-        # dit doet het niet
-        image = Pixbuf.new_from_data(image_cv2.tostring(),
-                                     GdkPixbuf.Colorspace.RGB,
-                                     False,
-                                     8,
-                                     image_cv2.shape[1],
-                                     image_cv2.shape[0],
-                                     image_cv2.shape[2] * image_cv2.shape[1])
-
-        picture_widget.set_from_pixbuf(image.copy())
+        picture_widget.set_from_pixbuf(image)
         self.close_popup()
         return True
 
