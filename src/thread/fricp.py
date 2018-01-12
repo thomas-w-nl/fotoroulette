@@ -11,25 +11,25 @@ class FRICP:
             """
             FRICP validation exception object.
             Args:
-                error (FRICP.Response): de error code
+                error (FRICP.Reponse): de error code
                 fricp (FRICP): Het object waar het omgaat
             """
             # error type = FRICP.Response en fricp is type FRICP, Maar op run-time herkend hij dat niet.
             self.error = error
             self.fricp = fricp
 
-        def __str__(self):
+        def __str__(self) -> str:
             """
             Returns:
-                String: error-naam
+                De naam van de Error
             """
             return self.error.name
 
         @property
-        def code(self):
+        def code(self) -> int:
             """
             Returns:
-                int: error-code
+                De error code
             """
             return self.error.value
 
@@ -37,8 +37,9 @@ class FRICP:
         def response(self):
             """
             Het correcte response wat je naar de afzender moet sturen
+
             Returns:
-                FRICP: object met de error code en juist addres etc.
+                object met de error code en juist addres etc.
             """
             response = FRICP(FRICP.Request.RESPONSE, self.fricp.address, self.fricp.owner, self.error)
             return response
@@ -48,18 +49,17 @@ class FRICP:
         Het response van de server, is 0 als het een request is
         """
         REQUEST = 0
-        # 100-199 is success range
+        #: 100-199 is success range
         SUCCESS = 100
 
-        # 200-299 is de error range
-        # 200-209 unknown
+        #: 200-299 is de error range
+        #: 200-209 unknown
         UNKNOWN_ERROR = 200  # unused
         UNKNOWN_OWNER = 201
         UNKNOWN_REQUEST = 202
         UNKNOWN_RESPONSE = 203
         UNKNOWN_HANDLING_ERROR = 204
 
-        #
         REJECTED = 210  # unused
         VERSION_MISMATCH = 211
         INVALID_VALUE_COMBINATION = 212
@@ -69,34 +69,36 @@ class FRICP:
         UNEXPECTED_REQUEST_OR_RESPONSE = 216
         FAILED_TO_RECEIVE = 217  # client error
 
-        # 220-229 connection
+        #: 220-229 connection
         CONNECTION_LOST = 220  # heeft dit wel nut? # TODO: implementeren
         CONNECTION_TIMEOUT = 221  # heeft dit wel nut? # TODO: implementeren
         UNABLE_TO_SEND = 222
 
-        # 300-399 is de opdracht range
+        #: 300-399 is de opdracht range
         CLOSE_CONNECTION = 301  # unused
 
     class Request(Enum):
         """
         Wat voor request is het? 0 als het een response is
+
+        Args:
             int: request nr
             Any: Type data, wat bij de request hoort
         """
         RESPONSE = (0, None)
         # SHUTDOWN = 1 is dit handig?
-        # 100-199 hardware
+        #: 100-199 hardware
         HARDWARE_GET_CAMERA = (100, None)
         HARDWARE_GET_RANGE_SENSOR_DISTANCE = (101, None)
         HARDWARE_GET_SERVO_POSITION = (102, None)
         HARDWARE_SET_SERVO_POSITION = (103, list)
 
-        # 200-299 processing
+        #: 200-299 processing
         PROCESSING_MAKE_PHOTOS = (200, None)
         PROCESSING_GET_PHOTOS = (201, None)  # unused # TODO: impleneteren
         PROCESSING_UPLOAD_NETWORK = (202, None)
 
-        # 300-399 gui
+        #: 300-399 gui
         def __init__(self, request, data_type):
             self.request = request
             self.data_type = data_type
@@ -110,7 +112,7 @@ class FRICP:
         PROCESSING = ("processing_unixSocket", 200, 299)
         GUI = ("gui_unixSocket", 300, 399)
 
-        def __init__(self, address, min_request_range, max_request_range):
+        def __init__(self, address : str, min_request_range : int, max_request_range : int):
             self.address = address
             self.min_request_range = min_request_range
             self.max_request_range = max_request_range
@@ -119,6 +121,7 @@ class FRICP:
         def list() -> list():
             """
             Krijg een array met strings met alle mogelijke owners
+
             Returns:
                 array: alle owners
             """
@@ -134,8 +137,9 @@ class FRICP:
         """
         Foto Roulette Internal Communication Protocol
         Protocol voor de communicatie tussen de processing; hardware en gui
+
         Args:
-            request (Request/Enum): De request of response die je doet.
+            request: De request of response die je doet.
             owner (Owner/Enum): "HARDWARE/GUI/PROCESSING" Wie het bericht verstuurd
             address (Owner/Enum): "HARDWARE/GUI/PROCESSING" waar moet het naartoe?
             response (:obj: `Response/Enum`, optional): "REQUEST" Voor een request.
@@ -186,6 +190,7 @@ class FRICP:
             * correcte data
             * request/response controleren
         Geeft een ValidationError exception als er iets niet valid is
+
         Args:
             fricp (FRICP): het object wat moet worden gecontroleerd
             expected (String): "REQUEST" of "RESPONSE", wat je verwacht wat voor paketje het is
@@ -231,6 +236,7 @@ class FRICP:
     def send(self):
         """
         Stuur data volgends het FRICP, raised ook een FRICP.ValidationError als er iets mis gaat
+
         Returns:
             FRICP: Het antwoord van de server
         """

@@ -6,15 +6,6 @@ import time
 
 DEBUG = False
 
-config = configparser.ConfigParser()
-config.read('fotoroulette.conf')
-TRIG = config['RangeSensor'].getint('TRIG')
-ECHO = config['RangeSensor'].getint('ECHO')
-GELUIDSSNELHEID = config['RangeSensor'].getint('GELUIDSSNELHEID')
-SENSOR_FOV = config['RangeSensor'].getint('SENSOR_FOV')
-
-global_time_start = 0
-global_time_end = 0
 
 
 def _init():
@@ -28,17 +19,29 @@ def _init():
 
     GPIO.output(TRIG, False)
 
+    config = configparser.ConfigParser()
+    config.read('fotoroulette.conf')
+    TRIG = config['RangeSensor'].getint('TRIG')
+    ECHO = config['RangeSensor'].getint('ECHO')
+    GELUIDSSNELHEID = config['RangeSensor'].getint('GELUIDSSNELHEID')
+    SENSOR_FOV = config['RangeSensor'].getint('SENSOR_FOV')
+
+    global_time_start = 0
+    global_time_end = 0
+
+
 try:
     import RPi.GPIO as GPIO
     _init()
-except ImportError as error:
-    log.error("ImportError: %s, normal if in fake environment", error)
+except ModuleNotFoundError:
+    pass
 
 
 def get_distance() -> int:
     """
     Meet de afstand met de sensor. Hiervoor moeten Echo en Trig op de geconfigureerde pins aangsloten zijn
     met weerstanden zoals in de technische tekening. De sensor wordt geinitaliseerd bij het inladen van dit bestand.
+
     Returns:
         De gemeten afstand in centimeters, -1 bij een error
 
@@ -59,6 +62,7 @@ def get_distance() -> int:
 def _get_distance_uncorrected() -> int:
     """
     Meet de afstand met de sensor zonder extra checks
+
     Returns:
         De gemeten afstand zonder checks
     """

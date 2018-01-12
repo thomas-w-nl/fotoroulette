@@ -129,6 +129,7 @@ def get_faces(photos_with_data: PhotoData) -> List[np.array]:
 def _confident(face: Face, range_sensor: RangeSensor) -> bool:
     """
     Bereken de confidence score van een gezicht aan de hand van OpenCV en de range sensor
+
     Args:
         face: Het gezicht
         range_sensor: De range sensor data

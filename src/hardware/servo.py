@@ -18,15 +18,19 @@ try:
     GPIO.setup(18, GPIO.OUT)
     pwm = GPIO.PWM(18, 50)
     pwm.start(0)
-except ImportError as error:
-    log.error("ImportError: %s, normal if in fake environment", error)
+except ModuleNotFoundError:
+    pass
 
 
-def goto_position(graden: int, sleep:float=0.4):
+
+def goto_position(graden: int, sleep:float=0.4) -> None:
     """
     Send servo to specific position
-    :param sleep:
-    :param graden: de positie waar de servo heen moet draaien
+
+    Args:
+      sleep: Hoe lang de servo wacht tot dat hij weer moet draaien
+      graden: De positie waar de servo heen moet draaien in graden
+
     """
 
     global _position
@@ -42,6 +46,7 @@ def goto_position(graden: int, sleep:float=0.4):
 def get_position() -> int:
     """
     Vraag de huidige positie van de servo op
+
     Returns:
         De positie in graden
     """

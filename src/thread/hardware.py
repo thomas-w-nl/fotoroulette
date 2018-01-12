@@ -15,6 +15,7 @@ class Servo:
         verstuurd `HARDWARE_SET_SERVO_POSITION` naar de Hardware FRICP server.
         Draai de servo naar `graden`.
         kan een FRICP.ValidationError exception throwen
+
         Args:
             graden(int): naar welke graad moet hij draaien
 
@@ -36,6 +37,7 @@ class Servo:
         verstuurd `HARDWARE_GET_SERVO_POSITION` naar de Hardware FRICP server.
         krijg de servo positie van de hardware server.
         kan een FRICP.ValidationError exception throwen
+
         Returns:
             int: servo positie
         """
@@ -55,6 +57,7 @@ class Camera:
         verstuurd `HARDWARE_GET_CAMERA` naar de Hardware FRICP server.
         maakt een foto met de camera en returnt deze.
         kan een FRICP.ValidationError exception throwen
+
         Returns:
             ARGB_Numpady_Arrays: foto gemaakt met de server
         """
@@ -73,6 +76,7 @@ class RangeSensor:
         verstuurd `HARDWARE_GET_RANGE_SENSOR_DISTANCE` naar de Hardware FRICP server.
         krijg de afstand van de range sensor
         kan een FRICP.ValidationError exception throwen
+
         Returns:
             int: gemete afstand
         """

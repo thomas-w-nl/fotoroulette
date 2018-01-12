@@ -17,9 +17,12 @@ class Server:
 
         def handle(self):
             """
-            Standaard functie van socketserver, word automatich geroepen waneer er een request naar de server word gedaan.
+            Standaard functie van socketserver, word automatich geroepen
+            waneer er een request naar de server word gedaan.
+
             Returns:
                 Void
+
             """
             self.data = pickle.load(self.rfile)
             self.buffer_size = self.data.buffer_size
@@ -61,6 +64,7 @@ class Server:
         def reply(self, fricp: FRICP):
             """
             Geef antwoord aan de process die je iets heeft gestuurd.
+
             Args:
                 fricp (FRICP): Het object dat moet worden verstuurd
             """
@@ -75,7 +79,9 @@ class Server:
 
     def __init__(self, owner: FRICP.Owner):
         """
-        Server class. Gebruikt door de hardware; gui en processing om met elkaar te praten door middel van PRICPv1
+        Server class. Gebruikt door de hardware; gui en processing om met elkaar
+        te praten door middel van PRICPv1
+
         Returns:
             Helemaal niks, jonguh BAM!
         """
@@ -95,6 +101,7 @@ class Server:
     def open_server(self):
         """
         Open de server zodat je verbindingen kan ontvangen.
+
         Returns:
             ServerStatus/Enum: Zodat je kan zien of hij goed is gestart!
         """
@@ -130,6 +137,7 @@ class Server:
     def close_server(self):
         """
         Sluit alle verbindingen en sluit de server af.
+
         Returns:
             ServerStatus/Enum: Zodat je kan zien of hij wel goed is afgesloten
         """
@@ -161,6 +169,7 @@ class Server:
         Deze functie moet eigenlijk private zijn.
         schakelt ook de server uit, als je hem op off zet. Om zombie processen tegen te gaan.
         Het is nog steeds niet de bedoeling dat je deze setter gebruikt
+
         Args:
             value (ServerStatus/Emum): de waarde dat de server moet hebben
         """

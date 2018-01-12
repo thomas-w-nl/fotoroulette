@@ -1,8 +1,8 @@
-"""
-A program that will process images taken by a camera.
-
-Copyright (c) 2017, Valentijn van de Beek
-"""
+#
+# A program that will process images taken by a camera.
+#
+# Copyright (c) 2017, Valentijn van de Beek
+#
 # Import from the parent directory instead
 
 import random

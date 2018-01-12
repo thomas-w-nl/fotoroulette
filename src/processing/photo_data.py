@@ -16,6 +16,7 @@ class PhotoData:
     def append_photo(self, photo: np.array, photo_angle: float):
         """
         Voeg een foto toe
+
         Args:
             photo: De foto als numpy array
             photo_angle: De hoek waarop de foto is genomen
@@ -25,6 +26,7 @@ class PhotoData:
     def append_distance(self, distance: float, distance_angle: float):
         """
         Voeg een gemeten aftand toe
+
         Args:
             distance: De afstand
             distance_angle: De hoek waarop de afstand gemeten is
@@ -34,6 +36,7 @@ class PhotoData:
     def get(self):
         """
         Vraag de RangeSensor en Photos op
+
         Returns:
             Een Photo object en RangeSensor object
         """
@@ -48,6 +51,7 @@ class RangeSensor:
     def append(self, distance: float, distance_angle: float):
         """
         Voeg een gemeten aftand toe
+
         Args:
             distance: De afstand
             distance_angle: De hoek waarop de afstand gemeten is
@@ -75,9 +79,8 @@ class RangeSensor:
 
         return confidence
 
-    def _calculate_confidence(self, distance: float, sweetspot: float = config['RangeSensor'].getfloat('SWEETSPOT'),
-                              width_factor: float = config['RangeSensor'].getfloat('SWEETSPOT_WIDTH_FACTOR'),
-                              max_confidence: float = config['RangeSensor'].getfloat('MAX_CONFIDENCE')) -> float:
+    def _calculate_confidence(self, distance: float, sweetspot: float, width_factor: float,
+                              max_confidence: float) -> float:
         """
         Bereken een parabool voor de confidence score.
 
@@ -138,6 +141,7 @@ class Photo:
     def append(self, photo: np.array, photo_angle: float):
         """
         Voeg een foto toe
+
         Args:
             photo: De foto als numpy array
             photo_angle: De hoek waarop de foto is genomen

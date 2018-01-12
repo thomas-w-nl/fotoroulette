@@ -13,8 +13,10 @@ def handle(fricp: FRICP) -> object:
     """
     functie om data op te vragen van de processing handeler.
     kan een FRICP.ValidationError exception throwen
+
     Args:
         fricp(FRICP): het object wat gehandled moet worden
+
     Returns:
         object: data van het gevraagte object
 

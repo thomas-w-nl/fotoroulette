@@ -8,9 +8,10 @@ def start(servers_to_start: list() = FRICP.Owner.list(), start_from_core: int = 
     """
     Start servers op verschillende cores (optellent vanaf `start_from_core`), geef een Array mee met welke servers er moeten worden gestart.
     Bij geen argumenten start hij alle servers.
+
     Args:
-        servers_to_start(:obj: `list(str)`, optional): HARDWARE, PROCESSING of GUI, default is alles
-        start_from_core(:obj: `int`, optional): vanaf welke core moeten de servers worden gestart, default is 0
+        servers_to_start: HARDWARE, PROCESSING of GUI, default is alles
+        start_from_core: vanaf welke core moeten de servers worden gestart, default is 0
 
     Returns:
         list(int): array(1,0) succes codes, of de command om de servers te starten succesvol is uitgevoerd. (0 is succes)
