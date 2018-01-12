@@ -152,7 +152,7 @@ class Handler:
     def _show_game_popup(self, name : str, description : str, example_image : str) -> Gtk.Window:
         popup = self.window.show_popup("GameDialog")
         image = Pixbuf.new_from_file(example_image)\
-                      .scale_simple(800, 450, GdkPixbuf.InterpType.BILINEAR)
+                      .scale_simple(200, 200, GdkPixbuf.InterpType.BILINEAR)
         self.window._builder.get_object("GameTitle").set_text(name)
         self.window._builder.get_object("GameDescription").set_text(description)
         self.window._builder.get_object("GameImage").set_from_pixbuf(image)

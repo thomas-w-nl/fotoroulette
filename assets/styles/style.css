@@ -4,11 +4,16 @@
     background-color: rgba(0, 0, 255, 0.5);
 }
 
-#save-button {
-    background-color: #D81A1A;
+#info-button {
+    background-color: blue;
     border-radius: 5px;
-    font-size: 1.5em;
-    margin: 10px 10px 10px 10px;
+}
+
+#save-button {
+     background-color: #D81A1A;
+     border-radius: 5px;
+     font-size: 1.5em;
+     margin: 10px 10px 10px 10px;
 }
 
 #window-stack:disabled {
@@ -30,7 +35,7 @@ button:disabled {
     background-color: #70C66B;
 }
 
-.button {
+.button-fys {
     background-color: #70C66B;
     font-size: 1.6em;
     font-weight: bold;
