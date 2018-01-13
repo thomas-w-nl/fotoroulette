@@ -26,7 +26,7 @@ class MainWindow:
         self._window = self._builder.get_object("MainWindow")
         self._popup = None # shitty hack
 
-        self._set_logo("img/corendon_logo.png", 400, 150)
+        self._set_logo("assets/images/corendon_logo.png", 400, 150)
 
         # Use CSS for styling
         style = Gtk.CssProvider()

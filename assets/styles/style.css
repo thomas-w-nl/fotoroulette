@@ -1,20 +1,20 @@
 #splashscreen {
-    background-image: url("../../img/background.png");
+    background-image: url("../images/background_blur.png");
     background-size: cover;
     background-color: rgba(0, 0, 255, 0.5);
 }
 
-#info-button {
-    background-color: #0071F9;
-    border-radius: 5px;
-}
+/*#info-button {*/
+    /*background-color: #0071F9;*/
+    /*border-radius: 5px;*/
+/*}*/
 
-#save-button {
-    background-color: #D81A1A;
-    border-radius: 5px;
-    font-size: 1.5em;
-    margin: 10px 10px 10px 10px;
-}
+/*#save-button {*/
+    /*background-color: #D81A1A;*/
+    /*border-radius: 5px;*/
+    /*font-size: 1.5em;*/
+    /*margin: 10px 10px 10px 10px;*/
+/*}*/
 
 #window-stack:disabled,
 button:disabled {
@@ -23,30 +23,79 @@ button:disabled {
 }
 
 .top-bar {
-    background-color: grey;
+    background-color: #e5e5e5;
 }
 
 .game-icon {
     background-color: #70C66B;
 }
 
-.button-fys {
-    background-color: #70C66B;
-    font-size: 1.6em;
-    font-weight: bold;
-    color: white;
-    border-radius: 25px;
-}
+/*.button-fys {*/
+    /*background-color: #70C66B;*/
+    /*font-size: 1.6em;*/
+    /*font-weight: bold;*/
+    /*color: white;*/
+    /*border-radius: 25px;*/
+/*}*/
 
-.alt-button {
-    background-color: #FCCC00;
-    font-size: 1.6em;
-    font-weight: bold;
-    color: white;
-    margin: 5px 5px;
-    border-radius: 5px;
-}
+/*.alt-button {*/
+    /*background-color: #FCCC00;*/
+    /*font-size: 1.6em;*/
+    /*font-weight: bold;*/
+    /*color: white;*/
+    /*margin: 5px 5px;*/
+    /*border-radius: 5px;*/
+/*}*/
 
 .box {
     background-color: white;
 }
+
+.button {
+    font-size: 1.6em;
+    font-weight: bold;
+    color: white;
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px 10px;
+    background-color: #FCCC00;
+
+}
+
+.button-succes {
+    background-color: #70C66B;
+}
+
+.button-bad {
+    background-color: #D81A1A;
+}
+
+.button-info {
+    background-color: white;
+    background: url("../images/info.svg") center no-repeat;
+    background-size: contain;
+}
+.button-quit {
+    background-color: white;
+    background: url("../images/close.svg") center no-repeat;
+    background-size: contain;
+}
+
+.button-big {
+    border-radius: 25px;
+    margin: 20px;
+    padding: 15px 10px;
+    font-size: 2em;
+}
+
+.button-small {
+    border-radius: 50%;
+}
+.button-game {
+
+}
+.dialog{
+    padding: 20px;
+}
+.dialog-header {}
+

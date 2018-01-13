@@ -9,7 +9,7 @@
     <property name="halign">center</property>
     <property name="valign">center</property>
     <property name="margin_right">50</property>
-    <property name="pixbuf">cardigan.jpg</property>
+    <property name="pixbuf">../love.svg</property>
     <style>
       <class name="game-icon"/>
     </style>
@@ -20,7 +20,7 @@
     <property name="halign">baseline</property>
     <property name="valign">end</property>
     <property name="margin_right">50</property>
-    <property name="pixbuf">cardigan.jpg</property>
+    <property name="pixbuf">../love.svg</property>
     <style>
       <class name="game-icon"/>
     </style>
@@ -29,7 +29,7 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="margin_right">50</property>
-    <property name="pixbuf">cardigan.jpg</property>
+    <property name="pixbuf">../love.svg</property>
     <style>
       <class name="game-icon"/>
     </style>
@@ -38,7 +38,7 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="margin_right">50</property>
-    <property name="pixbuf">cardigan.jpg</property>
+    <property name="pixbuf">../love.svg</property>
     <style>
       <class name="game-icon"/>
     </style>
@@ -66,7 +66,7 @@
                 <property name="margin_left">40</property>
                 <property name="margin_right">40</property>
                 <property name="margin_top">40</property>
-                <property name="pixbuf">cardigan.jpg</property>
+                <property name="pixbuf">../love.svg</property>
                 <style>
                   <class name="splash-content"/>
                 </style>
@@ -91,8 +91,9 @@
                 <property name="margin_bottom">60</property>
                 <signal name="clicked" handler="on_start_clicked" swapped="no"/>
                 <style>
-                  <class name="button-fys"/>
+                  <class name="button-big"/>
                   <class name="button"/>
+                  <class name="button-succes"/>
                 </style>
               </object>
               <packing>
@@ -119,6 +120,7 @@
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="column_homogeneous">True</property>
                 <child>
                   <object class="GtkButton" id="SaveButton">
                     <property name="label" translatable="yes">Afsluiten &amp; Opslaan</property>
@@ -131,8 +133,8 @@
                     <property name="valign">center</property>
                     <signal name="clicked" handler="open_save_window" swapped="no"/>
                     <style>
-                      <class name="button-fys"/>
                       <class name="button"/>
+                      <class name="button-bad"/>
                     </style>
                   </object>
                   <packing>
@@ -142,7 +144,7 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="InformationButton">
-                    <property name="label" translatable="yes">Informatie</property>
+                    <property name="label" translatable="yes"> </property>
                     <property name="name">info-button</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -153,7 +155,25 @@
                     <property name="hexpand">True</property>
                     <signal name="clicked" handler="on_information_clicked" swapped="no"/>
                     <style>
-                      <class name="info"/>
+                      <class name="button-info"/>
+                      <class name="button"/>
+                      <class name="button-small"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left_attach">2</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton" id="bekijkFotoButton">
+                    <property name="label" translatable="yes">Gemaakte foto's bekijken</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="relief">half</property>
+                    <property name="image_position">right</property>
+                    <style>
                       <class name="button"/>
                     </style>
                   </object>
@@ -220,7 +240,9 @@
                         <property name="xalign">0.15000000596046448</property>
                         <signal name="clicked" handler="on_lovemeter_pressed" swapped="no"/>
                         <style>
-                          <class name="button-fys"/>
+                          <class name="button"/>
+                          <class name="button-game"/>
+                          <class name="button-succes"/>
                         </style>
                       </object>
                       <packing>
@@ -245,7 +267,9 @@
                         <property name="xalign">0.15000000596046448</property>
                         <signal name="clicked" handler="on_mocking_pressed" swapped="no"/>
                         <style>
-                          <class name="button-fys"/>
+                          <class name="button"/>
+                          <class name="button-succes"/>
+                          <class name="button-game"/>
                         </style>
                       </object>
                       <packing>
@@ -268,7 +292,9 @@
                         <property name="xalign">0.15000000596046448</property>
                         <signal name="clicked" handler="on_superheroes_pressed" swapped="no"/>
                         <style>
-                          <class name="button-fys"/>
+                          <class name="button"/>
+                          <class name="button-succes"/>
+                          <class name="button-game"/>
                         </style>
                       </object>
                       <packing>
@@ -291,7 +317,9 @@
                         <property name="xalign">0.15000000596046448</property>
                         <signal name="clicked" handler="on_versus_pressed" swapped="no"/>
                         <style>
-                          <class name="button-fys"/>
+                          <class name="button"/>
+                          <class name="button-succes"/>
+                          <class name="button-game"/>
                         </style>
                       </object>
                       <packing>
@@ -327,7 +355,7 @@
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">cardigan.jpg</property>
+                <property name="pixbuf">../love.svg</property>
               </object>
               <packing>
                 <property name="index">5</property>
@@ -360,7 +388,7 @@
               <object class="GtkImage" id="Picture">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">cardigan.jpg</property>
+                <property name="pixbuf">../love.svg</property>
               </object>
               <packing>
                 <property name="index">-1</property>
@@ -376,7 +404,7 @@
                 <property name="valign">end</property>
                 <signal name="clicked" handler="on_start_clicked" swapped="no"/>
                 <style>
-                  <class name="alt-button"/>
+                  <class name="button"/>
                 </style>
               </object>
               <packing>
@@ -516,7 +544,9 @@ Je kan ook de QR code scannen</property>
                         <property name="halign">center</property>
                         <signal name="clicked" handler="on_quit_clicked" swapped="no"/>
                         <style>
-                          <class name="alt-button"/>
+                          <class name="button"/>
+                          <class name="button-big"/>
+                          <class name="button-neutral"/>
                         </style>
                       </object>
                       <packing>
@@ -564,39 +594,21 @@ Je kan ook de QR code scannen</property>
       <object class="GtkBox">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox">
             <property name="can_focus">False</property>
             <property name="halign">center</property>
             <property name="valign">center</property>
-            <property name="homogeneous">True</property>
-            <property name="layout_style">end</property>
+            <property name="orientation">vertical</property>
+            <property name="layout_style">start</property>
             <child>
-              <object class="GtkButton" id="PlayButton">
-                <property name="label" translatable="yes">Speel Nu!</property>
-                <property name="height_request">-1</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="margin_top">20</property>
-                <property name="margin_bottom">20</property>
-                <property name="hexpand">True</property>
-                <signal name="clicked" handler="play_game_pressed" swapped="no"/>
-                <style>
-                  <class name="button"/>
-                </style>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
+              <placeholder/>
             </child>
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="fill">True</property>
+            <property name="fill">False</property>
+            <property name="pack_type">end</property>
             <property name="position">0</property>
           </packing>
         </child>
@@ -611,18 +623,17 @@ Je kan ook de QR code scannen</property>
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkButton">
-                    <property name="label">gtk-quit</property>
+                    <property name="label"> </property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="halign">end</property>
                     <property name="valign">end</property>
-                    <property name="use_stock">True</property>
-                    <property name="always_show_image">True</property>
                     <signal name="clicked" handler="on_close_clicked" swapped="no"/>
                     <style>
-                      <class name="close-button"/>
+                      <class name="button-quit"/>
                       <class name="button"/>
+                      <class name="button-small"/>
                     </style>
                   </object>
                   <packing>
@@ -654,8 +665,9 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
                   <object class="GtkImage" id="GameImage">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="margin_left">238</property>
                     <property name="hexpand">True</property>
-                    <property name="pixbuf">cardigan.jpg</property>
+                    <property name="pixbuf">../love.svg</property>
                     <property name="icon_size">5</property>
                   </object>
                   <packing>
@@ -675,6 +687,9 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
                       <attribute name="font-desc" value="Noto Sans 20"/>
                       <attribute name="foreground" value="#000000000000"/>
                     </attributes>
+                    <style>
+                      <class name="dialog-header"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -693,6 +708,27 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="PlayButton">
+            <property name="label" translatable="yes">Speel Nu!</property>
+            <property name="height_request">-1</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="hexpand">True</property>
+            <signal name="clicked" handler="play_game_pressed" swapped="no"/>
+            <style>
+              <class name="button"/>
+              <class name="button-succes"/>
+              <class name="button-big"/>
+            </style>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
           </packing>
         </child>
         <style>
@@ -735,8 +771,8 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
                 <property name="receives_default">True</property>
                 <signal name="clicked" handler="on_close_clicked" swapped="no"/>
                 <style>
-                  <class name="alt-button"/>
                   <class name="button"/>
+                  <class name="button-succes"/>
                 </style>
               </object>
               <packing>
@@ -755,6 +791,7 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
                 <signal name="clicked" handler="on_save_clicked" swapped="no"/>
                 <style>
                   <class name="button"/>
+                  <class name="button-bad"/>
                 </style>
               </object>
               <packing>
@@ -789,29 +826,12 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
                       <attribute name="font-desc" value="Noto Sans 20"/>
                       <attribute name="foreground" value="#000000000000"/>
                     </attributes>
-                  </object>
-                  <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="CloseButton">
-                    <property name="label">gtk-quit</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">end</property>
-                    <property name="valign">end</property>
-                    <property name="use_stock">True</property>
-                    <property name="always_show_image">True</property>
-                    <signal name="clicked" handler="on_close_clicked" swapped="no"/>
                     <style>
-                      <class name="close-button"/>
+                      <class name="dialog-header"/>
                     </style>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
+                    <property name="left_attach">0</property>
                     <property name="top_attach">0</property>
                   </packing>
                 </child>
@@ -831,18 +851,6 @@ website</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
-                    <property name="top_attach">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkImage" id="VoorbeeldPlaatje">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="hexpand">True</property>
-                    <property name="stock">gtk-missing-image</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
                     <property name="top_attach">1</property>
                   </packing>
                 </child>
@@ -866,21 +874,29 @@ website</property>
       </object>
     </child>
   </object>
-  <object class="GtkDialog">
+  <object class="GtkDialog" id="infoDialog">
     <property name="can_focus">False</property>
+    <property name="type">popup</property>
+    <property name="title" translatable="yes">Informatie</property>
+    <property name="modal">True</property>
+    <property name="window_position">center-always</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="urgency_hint">True</property>
+    <property name="transient_for">MainWindow</property>
+    <property name="attached_to">WindowStack</property>
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox">
             <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="orientation">vertical</property>
+            <property name="layout_style">start</property>
             <child>
               <placeholder/>
             </child>
@@ -888,7 +904,90 @@ website</property>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
+            <property name="pack_type">end</property>
             <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label"> </property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">end</property>
+                    <property name="valign">end</property>
+                    <style>
+                      <class name="button-quit"/>
+                      <class name="button"/>
+                      <class name="button-small"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="GameDescription1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="valign">start</property>
+                    <property name="margin_top">5</property>
+                    <property name="margin_bottom">5</property>
+                    <property name="hexpand">False</property>
+                    <property name="label" translatable="yes">Debitis voluptatum iste omnis ullam repellat voluptatibus sit expedita. Est est sint officia explicabo. Error ipsam blanditiis ea quia. Sunt consectetur modi autem.
+
+Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse nesciunt quaerat totam reiciendis. Eos hic tempora veritatis reiciendis velit tempora omnis molestias. Nam temporibus eaque quia distinctio repellat est error molestiae.</property>
+                    <property name="wrap">True</property>
+                    <property name="max_width_chars">40</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">1</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="GameTitle1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="hexpand">True</property>
+                    <property name="label" translatable="yes">Wat kan je allemaal doen met dit apparaat?</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Noto Sans 20"/>
+                      <attribute name="foreground" value="#000000000000"/>
+                    </attributes>
+                    <style>
+                      <class name="dialog-header"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
