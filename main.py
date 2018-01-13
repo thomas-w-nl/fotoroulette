@@ -31,9 +31,7 @@ if __name__ == "__main__":
 
         games = []
 
-        games.append(game_by_type(Games.WANTED, faces).gen_overlay())
         games.append(game_by_type(Games.LOVEMETER, faces).gen_overlay())
-        # game.append(Versus(faces).gen_overlay())
 
 
 

@@ -2,10 +2,7 @@ import random
 import uuid
 from enum import Enum
 
-import os
 from src.processing import overlay as ov
-
-PROJECT_ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class Games(Enum):
@@ -19,7 +16,6 @@ class Game:
     def __init__(self, faces):
         self._game_id = uuid.uuid4()
         self.overlay = None
-        self.on_top = False
         self.background_color = None
         self.faces = faces
         self.player_count = 2
@@ -39,8 +35,6 @@ class Game:
         Returns:
              tuple with the 2 indexes
         """
-        if self.player_count > len(self.faces):
-            raise ValueError("To few faces to generate an overlay")
 
         random.shuffle(self.faces)
 
@@ -74,7 +68,6 @@ class Versus(Game):
     def __init__(self, faces):
         super(Versus, self).__init__(faces)
 
-        self.on_top = True
         self.overlay = "assets/overlays/versus.png"
         self.player_count = 2
         self.offsets = [
@@ -106,7 +99,7 @@ class Wanted(Game):
         super(Wanted, self).__init__(faces)
 
         self.overlay = "assets/overlays/wanted.png"
-        self.on_top = True
+        self.background_color = (128, 169, 183)
         self.player_count = 1
         self.offsets = [
             {
@@ -132,7 +125,6 @@ class Superheroes(Game):
         super(Superheroes, self).__init__(faces)
 
         self.player_count = 7
-        self.on_top = True
         self.extra_background = "assets/overlays/superheroes_solid.png"
         self.overlay = "assets/overlays/superheroes_transparent.png"
         self.offsets = [
@@ -189,8 +181,7 @@ class LoveMeter(Game):
         super(LoveMeter, self).__init__(faces)
 
         self.overlay = "assets/overlays/lovemeter.png"
-        self.background_color = [249, 81, 161]
-        self.on_top = True
+        self.background_color = (161, 81, 249)
         self.player_count = 2
         self.offsets = [
             {
@@ -214,3 +205,4 @@ class LoveMeter(Game):
         super(LoveMeter, self)._random_images()
 
         return ov.generate_overlay(self)
+
