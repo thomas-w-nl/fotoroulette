@@ -79,8 +79,10 @@ class RangeSensor:
 
         return confidence
 
-    def _calculate_confidence(self, distance: float, sweetspot: float, width_factor: float,
-                              max_confidence: float) -> float:
+    def _calculate_confidence(self, distance: float,
+                              sweetspot: float = config['RangeSensor'].getfloat('SWEETSPOT'),
+                              width_factor: float = config['RangeSensor'].getfloat('SWEETSPOT_WIDTH_FACTOR'),
+                              max_confidence: float = config['RangeSensor'].getfloat('MAX_CONFIDENCE')) -> float:
         """
         Bereken een parabool voor de confidence score.
 
