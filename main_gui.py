@@ -4,9 +4,10 @@ import cv2
 import numpy as np
 
 gi.require_version('Gtk', '3.0')
+
 from gi.repository import Gtk, GdkPixbuf, Gdk, GObject
 from gi.repository.GdkPixbuf import Pixbuf
-from gui import networking
+from src.gui import networking
 
 class MainWindow:
     """
@@ -17,7 +18,7 @@ class MainWindow:
         Sets up the basic logic of the GTK application
         """
         self._builder = Gtk.Builder()
-        self._builder.add_from_file("gui/new_gui.glade")
+        self._builder.add_from_file("assets/gui/gui.glade")
         self._builder.connect_signals(Handler(self))
 
         self._stack = self._builder.get_object("WindowStack")
@@ -25,11 +26,11 @@ class MainWindow:
         self._window = self._builder.get_object("MainWindow")
         self._popup = None # shitty hack
 
-        self._set_logo("../img/corendon_logo.png", 400, 150)
+        self._set_logo("img/corendon_logo.png", 400, 150)
 
         # Use CSS for styling
         style = Gtk.CssProvider()
-        style.load_from_path("../assets/styles/style.css")
+        style.load_from_path("assets/styles/style.css")
         Gtk.StyleContext.add_provider_for_screen(
             Gdk.Screen.get_default(),
             style,

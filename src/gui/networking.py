@@ -14,7 +14,7 @@ import numpy as np
 gi.require_version('Gtk', '3.0')
 from gi.repository import GLib, Gio
 from pathlib import Path
-from common import log, jsonserializer
+from src.common import log, jsonserializer
 
 def _read_all_bytes(input_stream : Gio.IOStream, amount_of_bytes : int=16384) -> bytes:
     """
