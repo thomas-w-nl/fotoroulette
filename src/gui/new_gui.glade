@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.2 -->
+<!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <!-- interface-local-resource-path /home/faalentijn/usr/doc/opdr/vis/raspberry-pi/img -->
-  <!-- interface-css-provider-path styles/style.css -->
+  <!-- interface-local-resource-path img/ -->
   <object class="GtkImage" id="HeroesLogo">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="halign">center</property>
     <property name="valign">center</property>
     <property name="margin_right">50</property>
-    <property name="pixbuf">../../img/heroes.svg</property>
+    <property name="pixbuf">cardigan.jpg</property>
     <style>
       <class name="game-icon"/>
     </style>
@@ -21,7 +20,7 @@
     <property name="halign">baseline</property>
     <property name="valign">end</property>
     <property name="margin_right">50</property>
-    <property name="pixbuf">../../img/love.svg</property>
+    <property name="pixbuf">cardigan.jpg</property>
     <style>
       <class name="game-icon"/>
     </style>
@@ -30,7 +29,7 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="margin_right">50</property>
-    <property name="pixbuf">../../img/mock.svg</property>
+    <property name="pixbuf">cardigan.jpg</property>
     <style>
       <class name="game-icon"/>
     </style>
@@ -39,7 +38,7 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="margin_right">50</property>
-    <property name="pixbuf">../../img/versus.svg</property>
+    <property name="pixbuf">cardigan.jpg</property>
     <style>
       <class name="game-icon"/>
     </style>
@@ -67,7 +66,7 @@
                 <property name="margin_left">40</property>
                 <property name="margin_right">40</property>
                 <property name="margin_top">40</property>
-                <property name="pixbuf">../../img/corendon_logo.png</property>
+                <property name="pixbuf">cardigan.jpg</property>
                 <style>
                   <class name="splash-content"/>
                 </style>
@@ -93,6 +92,7 @@
                 <signal name="clicked" handler="on_start_clicked" swapped="no"/>
                 <style>
                   <class name="button-fys"/>
+                  <class name="button"/>
                 </style>
               </object>
               <packing>
@@ -132,6 +132,7 @@
                     <signal name="clicked" handler="open_save_window" swapped="no"/>
                     <style>
                       <class name="button-fys"/>
+                      <class name="button"/>
                     </style>
                   </object>
                   <packing>
@@ -152,7 +153,8 @@
                     <property name="hexpand">True</property>
                     <signal name="clicked" handler="on_information_clicked" swapped="no"/>
                     <style>
-                      <class name="button-fys"/>
+                      <class name="info"/>
+                      <class name="button"/>
                     </style>
                   </object>
                   <packing>
@@ -325,7 +327,7 @@
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">../../img/ripley.jpg</property>
+                <property name="pixbuf">cardigan.jpg</property>
               </object>
               <packing>
                 <property name="index">5</property>
@@ -358,7 +360,7 @@
               <object class="GtkImage" id="Picture">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">../../img/rogueGirl.jpg</property>
+                <property name="pixbuf">cardigan.jpg</property>
               </object>
               <packing>
                 <property name="index">-1</property>
@@ -618,6 +620,10 @@ Je kan ook de QR code scannen</property>
                     <property name="use_stock">True</property>
                     <property name="always_show_image">True</property>
                     <signal name="clicked" handler="on_close_clicked" swapped="no"/>
+                    <style>
+                      <class name="close-button"/>
+                      <class name="button"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -649,7 +655,7 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="hexpand">True</property>
-                    <property name="pixbuf">rogueGirl.jpg</property>
+                    <property name="pixbuf">cardigan.jpg</property>
                     <property name="icon_size">5</property>
                   </object>
                   <packing>
@@ -689,10 +695,10 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
             <property name="position">1</property>
           </packing>
         </child>
+        <style>
+          <class name="dialog"/>
+        </style>
       </object>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </object>
   <object class="GtkDialog" id="InformationDialog">
@@ -730,6 +736,7 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
                 <signal name="clicked" handler="on_close_clicked" swapped="no"/>
                 <style>
                   <class name="alt-button"/>
+                  <class name="button"/>
                 </style>
               </object>
               <packing>
@@ -853,10 +860,44 @@ website</property>
             <property name="position">1</property>
           </packing>
         </child>
+        <style>
+          <class name="dialog"/>
+        </style>
       </object>
     </child>
-    <child>
-      <placeholder/>
+  </object>
+  <object class="GtkDialog">
+    <property name="can_focus">False</property>
+    <property name="type_hint">dialog</property>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <style>
+          <class name="dialog"/>
+        </style>
+      </object>
     </child>
   </object>
 </interface>

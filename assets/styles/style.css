@@ -5,27 +5,22 @@
 }
 
 #info-button {
-    background-color: blue;
+    background-color: #0071F9;
     border-radius: 5px;
 }
 
 #save-button {
-     background-color: #D81A1A;
-     border-radius: 5px;
-     font-size: 1.5em;
-     margin: 10px 10px 10px 10px;
+    background-color: #D81A1A;
+    border-radius: 5px;
+    font-size: 1.5em;
+    margin: 10px 10px 10px 10px;
 }
 
-#window-stack:disabled {
-    background-color: grey;
-    opacity: 10;
-}
-
+#window-stack:disabled,
 button:disabled {
     background-color: grey;
     opacity: 10;
 }
-
 
 .top-bar {
     background-color: grey;
@@ -44,7 +39,7 @@ button:disabled {
 }
 
 .alt-button {
-    background-color: yellow;
+    background-color: #FCCC00;
     font-size: 1.6em;
     font-weight: bold;
     color: white;

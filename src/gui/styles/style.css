@@ -5,9 +5,12 @@
 }
 
 #start-button {
-    background-color: green;
+    background-color: #70C66B;
     font-size: 3em;
     font-weight: bold;
     color: white;
     border-radius: 25px;
+}
+.close-button {
+
 }
