@@ -216,7 +216,7 @@ def _opencv_get_faces(photo: np.array):
        Een list met de coordinaten van de gezichten en een lijst met confidence scores
     """
 
-    log.debug("Opencv Input image size:"+ str(photo.shape))
+    log.debug("Opencv Input image size:" + str(photo.shape))
 
     img_gray = cv2.cvtColor(photo, cv2.COLOR_BGR2GRAY)
 
@@ -238,7 +238,7 @@ def _opencv_get_faces(photo: np.array):
     )
 
     if len(confidences):
-        log.debug("face confidence "+str(confidences[0]))
+        log.debug("face confidence " + str(confidences[0]))
 
     if DEBUG and len(faces):
         print("got " + str(len(faces)) + " faces! (in one foto)")
@@ -257,16 +257,31 @@ def _crop_image(img: np.array, rect: list, padding: int) -> np.array:
     Returns:
        De uitgeknipte foto.
     """
-    # Todo padding may be out side of image
+
     x, y, w, h = rect
     x -= padding
     y -= padding
     w += (padding * 2)
     h += (padding * 2)
+
+    # prevent face cutout being out of image range
+    photo_w, photo_h, _ = img.shape
+
+    if x < 0:
+        x = 0
+    if y < 0:
+        y = 0
+
+    if x + w > photo_w:
+        w = photo_w - x
+
+    if y + h > photo_h:
+        h = photo_h - y
+
     return img[y:(y + h), x:(x + w)]
 
 
-def _cut_out_head(face: Face, photo: Photo) -> np.array:
+def _cut_out_head(face: Face, photo: np.array) -> np.array:
     """
     Haalt een gezicht uit de foto en geeft die weer terug als een aparte foto
 
@@ -279,6 +294,7 @@ def _cut_out_head(face: Face, photo: Photo) -> np.array:
     """
     CUTOUT_PADDING_FACTOR = config['FaceDetection'].getfloat('CUTOUT_PADDING_FACTOR')
     x, y, w, h = face.pos
+
     padding = int(round(w * CUTOUT_PADDING_FACTOR))
     cutout = _crop_image(photo, face.pos, padding)
 
