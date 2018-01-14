@@ -75,19 +75,19 @@ button:disabled {
 .dialog-header {}
 
 #love-meter {
-    background-image: url("../images/love.svg");
+    background-image: url("../images/love.png");
 }
 
 #mocking {
-    background-image: url("../images/mock.svg");
+    background-image: url("../images/mock.png");
 }
 
 #heroes {
-    background-image: url("../images/heroes.svg");
+    background-image: url("../images/heroes.png");
 }
 
 #versus {
-    background-image: url("../images/versus.svg");
+    background-image: url("../images/versus.png");
 }
 
 #example-image {
