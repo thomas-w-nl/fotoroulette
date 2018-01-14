@@ -1,48 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.20.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <!-- interface-local-resource-path img/ -->
-  <object class="GtkImage" id="HeroesLogo">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="halign">center</property>
-    <property name="valign">center</property>
-    <property name="margin_right">50</property>
-    <property name="pixbuf">../love.svg</property>
-    <style>
-      <class name="game-icon"/>
-    </style>
-  </object>
-  <object class="GtkImage" id="LoveMeterLogo">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="halign">baseline</property>
-    <property name="valign">end</property>
-    <property name="margin_right">50</property>
-    <property name="pixbuf">../love.svg</property>
-    <style>
-      <class name="game-icon"/>
-    </style>
-  </object>
-  <object class="GtkImage" id="MockingLogo">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="margin_right">50</property>
-    <property name="pixbuf">../love.svg</property>
-    <style>
-      <class name="game-icon"/>
-    </style>
-  </object>
-  <object class="GtkImage" id="VersusLogo">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="margin_right">50</property>
-    <property name="pixbuf">../love.svg</property>
-    <style>
-      <class name="game-icon"/>
-    </style>
-  </object>
+  <!-- interface-local-resource-path ../images/ -->
   <object class="GtkWindow" id="MainWindow">
     <property name="can_focus">False</property>
     <property name="window_position">center-always</property>
@@ -66,7 +26,7 @@
                 <property name="margin_left">40</property>
                 <property name="margin_right">40</property>
                 <property name="margin_top">40</property>
-                <property name="pixbuf">../love.svg</property>
+                <property name="pixbuf">../images/corendon_logo.png</property>
                 <style>
                   <class name="splash-content"/>
                 </style>
@@ -226,6 +186,7 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkButton" id="LoveMeterButton">
+                        <property name="name">love-meter</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
@@ -236,8 +197,7 @@
                         <property name="margin_bottom">15</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
-                        <property name="image">LoveMeterLogo</property>
-                        <property name="xalign">0.15000000596046448</property>
+                        <property name="use_stock">True</property>
                         <signal name="clicked" handler="on_lovemeter_pressed" swapped="no"/>
                         <style>
                           <class name="button"/>
@@ -252,6 +212,7 @@
                     </child>
                     <child>
                       <object class="GtkButton" id="MockingButton">
+                        <property name="name">mocking</property>
                         <property name="width_request">200</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -263,8 +224,7 @@
                         <property name="margin_bottom">15</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
-                        <property name="image">MockingLogo</property>
-                        <property name="xalign">0.15000000596046448</property>
+                        <property name="use_stock">True</property>
                         <signal name="clicked" handler="on_mocking_pressed" swapped="no"/>
                         <style>
                           <class name="button"/>
@@ -279,6 +239,7 @@
                     </child>
                     <child>
                       <object class="GtkButton" id="HeroesButton">
+                        <property name="name">heroes</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
@@ -288,8 +249,7 @@
                         <property name="margin_bottom">15</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
-                        <property name="image">VersusLogo</property>
-                        <property name="xalign">0.15000000596046448</property>
+                        <property name="use_stock">True</property>
                         <signal name="clicked" handler="on_superheroes_pressed" swapped="no"/>
                         <style>
                           <class name="button"/>
@@ -304,6 +264,7 @@
                     </child>
                     <child>
                       <object class="GtkButton" id="VersusButton">
+                        <property name="name">versus</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
@@ -313,8 +274,7 @@
                         <property name="margin_bottom">15</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
-                        <property name="image">HeroesLogo</property>
-                        <property name="xalign">0.15000000596046448</property>
+                        <property name="use_stock">True</property>
                         <signal name="clicked" handler="on_versus_pressed" swapped="no"/>
                         <style>
                           <class name="button"/>
@@ -355,7 +315,7 @@
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">../love.svg</property>
+                <property name="pixbuf">../imagesmock.svg</property>
               </object>
               <packing>
                 <property name="index">5</property>
@@ -388,7 +348,7 @@
               <object class="GtkImage" id="Picture">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">../love.svg</property>
+                <property name="pixbuf">../images/love.svg</property>
               </object>
               <packing>
                 <property name="index">-1</property>
@@ -667,7 +627,7 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
                     <property name="can_focus">False</property>
                     <property name="margin_left">238</property>
                     <property name="hexpand">True</property>
-                    <property name="pixbuf">../love.svg</property>
+                    <property name="pixbuf">../images/love.svg</property>
                     <property name="icon_size">5</property>
                   </object>
                   <packing>
@@ -735,6 +695,9 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
           <class name="dialog"/>
         </style>
       </object>
+    </child>
+    <child>
+      <placeholder/>
     </child>
   </object>
   <object class="GtkDialog" id="InformationDialog">
@@ -873,6 +836,9 @@ website</property>
         </style>
       </object>
     </child>
+    <child>
+      <placeholder/>
+    </child>
   </object>
   <object class="GtkDialog" id="infoDialog">
     <property name="can_focus">False</property>
@@ -997,6 +963,9 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
           <class name="dialog"/>
         </style>
       </object>
+    </child>
+    <child>
+      <placeholder/>
     </child>
   </object>
 </interface>
