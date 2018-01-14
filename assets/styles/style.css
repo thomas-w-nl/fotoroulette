@@ -84,8 +84,8 @@ button:disabled {
 
 .button-big {
     border-radius: 25px;
-    margin: 10px;
-    padding: 10px 5px;
+    margin: 20px;
+    padding: 15px 10px;
     font-size: 2em;
 }
 
@@ -93,12 +93,11 @@ button:disabled {
     border-radius: 50%;
 }
 .button-game {
-    min-height: 100px;
-    min-width: 300px;
+    min-height: 80px;
+    min-width: 350px;
     background-color: #70C66B;
     background-repeat: no-repeat;
     background-position: center;
-    background-size: contain;
 }
 .dialog {
     padding: 20px;
