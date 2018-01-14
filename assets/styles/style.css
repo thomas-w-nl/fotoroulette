@@ -4,52 +4,23 @@
     background-color: rgba(0, 0, 255, 0.5);
 }
 
-/*#info-button {*/
-/*background-color: #0071F9;*/
-/*border-radius: 5px;*/
-/*}*/
-
-/*#save-button {*/
-/*background-color: #D81A1A;*/
-/*border-radius: 5px;*/
-/*font-size: 1.5em;*/
-/*margin: 10px 10px 10px 10px;*/
-/*}*/
-
 .top-bar:disabled,
 #window-stack:disabled,
 button:disabled {
-    background-color: grey;
+    background: grey;
     opacity: 10;
 }
 
 .top-bar {
-    background-color: #e5e5e5;
+    background: #e5e5e5;
 }
 
 .game-icon {
-    background-color: #70C66B;
+    background: #70C66B;
 }
 
-/*.button-fys {*/
-/*background-color: #70C66B;*/
-/*font-size: 1.6em;*/
-/*font-weight: bold;*/
-/*color: white;*/
-/*border-radius: 25px;*/
-/*}*/
-
-/*.alt-button {*/
-/*background-color: #FCCC00;*/
-/*font-size: 1.6em;*/
-/*font-weight: bold;*/
-/*color: white;*/
-/*margin: 5px 5px;*/
-/*border-radius: 5px;*/
-/*}*/
-
 .box {
-    background-color: white;
+    background: white;
 }
 
 .button {
@@ -59,26 +30,24 @@ button:disabled {
     margin: 5px;
     border-radius: 5px;
     padding: 5px 10px;
-    background-color: #FCCC00;
+    background: #FCCC00;
 
 }
 
 .button-succes {
-    background-color: #70C66B;
+    background: #70C66B;
 }
 
 .button-bad {
-    background-color: #D81A1A;
+    background: #D81A1A;
 }
 
 .button-info {
-    background-color: white;
-    background: url("../images/info.svg") center no-repeat;
+    background: white url("../images/info.svg") center no-repeat;
     background-size: contain;
 }
 .button-quit {
-    background-color: white;
-    background: url("../images/close.svg") center no-repeat;
+    background: white url("../images/info.svg") center no-repeat;
     background-size: contain;
 }
 

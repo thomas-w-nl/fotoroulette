@@ -12,7 +12,7 @@ from src.gui import networking
 from multiprocessing import Process
 
 def play_sound(file_name : str):
-    subprocess.run(["mpv", "assets/sound/" + file_name])
+    subprocess.run(["mpv", "agtssets/sound/" + file_name])
 
 
 class MainWindow:
