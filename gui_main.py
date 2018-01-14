@@ -2,12 +2,18 @@ import gi
 import signal
 import cv2
 import numpy as np
+import subprocess
 
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, GdkPixbuf, Gdk, GObject
 from gi.repository.GdkPixbuf import Pixbuf
 from src.gui import networking
+from multiprocessing import Process
+
+def play_sound(file_name : str):
+    subprocess.run(["mpv", "assets/sound/" + file_name])
+
 
 class MainWindow:
     """
@@ -25,6 +31,7 @@ class MainWindow:
         self._logo = self._builder.get_object("CorendonLogo")
         self._window = self._builder.get_object("MainWindow")
         self._popup = None # shitty hack
+        self._song = None
 
         self._set_logo("assets/images/corendon_logo.png", 600, 200)
 
@@ -105,9 +112,11 @@ class MainWindow:
         image = Pixbuf.new_from_file(path)
 
         picture_widget.set_from_pixbuf(image)
+        if self._song is not None:
+            Process(target=play_sound, args=(self._song,)).start()
+
         self.close_popup()
         return True
-
 
     def start(self):
         self._window.show_all()
@@ -150,7 +159,9 @@ class Handler:
         json_message = "{\"message\": \"play_game\", \"name\": \"%s\"}\n" % name
         networking.send_message(json_message, self.window.set_photo)
 
-    def _show_game_popup(self, name : str, description : str, example_image : str) -> Gtk.Window:
+    def _show_game_popup(self, name : str, description : str, example_image : str, song : str) -> Gtk.Window:
+        self.window._song = song
+
         popup = self.window.show_popup("GameDialog")
         image = Pixbuf.new_from_file(example_image)\
                       .scale_simple(800, 450, GdkPixbuf.InterpType.BILINEAR)
@@ -160,16 +171,16 @@ class Handler:
         return popup
 
     def on_superheroes_pressed(self, button):
-        self._show_game_popup("Superheroes", "Superheroes", "../img/heroes.svg")
+        self._show_game_popup("Superheroes", "Superheroes", "assets/images/heroes.svg", "heroes.mp3")
 
     def on_versus_pressed(self, button):
-        self._show_game_popup("Versus", "Versus", "../img/love.svg")
+        self._show_game_popup("Versus", "Versus", "../img/love.svg", "fatality.mp3")
 
     def on_lovemeter_pressed(self, button):
-        self._show_game_popup("Love Meter", "Love Meter", "../img/versus.svg")
+        self._show_game_popup("Love Meter", "Love Meter", "assets/images/versus.svg", "dingDong.mp3")
 
     def on_mocking_pressed(self, button):
-        self._show_game_popup("Wanted", "Love Meter", "../img/love.svg")
+        self._show_game_popup("Wanted", "Love Meter", "assets/images/love.svg", "finishHim.mp3")
 
     def on_close_clicked(self, button):
         self.window.close_popup()
