@@ -84,8 +84,8 @@ button:disabled {
 
 .button-big {
     border-radius: 25px;
-    margin: 20px;
-    padding: 15px 10px;
+    margin: 10px;
+    padding: 10px 5px;
     font-size: 2em;
 }
 
@@ -124,5 +124,5 @@ button:disabled {
 
 #example-image {
     min-width: 50px;
-    min-height: 50px;
+    min-height: 100px;
 }
