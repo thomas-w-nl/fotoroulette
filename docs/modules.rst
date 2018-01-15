@@ -1,9 +1,11 @@
-src
-===
+raspberry-pi
+============
 
 .. toctree::
    :maxdepth: 4
 
-   hardware
    main
-   processing
+   main_gui
+   processing_main
+   src
+   start_server

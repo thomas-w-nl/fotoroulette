@@ -35,11 +35,12 @@ def draw_rectangle(frame, rect, texts=("")):
     return frame
 
 
-def draw_image(img):
+def draw_image(img) -> None:
     """
     Laat het plaatje zien.
-    :rtype: void
-    :param: plaatje
+
+    Args:
+       Plaatje
     """
     cv2.imshow("FYS", img)
     cv2.waitKey()

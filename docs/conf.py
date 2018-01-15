@@ -19,8 +19,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../src/'))
-
+sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../src'))
 
 # -- General configuration ------------------------------------------------
 
@@ -57,8 +57,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Vakantiekieker'
-copyright = '2017, Valentijn van de Beek, Thomas Wiggers, Michel Jonk,\nNoeël Moeskops, Theo Bouwman'
-author = 'Valentijn van de Beek, Thomas Wiggers, Michel Jonk,\nNoeël Moeskops, Theo Bouwman'
+copyright = '2017, Valentijn Beek, Thomas Wiggers, Noeël Moeskops, Theo Bouwman'
+author = 'Valentijn Beek, Thomas Wiggers, Noeël Moeskops, Theo Bouwman'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -153,7 +153,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Vakantiekieker.tex', 'Vakantiekieker Documentation',
-     'Valentijn van de Beek, Thomas Wiggers, Michel Jonk, Noeël Moeskops, Theo Bouwman', 'manual'),
+     'Valentijn Beek, Thomas Wiggers, Noeël Moeskops, Theo Bouwman', 'manual'),
 ]
 
 

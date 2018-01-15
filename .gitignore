@@ -11,6 +11,7 @@ out
 # Python shizzel
 #
 
+src/transferred_by_network.png
 .pyc
 # Byte-compiled / optimized / DLL files
 __pycache__/
