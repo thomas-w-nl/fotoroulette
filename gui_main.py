@@ -163,8 +163,7 @@ class Handler:
         self.window._song = song
 
         popup = self.window.show_popup("GameDialog")
-        image = Pixbuf.new_from_file(example_image)\
-                      .scale_simple(800, 450, GdkPixbuf.InterpType.BILINEAR)
+        image = Pixbuf.new_from_file(example_image)
         self.window._builder.get_object("GameTitle").set_text(name)
         self.window._builder.get_object("GameDescription").set_text(description)
         self.window._builder.get_object("GameImage").set_from_pixbuf(image)
@@ -180,7 +179,7 @@ class Handler:
         self._show_game_popup("Love Meter", "Love Meter", "assets/images/versus.svg", "dingDong.mp3")
 
     def on_mocking_pressed(self, button):
-        self._show_game_popup("Wanted", "Love Meter", "assets/images/love-example.png", "finishHim.mp3")
+        self._show_game_popup("Wanted", "Love Meter", "assets/images/love.png", "finishHim.mp3")
 
     def on_close_clicked(self, button):
         self.window.close_popup()
