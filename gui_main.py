@@ -116,6 +116,8 @@ class MainWindow:
         image = Pixbuf.new_from_file(path)
         os.remove(path)
 
+        self._photos.append(image)
+
         picture_widget.set_from_pixbuf(image)
         if self._song is not None:
             p = Process(target=play_sound, args=(self._song,)).start()
@@ -125,8 +127,8 @@ class MainWindow:
 
     def start(self):
         self._window.show_all()
+        self._stack.set_visible_child_name("preview-photos")
         Gtk.main()
-
 
 class Handler:
     def __init__(self, window):
@@ -214,6 +216,5 @@ class Handler:
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    networking.create_server()
     window = MainWindow()
     window.start()
