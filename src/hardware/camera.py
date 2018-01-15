@@ -66,7 +66,7 @@ class Camera:
             try:
                 self.camera = PiCamera()
 
-                # self.rawCapture = PiRGBArray(self.camera)  # dit is redundant volgens mij
+                self.rawCapture = PiRGBArray(self.camera)  # dit is redundant volgens mij
 
                 config = configparser.ConfigParser()
                 config.read('fotoroulette.conf')
