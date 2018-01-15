@@ -30,9 +30,7 @@ def generate_overlay(game):
         face.image = _resize_fit(face.image, int(final_overlay_width / 2) - face_offset['minus_image_width'],
                                  final_overlay_height - face_offset['minus_image_width'])
 
-        face.image = _resize_fit(face.image,
-                                 int(overlay_width / 2) - face_offset['minus_image_width'],
-                                 overlay_height - face_offset['minus_image_width'])
+        face_height, face_width, face_channels = face.image.shape
 
         offset_x = face_offset['offset_x']
         offset_y = face_offset['offset_y']
@@ -59,9 +57,12 @@ def generate_overlay(game):
         roi_width_end = offset_x + face_width
 
         # PLACE FACE
-
         # Create mask, remove mask and place overlay on [background]
         place_holder_image[offset_y:roi_height_end, offset_x:roi_width_end] = face.image
+
+        cv2.imshow('output', place_holder_image)
+        print('-- place_holder_image with face ---')
+        cv2.waitKey()
 
         gray_fg = cv2.cvtColor(final_overlay, cv2.COLOR_BGR2GRAY)
         _, mask = cv2.threshold(gray_fg, 0, 255, cv2.THRESH_BINARY)
