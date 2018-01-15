@@ -3,6 +3,8 @@ import signal
 import cv2
 import numpy as np
 import subprocess
+import os
+import qrcode
 
 gi.require_version('Gtk', '3.0')
 
@@ -12,7 +14,7 @@ from src.gui import networking
 from multiprocessing import Process
 
 def play_sound(file_name : str):
-    subprocess.run(["mpv", "assets/sound/" + file_name])
+    subprocess.run(["mpv", "--no-resume-playback", "--volume=60", "assets/sound/" + file_name])
 
 
 class MainWindow:
@@ -110,6 +112,7 @@ class MainWindow:
         path = "transferred_by_network.png"
         cv2.imwrite(path, image_cv2)
         image = Pixbuf.new_from_file(path)
+        os.remove(path)
 
         picture_widget.set_from_pixbuf(image)
         if self._song is not None:
@@ -138,8 +141,18 @@ class Handler:
         def callback(response):
             self.window._builder.get_object("unique-code").set_text(response)
             self.window._stack.set_visible_child_name("save-screen")
+
+            photo = qrcode.make("https://fys.1hz.nl/nl/pictures/%s" % response)
+            photo.save("qr-code.png", "PNG")
+
+            image = Pixbuf.new_from_file("qr-code.png")
+            self.window._builder.get_object("qr-code").set_from_pixbuf(image)
+            os.remove("qr-code.png")
+
             self.window.close_popup()
+
             print(response)
+
             return True
 
         networking.send_message("{\"message\": \"command\", \"name\": \"send_photos\"}\n", callback)
