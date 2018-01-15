@@ -8,9 +8,8 @@ from src.common.log import log
 
 try:
     from picamera import PiCamera
-except ModuleNotFoundError:
-    pass
-    # log.error("ImportError: %s, normal if in fake environment",)
+except ImportError as error:
+    log.error("ImportError: %s, normal if in fake environment", error)
 
 
 class Camera:

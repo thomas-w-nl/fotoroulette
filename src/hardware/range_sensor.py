@@ -6,6 +6,15 @@ import time
 
 DEBUG = False
 
+config = configparser.ConfigParser()
+config.read('fotoroulette.conf')
+TRIG = config['RangeSensor'].getint('TRIG')
+ECHO = config['RangeSensor'].getint('ECHO')
+GELUIDSSNELHEID = config['RangeSensor'].getint('GELUIDSSNELHEID')
+SENSOR_FOV = config['RangeSensor'].getint('SENSOR_FOV')
+
+global_time_start = 0
+global_time_end = 0
 
 
 def _init():
@@ -19,24 +28,11 @@ def _init():
 
     GPIO.output(TRIG, False)
 
-    config = configparser.ConfigParser()
-    config.read('fotoroulette.conf')
-    TRIG = config['RangeSensor'].getint('TRIG')
-    ECHO = config['RangeSensor'].getint('ECHO')
-    GELUIDSSNELHEID = config['RangeSensor'].getint('GELUIDSSNELHEID')
-    SENSOR_FOV = config['RangeSensor'].getint('SENSOR_FOV')
-
-    global_time_start = 0
-    global_time_end = 0
-
-
 try:
     import RPi.GPIO as GPIO
     _init()
-except ModuleNotFoundError:
-    pass
-
-_init()
+except ImportError as error:
+    log.error("ImportError: %s, normal if in fake environment", error)
 
 
 def get_distance() -> int:
