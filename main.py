@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
         games = []
 
-        games.append(game_by_type(Games.SUPERHEROES, faces).gen_overlay())
+        games.append(game_by_type(Games.VERSUS, faces).gen_overlay())
 
 
 
@@ -42,4 +42,5 @@ if __name__ == "__main__":
 
         for game in games:
             cv2.imshow("output", game)
+            cv2.imwrite("game.jpg", game)
             cv2.waitKey()

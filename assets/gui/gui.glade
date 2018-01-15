@@ -308,7 +308,7 @@
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">../imagesclose.svg</property>
+                <property name="pixbuf">../images/inf.svg</property>
               </object>
               <packing>
                 <property name="index">5</property>
@@ -617,10 +617,11 @@ Je kan ook de QR code scannen</property>
                   <object class="GtkImage" id="GameImage">
                     <property name="name">example-image</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
                     <property name="margin_left">238</property>
                     <property name="hexpand">True</property>
-                    <property name="pixbuf">../images/close.svg</property>
+                    <property name="pixbuf">../images/info.svg</property>
                     <property name="icon_size">5</property>
                   </object>
                   <packing>
