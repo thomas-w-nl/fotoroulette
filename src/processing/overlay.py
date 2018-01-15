@@ -60,9 +60,6 @@ def generate_overlay(game):
         # Create mask, remove mask and place overlay on [background]
         place_holder_image[offset_y:roi_height_end, offset_x:roi_width_end] = face.image
 
-        cv2.imshow('output', place_holder_image)
-        print('-- place_holder_image with face ---')
-        cv2.waitKey()
 
         gray_fg = cv2.cvtColor(final_overlay, cv2.COLOR_BGR2GRAY)
         _, mask = cv2.threshold(gray_fg, 0, 255, cv2.THRESH_BINARY)
