@@ -26,7 +26,7 @@ from src.processing.overlay import generate_overlay
 # Check whether we're in a raspberry pi or not
 try:
     import RPi.GPIO as GPIO
-except Exception:
+except ImportError:
     print("Running in a fake environment")
     print("This is very dangerous regarding to errors. Please debug using ImportError and ModuleNotFound exeptions")
     import pickle
