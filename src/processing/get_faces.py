@@ -7,12 +7,11 @@ from src.common.log import *
 from src.common.tools import *
 from src.processing.photo_data import PhotoData, Photo, RangeSensor
 
-DEBUG = 0  # 2
 
 config = configparser.ConfigParser()
 config.read('fotoroulette.conf')
 
-
+DEBUG = config['General'].getint('DEBUG')
 class Face:
     def __init__(self, opencv_face, photo_angle: float, face_image: np.array):
         """

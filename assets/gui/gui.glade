@@ -309,7 +309,9 @@
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">../imagesclose.svg</property>
+                <style>
+                  <class name="foto-wait-img"/>
+                </style>
               </object>
               <packing>
                 <property name="index">5</property>
@@ -321,14 +323,20 @@
                 <property name="can_focus">False</property>
                 <property name="valign">start</property>
                 <property name="label" translatable="yes">Lachen, er worden foto's gemaakt!</property>
+                <style>
+                  <class name="foto-wait-text"/>
+                </style>
               </object>
               <packing>
                 <property name="index">-1</property>
               </packing>
             </child>
+            <style>
+              <class name="foto-wait-container"/>
+            </style>
           </object>
           <packing>
-            <property name="name">page1</property>
+            <property name="name">foto-wait</property>
             <property name="title" translatable="yes">page1</property>
             <property name="position">2</property>
             <property name="needs_attention">True</property>
@@ -664,7 +672,6 @@ Je kan ook de QR code scannen</property>
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="column_homogeneous">True</property>
                 <child>
                   <object class="GtkButton">
                     <property name="label"> </property>
@@ -708,10 +715,11 @@ Je kan ook de QR code scannen</property>
                   <object class="GtkImage" id="GameImage">
                     <property name="name">example-image</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
                     <property name="margin_left">238</property>
                     <property name="hexpand">True</property>
-                    <property name="pixbuf">../images/close.svg</property>
+                    <property name="pixbuf">../images/info.svg</property>
                     <property name="icon_size">5</property>
                   </object>
                   <packing>
