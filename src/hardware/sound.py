@@ -1,4 +1,4 @@
-import vlc
++import vlc
 import time
 from common.log import *
 
@@ -12,4 +12,3 @@ if __name__ == "__main__":
     log.debug("sound running as main")
     mortalKombat.play()
     time.sleep(60)
-

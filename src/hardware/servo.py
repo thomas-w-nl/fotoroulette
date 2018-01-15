@@ -2,6 +2,8 @@ import configparser
 import RPi.GPIO as GPIO
 import time
 
+from src.common.log import *
+
 config = configparser.ConfigParser()
 config.read('fotoroulette.conf')
 MAX_SERVO_POS = config['Servo'].getint('MAX_SERVO_POS')
@@ -15,12 +17,25 @@ pwm = GPIO.PWM(18, 50)
 pwm.start(0)
 
 
-def goto_position(graden: int, sleep=0.4):
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(18, GPIO.OUT)
+    pwm = GPIO.PWM(18, 50)
+    pwm.start(0)
+except ModuleNotFoundError:
+    pass
+
+
+
+def goto_position(graden: int, sleep:float=0.4) -> None:
     """
     Send servo to specific position
-    :param sleep:
-    :param graden: de positie waar de servo heen moet draaien
+
+    Args:
+      sleep: Hoe lang de servo wacht tot dat hij weer moet draaien
+      graden: De positie waar de servo heen moet draaien in graden
+
     """
+
     global _position
     if graden > MAX_SERVO_POS or graden < MIN_SERVO_POS:
         raise IndexError("Servo: " + str(graden))
@@ -34,6 +49,7 @@ def goto_position(graden: int, sleep=0.4):
 def get_position() -> int:
     """
     Vraag de huidige positie van de servo op
+
     Returns:
         De positie in graden
     """

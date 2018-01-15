@@ -1,3 +1,96 @@
-.image {
-    background: #3c3c3c;
+#splashscreen {
+    background-image: url("../images/background_blur.png");
+    background-size: cover;
+    background-color: rgba(0, 0, 255, 0.5);
+}
+
+.top-bar:disabled,
+#window-stack:disabled,
+button:disabled {
+    background: grey;
+    opacity: 10;
+}
+
+.top-bar {
+    background: #e5e5e5;
+}
+
+.game-icon {
+    background: #70C66B;
+}
+
+.box {
+    background: white;
+}
+
+.button {
+    font-size: 1.6em;
+    font-weight: bold;
+    color: white;
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px 10px;
+    background: #FCCC00;
+
+}
+
+.button-succes {
+    background: #70C66B;
+}
+
+.button-bad {
+    background: #D81A1A;
+}
+
+.button-info {
+    background: white url("../images/info.svg") center no-repeat;
+    background-size: contain;
+}
+.button-quit {
+    background: white url("../images/info.svg") center no-repeat;
+    background-size: contain;
+}
+
+.button-big {
+    border-radius: 25px;
+    margin: 20px;
+    padding: 15px 10px;
+    font-size: 2em;
+}
+
+.button-small {
+    border-radius: 50%;
+}
+.button-game {
+    min-height: 80px;
+    min-width: 350px;
+    background-color: #70C66B;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.dialog {
+    padding: 20px;
+}
+
+.dialog-header {}
+
+#love-meter {
+    background-image: url("../images/love.png");
+}
+
+#mocking {
+    background-image: url("../images/mock.png");
+}
+
+#heroes {
+    background-image: url("../images/heroes.png");
+}
+
+#versus {
+    background-image: url("../images/versus.png");
+}
+
+#example-image {
+    min-width: 50px;
+    min-height: 100px;
 }

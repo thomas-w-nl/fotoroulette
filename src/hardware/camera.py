@@ -2,8 +2,15 @@ import configparser
 import time
 import cv2
 import numpy as np
-from picamera import PiCamera
-from src.common import log
+import pickle
+
+from src.common.log import log
+
+try:
+    from picamera import PiCamera
+except ModuleNotFoundError:
+    pass
+    # log.error("ImportError: %s, normal if in fake environment",)
 
 
 class Camera:
@@ -14,6 +21,13 @@ class Camera:
         Returns:
            Een plaatje van de camera.
         """
+
+
+        # with open('test-input-photo.pkl', 'rb') as input:
+        #     photo = pickle.load(input)
+        #     return photo
+
+
         config = configparser.ConfigParser()
         config.read('fotoroulette.conf')
 
@@ -39,29 +53,37 @@ class Camera:
         # reshape buffer to requested resolution
         image = image[:height, :width, :]
 
+        # om debug info te maken
+        # with open('test-input-photo.pkl', 'wb') as output:
+        #     pickle.dump(image, output, pickle.HIGHEST_PROTOCOL)
+
         return image
 
     def __init__(self):
         """
         Start de camera
         """
-        self.camera = PiCamera()
+        try:
+            try:
+                self.camera = PiCamera()
 
-        # self.rawCapture = PiRGBArray(self.camera)  # dit is redundant volgens mij
+                # self.rawCapture = PiRGBArray(self.camera)  # dit is redundant volgens mij
 
-        config = configparser.ConfigParser()
-        config.read('fotoroulette.conf')
+                config = configparser.ConfigParser()
+                config.read('fotoroulette.conf')
 
-        width = config['Camera'].getint('CAMERA_RESOLUTION_H')
-        height = config['Camera'].getint('CAMERA_RESOLUTION_V')
-        self.camera.resolution = [width, height]
-        # allow camera to warm up
-        time.sleep(2)
+                width = config['Camera'].getint('CAMERA_RESOLUTION_H')
+                height = config['Camera'].getint('CAMERA_RESOLUTION_V')
+                self.camera.resolution = [width, height]
+                # allow camera to warm up
+                time.sleep(2)
 
-        if self.camera is None:
-            log.error("Could not open camera")
+            except PiCameraError as err:
+                log.warning('Something went wrong with the camera:', err)
+        except NameError as error:
+            log.error("NameError: %s, normal if in fake environment", error)
 
-    def close_camera(self):
+    def close(self):
         """
         Destructor
         """

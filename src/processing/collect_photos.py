@@ -29,7 +29,7 @@ def collect_photos() -> PhotoData:
 
     if FAKE:
         import os
-        cam = iter(os.listdir("/home/pi/Documents/python/raspberry-pi/img/"))
+        cam = iter(os.listdir("/home/pi/fys/raspberry-pi/img/"))
 
     current_pos = start_angle
     next_pic_angle = current_pos
