@@ -36,6 +36,9 @@ class Game:
              tuple with the 2 indexes
         """
 
+        if len(self.faces) == 0:
+            raise ValueError("No faces found")
+
         random.shuffle(self.faces)
 
         diff = len(self.faces) - self.player_count
