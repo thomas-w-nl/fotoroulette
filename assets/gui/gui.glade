@@ -91,6 +91,7 @@
                     <property name="receives_default">True</property>
                     <property name="halign">start</property>
                     <property name="valign">center</property>
+                    <property name="margin_left">10</property>
                     <signal name="clicked" handler="open_save_window" swapped="no"/>
                     <style>
                       <class name="button"/>
@@ -306,15 +307,12 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkImage">
+              <object class="GtkSpinner" id="FidgetSpinner">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <style>
-                  <class name="foto-wait-img"/>
-                </style>
               </object>
               <packing>
-                <property name="index">5</property>
+                <property name="index">-1</property>
               </packing>
             </child>
             <child type="overlay">
@@ -336,7 +334,7 @@
             </style>
           </object>
           <packing>
-            <property name="name">foto-wait</property>
+            <property name="name">photo-wait</property>
             <property name="title" translatable="yes">page1</property>
             <property name="position">2</property>
             <property name="needs_attention">True</property>
@@ -704,7 +702,7 @@ Je kan ook de QR code scannen</property>
                     <property name="label" translatable="yes">Debitis voluptatum iste omnis ullam repellat voluptatibus sit expedita. Est est sint officia explicabo. Error ipsam blanditiis ea quia. Sunt consectetur modi autem.
 </property>
                     <property name="wrap">True</property>
-                    <property name="max_width_chars">40</property>
+                    <property name="max_width_chars">80</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>

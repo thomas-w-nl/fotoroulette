@@ -1,5 +1,6 @@
 import qrcode
 import gi
+import threading
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, GdkPixbuf, Gdk, GObject
@@ -30,7 +31,7 @@ class Handler:
             # TODO: Show dialog
             return
 
-        photos.show_arrows()
+        photos._show_arrows()
         self.window._builder.get_object("PreviewPicture").set_from_pixbuf(photos.get_current_photo())
         self.window._stack.set_visible_child_name("preview-photos")
         self.window._builder.get_object("LeftArrow").hide()
@@ -39,16 +40,17 @@ class Handler:
         photos = self.window._photos
 
         try:
-            self.window._builder.get_object("PreviewPicture").set_from_pixbuf(photos.next_photo())
+            self.window._builder.get_object("PreviewPicture").set_from_pixbuf(photos.previous_photo())
         except IndexError:
-            pass
+            print("Error")
 
         return True
 
     def on_right_clicked(self, *args):
         photos = self.window._photos
+
         try:
-            self.window._builder.get_object("PreviewPicture").set_from_pixbuf(photos.previous_photo())
+            self.window._builder.get_object("PreviewPicture").set_from_pixbuf(photos.next_photo())
         except IndexError:
             pass
 
@@ -86,6 +88,12 @@ class Handler:
 
     def play_game_pressed(self, button):
         # We need to simplify the name to something we can send over the network
+
+        #self.window._builder.get_object("FidgetSpinner").start()
+        #self.window._stack.set_visible_child_name("photo-wait")
+        self.window.close_popup()
+        #t = threading.Thread(target=self.window._builder.get_object("FidgetSpinner").start)
+        #t.start()
         name = self.window._builder.get_object("GameTitle").get_text().lower().replace(' ', '_')
         json_message = "{\"message\": \"play_game\", \"name\": \"%s\"}\n" % name
         networking.send_message(json_message, self.window.set_photo)

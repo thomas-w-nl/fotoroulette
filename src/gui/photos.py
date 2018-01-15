@@ -18,7 +18,7 @@ class PhotoList:
         self.left_arrow = builder.get_object("LeftArrow")
         self.right_arrow = builder.get_object("RightArrow")
         self.index = 0
-        self.length = 0
+        self.length = -1
 
     def __len__(self):
         return self.length
@@ -26,15 +26,14 @@ class PhotoList:
     def __repr__(self):
         return "PhotoList(photos=%s)" % self.photos
 
-    def show_arrows(self) -> None:
+    def _show_arrows(self) -> None:
         """
         This function decides which arrows it should show depending on the current state of the list
         """
-        print("\n{0} - {1}\n".format(self.length, self.index))
-        if self.length == 1 and self.index == 0:
+        if self.length == 0 and self.index == 0:
            self.left_arrow.hide()
            self.right_arrow.hide()
-        elif self.length == 2 and self.index == 0:
+        elif self.index == 0:
            self.left_arrow.hide()
            self.right_arrow.show()
         elif self.index == self.length:
@@ -52,6 +51,7 @@ class PhotoList:
            photo: The photo you want to add
         """
         self.photos.append(photo)
+        print(self.length)
         self.length += 1
 
     def clear(self):
@@ -72,7 +72,13 @@ class PhotoList:
           IndexError when you you've already reached the max
         """
         self.index += 1
-        return self.photos[self.index]
+
+        if self.index > self.length:
+            raise IndexError
+
+        photo = self.photos[self.index]
+        self._show_arrows()
+        return photo
 
     def previous_photo(self):
         """
@@ -82,7 +88,12 @@ class PhotoList:
           IndexError when you're below zero.
         """
         self.index -= 1
-        return self.photos[self.index]
+        if self.index < 0:
+            raise IndexError
+
+        photo = self.photos[self.index]
+        self._show_arrows()
+        return photo
 
     def get_index(self) -> int:
         """Get the current index """
@@ -91,14 +102,6 @@ class PhotoList:
     def get_current_photo(self):
         return self.photos[self.index]
 
-    def at_beginning(self) -> bool:
-        """Returns whether the list is at the beginning"""
-        return self.index == 0
-
     def is_empty(self) -> bool:
         """Returns whether the list is empty"""
-        return self.length == 0
-
-    def at_end(self) -> bool:
-        """Returns whether it is at the end of the list"""
-        return self.index == self.length
+        return self.length == -1

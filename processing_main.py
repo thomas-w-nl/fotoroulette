@@ -23,6 +23,7 @@ from src.processing.spel import *
 from src.processing.collect_photos import collect_photos
 from src.processing.overlay import generate_overlay
 
+
 # Check whether we're in a raspberry pi or not
 try:
     import RPi.GPIO as GPIO

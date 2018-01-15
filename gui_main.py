@@ -13,6 +13,7 @@ from src.gui import photos
 from src.gui.handler import Handler
 from multiprocessing import Process
 
+SOUND = False
 
 def play_sound(file_name: str):
     subprocess.run(["mpv", "--no-resume-playback", "--volume=60", "assets/sound/" + file_name])
@@ -119,7 +120,7 @@ class MainWindow:
         self._photos.append(image)
 
         picture_widget.set_from_pixbuf(image)
-        if self._song is not None:
+        if self._song is not None and SOUND:
             p = Process(target=play_sound, args=(self._song,)).start()
 
         self.close_popup()
