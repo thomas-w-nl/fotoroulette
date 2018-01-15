@@ -181,7 +181,7 @@ class LoveMeter(Game):
         super(LoveMeter, self).__init__(faces)
 
         self.overlay = "assets/overlays/lovemeter.png"
-        self.background_color = (161, 81, 249)
+        self.background_color = (0, 0, 0)
         self.player_count = 2
         self.offsets = [
             {
