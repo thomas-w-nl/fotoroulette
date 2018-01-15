@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.0 -->
+<!-- Generated with glade 3.20.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <!-- interface-local-resource-path ../images/ -->
@@ -574,6 +574,7 @@ Je kan ook de QR code scannen</property>
               <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="column_homogeneous">True</property>
                 <child>
                   <object class="GtkButton">
                     <property name="label"> </property>
@@ -689,8 +690,157 @@ Je kan ook de QR code scannen</property>
         </style>
       </object>
     </child>
+    <child>
+      <placeholder/>
+    </child>
   </object>
-  <object class="GtkDialog" id="InformationDialog">
+  <object class="GtkDialog" id="InfoDialog">
+    <property name="can_focus">False</property>
+    <property name="type">popup</property>
+    <property name="title" translatable="yes">Informatie</property>
+    <property name="modal">True</property>
+    <property name="window_position">center-always</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="type_hint">dialog</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="urgency_hint">True</property>
+    <property name="transient_for">MainWindow</property>
+    <property name="attached_to">WindowStack</property>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="orientation">vertical</property>
+            <property name="layout_style">start</property>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Oké</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_close_clicked" swapped="no"/>
+                <style>
+                  <class name="button"/>
+                  <class name="button-succes"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="GameDescription1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="valign">start</property>
+                    <property name="margin_top">5</property>
+                    <property name="margin_bottom">5</property>
+                    <property name="hexpand">False</property>
+                    <property name="label" translatable="yes">Deze vakantiekieker is in opdracht van Corendon ontwikkeld door Noeel, Thomas, Valentijn, Theo en Michel die eerstejaars studenten Technische Informatica zijn aan de Hogeschool van Amsterdam.
+
+Deze vakantiekieker geeft u de mogelijkheid om uw fantastische vakantie nu nog leuker te maken. U kunt namelijk vier verschillende spellen spelen door simpelweg een spel te kiezen in de interface en voor de vakantiekieker te gaan staan.
+Na het spelen van een of meerdere spellen kunt u deze opslaan op onze website waarna u de foto’s kunt downloaden of delen op sociale media.
+</property>
+                    <property name="wrap">True</property>
+                    <property name="max_width_chars">40</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">1</property>
+                    <property name="width">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="GameTitle1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="hexpand">True</property>
+                    <property name="label" translatable="yes">Wat kan je allemaal doen met dit apparaat?</property>
+                    <attributes>
+                      <attribute name="font-desc" value="Noto Sans 20"/>
+                      <attribute name="foreground" value="#000000000000"/>
+                    </attributes>
+                    <style>
+                      <class name="dialog-header"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label"> </property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">end</property>
+                    <property name="valign">end</property>
+                    <signal name="clicked" handler="on_close_clicked" swapped="no"/>
+                    <style>
+                      <class name="button-quit"/>
+                      <class name="button"/>
+                      <class name="button-small"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <style>
+          <class name="dialog"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
+  <object class="GtkDialog" id="StopGameDialog">
     <property name="can_focus">False</property>
     <property name="type">popup</property>
     <property name="title" translatable="yes">Informatie</property>
@@ -826,146 +976,8 @@ website</property>
         </style>
       </object>
     </child>
-  </object>
-  <object class="GtkDialog" id="infoDialog">
-    <property name="can_focus">False</property>
-    <property name="type">popup</property>
-    <property name="title" translatable="yes">Informatie</property>
-    <property name="modal">True</property>
-    <property name="window_position">center-always</property>
-    <property name="destroy_with_parent">True</property>
-    <property name="type_hint">dialog</property>
-    <property name="skip_taskbar_hint">True</property>
-    <property name="urgency_hint">True</property>
-    <property name="transient_for">MainWindow</property>
-    <property name="attached_to">WindowStack</property>
-    <child internal-child="vbox">
-      <object class="GtkBox">
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <property name="orientation">vertical</property>
-            <property name="layout_style">start</property>
-            <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes">Oké</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <style>
-                  <class name="button"/>
-                  <class name="button-succes"/>
-                </style>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="pack_type">end</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkGrid">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkButton">
-                    <property name="label"> </property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="halign">end</property>
-                    <property name="valign">end</property>
-                    <style>
-                      <class name="button-quit"/>
-                      <class name="button"/>
-                      <class name="button-small"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="GameDescription1">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="valign">start</property>
-                    <property name="margin_top">5</property>
-                    <property name="margin_bottom">5</property>
-                    <property name="hexpand">False</property>
-                    <property name="label" translatable="yes">Deze vakantiekieker is in opdracht van Corendon ontwikkeld door Noeel, Thomas, Valentijn, Theo en Michel die eerstejaars studenten Technische Informatica zijn aan de Hogeschool van Amsterdam.
-
-Deze vakantiekieker geeft u de mogelijkheid om uw fantastische vakantie nu nog leuker te maken. U kunt namelijk vier verschillende spellen spelen door simpelweg een spel te kiezen in de interface en voor de vakantiekieker te gaan staan.
-Na het spelen van een of meerdere spellen kunt u deze opslaan op onze website waarna u de foto’s kunt downloaden of delen op sociale media.
-</property>
-                    <property name="wrap">True</property>
-                    <property name="max_width_chars">40</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">1</property>
-                    <property name="width">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="GameTitle1">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">start</property>
-                    <property name="hexpand">True</property>
-                    <property name="label" translatable="yes">Wat kan je allemaal doen met dit apparaat?</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Noto Sans 20"/>
-                      <attribute name="foreground" value="#000000000000"/>
-                    </attributes>
-                    <style>
-                      <class name="dialog-header"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">0</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <style>
-          <class name="dialog"/>
-        </style>
-      </object>
+    <child>
+      <placeholder/>
     </child>
   </object>
 </interface>

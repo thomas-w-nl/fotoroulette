@@ -162,13 +162,13 @@ class Handler:
         networking.send_message("{\"message\": \"command\", \"name\": \"send_photos\"}\n", callback)
 
     def open_save_window(self, *args):
-        self.window.show_popup("InformationDialog")
+        self.window.show_popup("StopGameDialog")
 
     def on_dialog_close(self, *args):
         print("closed")
 
     def on_information_clicked(self, button):
-        self.window.show_popup("InformationDialog")
+        self.window.show_popup("InfoDialog")
 
     def play_game_pressed(self, button):
         # We need to simplify the name to something we can send over the network
