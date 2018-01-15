@@ -12,7 +12,7 @@ from src.gui import networking
 from multiprocessing import Process
 
 def play_sound(file_name : str):
-    subprocess.run(["mpv", "agtssets/sound/" + file_name])
+    subprocess.run(["mpv", "assets/sound/" + file_name])
 
 
 class MainWindow:
@@ -113,7 +113,7 @@ class MainWindow:
 
         picture_widget.set_from_pixbuf(image)
         if self._song is not None:
-            Process(target=play_sound, args=(self._song,)).start()
+            p = Process(target=play_sound, args=(self._song,)).start()
 
         self.close_popup()
         return True
@@ -180,7 +180,7 @@ class Handler:
         self._show_game_popup("Love Meter", "Love Meter", "assets/images/versus.svg", "dingDong.mp3")
 
     def on_mocking_pressed(self, button):
-        self._show_game_popup("Wanted", "Love Meter", "assets/images/love.svg", "finishHim.mp3")
+        self._show_game_popup("Wanted", "Love Meter", "assets/images/love-example.png", "finishHim.mp3")
 
     def on_close_clicked(self, button):
         self.window.close_popup()
