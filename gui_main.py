@@ -171,16 +171,22 @@ class Handler:
         return popup
 
     def on_superheroes_pressed(self, button):
-        self._show_game_popup("Superheroes", "Superheroes", "assets/images/heroes.svg", "heroes.mp3")
+        self._show_game_popup("Superheroes", "Iedereen wilt wel een superheld zijn maar lang niet iedereen is daar geschikt voor. Superheroes analyseert de vaardigheden van iedere speler en vergelijkt deze met bekende helden als Superman en Batman. De uiteindelijk geselecteerde spelers worden aan het publiek getoont d.m.v een poster die overal te zien zal zijn.",
+                              "assets/images/heroes.svg", "heroes.mp3")
 
     def on_versus_pressed(self, button):
-        self._show_game_popup("Versus", "Versus", "../img/love.svg", "fatality.mp3")
+        self._show_game_popup("Versus", "Bij versus draait het erom dat de wedstrijd gelijk is maar dat de rivaliteit extreem hoog ligt."
+                                        "De meest rivaliserende spelers komen oog in oog te staan met elkaar waarna het ultieme gevecht zal beginnen.",
+                              "../img/love.svg", "fatality.mp3")
 
     def on_lovemeter_pressed(self, button):
-        self._show_game_popup("Love Meter", "Love Meter", "assets/images/versus.svg", "dingDong.mp3")
+        self._show_game_popup("Love Meter", "De Lovemeter selecteert twee spelers om zo het perfecte koppel samen te stellen."
+                                            "Denkt u dat u op het punt de ware liefde te gaan vinden maar u wilt het 100% weten, speel dan de Lovemeter!",
+                              "assets/images/versus.svg", "dingDong.mp3")
 
     def on_mocking_pressed(self, button):
-        self._show_game_popup("Wanted", "Love Meter", "assets/images/love-example.png", "finishHim.mp3")
+        self._show_game_popup("Wanted", "Wanted checkt de achtergrond van de spelers om vervolgens de meest criminele speler bekend te maken d.m.v een “wanted”-poster.",
+                              "assets/images/love-example.png", "finishHim.mp3")
 
     def on_close_clicked(self, button):
         self.window.close_popup()

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.2 -->
+<!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <!-- interface-local-resource-path ../images/ -->
@@ -689,9 +689,6 @@ Je kan ook de QR code scannen</property>
         </style>
       </object>
     </child>
-    <child>
-      <placeholder/>
-    </child>
   </object>
   <object class="GtkDialog" id="InformationDialog">
     <property name="can_focus">False</property>
@@ -829,9 +826,6 @@ website</property>
         </style>
       </object>
     </child>
-    <child>
-      <placeholder/>
-    </child>
   </object>
   <object class="GtkDialog" id="infoDialog">
     <property name="can_focus">False</property>
@@ -857,7 +851,21 @@ website</property>
             <property name="orientation">vertical</property>
             <property name="layout_style">start</property>
             <child>
-              <placeholder/>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Oké</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <style>
+                  <class name="button"/>
+                  <class name="button-succes"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
             </child>
           </object>
           <packing>
@@ -903,9 +911,11 @@ website</property>
                     <property name="margin_top">5</property>
                     <property name="margin_bottom">5</property>
                     <property name="hexpand">False</property>
-                    <property name="label" translatable="yes">Debitis voluptatum iste omnis ullam repellat voluptatibus sit expedita. Est est sint officia explicabo. Error ipsam blanditiis ea quia. Sunt consectetur modi autem.
+                    <property name="label" translatable="yes">Deze vakantiekieker is in opdracht van Corendon ontwikkeld door Noeel, Thomas, Valentijn, Theo en Michel die eerstejaars studenten Technische Informatica zijn aan de Hogeschool van Amsterdam.
 
-Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse nesciunt quaerat totam reiciendis. Eos hic tempora veritatis reiciendis velit tempora omnis molestias. Nam temporibus eaque quia distinctio repellat est error molestiae.</property>
+Deze vakantiekieker geeft u de mogelijkheid om uw fantastische vakantie nu nog leuker te maken. U kunt namelijk vier verschillende spellen spelen door simpelweg een spel te kiezen in de interface en voor de vakantiekieker te gaan staan.
+Na het spelen van een of meerdere spellen kunt u deze opslaan op onze website waarna u de foto’s kunt downloaden of delen op sociale media.
+</property>
                     <property name="wrap">True</property>
                     <property name="max_width_chars">40</property>
                   </object>
@@ -956,9 +966,6 @@ Fuga ratione vero voluptas cupiditate. Sed voluptas iste dicta quo. Rem qui esse
           <class name="dialog"/>
         </style>
       </object>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </object>
 </interface>
