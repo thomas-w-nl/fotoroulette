@@ -3,6 +3,8 @@ import signal
 import cv2
 import numpy as np
 import subprocess
+import os
+import qrcode
 
 gi.require_version('Gtk', '3.0')
 
@@ -11,14 +13,16 @@ from gi.repository.GdkPixbuf import Pixbuf
 from src.gui import networking
 from multiprocessing import Process
 
-def play_sound(file_name : str):
-    subprocess.run(["mpv", "assets/sound/" + file_name])
+
+def play_sound(file_name: str):
+    subprocess.run(["mpv", "--no-resume-playback", "--volume=60", "assets/sound/" + file_name])
 
 
 class MainWindow:
     """
     The GTK application that displays the photos taken by the photobooth
     """
+
     def __init__(self):
         """
         Sets up the basic logic of the GTK application
@@ -30,7 +34,7 @@ class MainWindow:
         self._stack = self._builder.get_object("WindowStack")
         self._logo = self._builder.get_object("CorendonLogo")
         self._window = self._builder.get_object("MainWindow")
-        self._popup = None # shitty hack
+        self._popup = None  # shitty hack
         self._song = None
 
         self._set_logo("assets/images/corendon_logo.png", 600, 200)
@@ -44,7 +48,7 @@ class MainWindow:
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-    def show_popup(self, popup_name : str) -> Gtk.Dialog:
+    def show_popup(self, popup_name: str) -> Gtk.Dialog:
         """
         Show a popup and disable the screen
 
@@ -67,7 +71,7 @@ class MainWindow:
             self._window.set_sensitive(True)
             self._popup = None
 
-    def _set_logo(self, path : str, width : int, height : int) -> None:
+    def _set_logo(self, path: str, width: int, height: int) -> None:
         """
         Sets the logo on top of the application
 
@@ -94,7 +98,7 @@ class MainWindow:
         # Maakt GTK blij
         return True
 
-    def set_photo(self, response : str) -> bool:
+    def set_photo(self, response: str) -> bool:
         """
         Set the currently showed picture from a string
 
@@ -110,6 +114,7 @@ class MainWindow:
         path = "transferred_by_network.png"
         cv2.imwrite(path, image_cv2)
         image = Pixbuf.new_from_file(path)
+        os.remove(path)
 
         picture_widget.set_from_pixbuf(image)
         if self._song is not None:
@@ -122,6 +127,7 @@ class MainWindow:
         self._window.show_all()
         Gtk.main()
 
+
 class Handler:
     def __init__(self, window):
         self.window = window
@@ -131,6 +137,7 @@ class Handler:
 
     def on_quit_clicked(self, *args):
         self.window._stack.set_visible_child_name("splash-screen")
+
         def callback(self, response):
             self._builder.get_object("unique-code").set_text(response)
 
@@ -138,8 +145,18 @@ class Handler:
         def callback(response):
             self.window._builder.get_object("unique-code").set_text(response)
             self.window._stack.set_visible_child_name("save-screen")
+
+            photo = qrcode.make("https://fys.1hz.nl/nl/pictures/%s" % response)
+            photo.save("qr-code.png", "PNG")
+
+            image = Pixbuf.new_from_file("qr-code.png")
+            self.window._builder.get_object("qr-code").set_from_pixbuf(image)
+            os.remove("qr-code.png")
+
             self.window.close_popup()
+
             print(response)
+
             return True
 
         networking.send_message("{\"message\": \"command\", \"name\": \"send_photos\"}\n", callback)
@@ -159,33 +176,36 @@ class Handler:
         json_message = "{\"message\": \"play_game\", \"name\": \"%s\"}\n" % name
         networking.send_message(json_message, self.window.set_photo)
 
-    def _show_game_popup(self, name : str, description : str, example_image : str, song : str) -> Gtk.Window:
+    def _show_game_popup(self, name: str, description: str, example_image: str, song: str) -> Gtk.Window:
         self.window._song = song
 
         popup = self.window.show_popup("GameDialog")
-        image = Pixbuf.new_from_file(example_image)\
-                      .scale_simple(800, 450, GdkPixbuf.InterpType.BILINEAR)
+        image = Pixbuf.new_from_file(example_image)
         self.window._builder.get_object("GameTitle").set_text(name)
         self.window._builder.get_object("GameDescription").set_text(description)
         self.window._builder.get_object("GameImage").set_from_pixbuf(image)
         return popup
 
     def on_superheroes_pressed(self, button):
-        self._show_game_popup("Superheroes", "Iedereen wilt wel een superheld zijn maar lang niet iedereen is daar geschikt voor. Superheroes analyseert de vaardigheden van iedere speler en vergelijkt deze met bekende helden als Superman en Batman. De uiteindelijk geselecteerde spelers worden aan het publiek getoont d.m.v een poster die overal te zien zal zijn.",
+        self._show_game_popup("Superheroes",
+                              "Iedereen wilt wel een superheld zijn maar lang niet iedereen is daar geschikt voor. Superheroes analyseert de vaardigheden van iedere speler en vergelijkt deze met bekende helden als Superman en Batman. De uiteindelijk geselecteerde spelers worden aan het publiek getoont d.m.v een poster die overal te zien zal zijn.",
                               "assets/images/heroes.svg", "heroes.mp3")
 
     def on_versus_pressed(self, button):
-        self._show_game_popup("Versus", "Bij versus draait het erom dat de wedstrijd gelijk is maar dat de rivaliteit extreem hoog ligt."
-                                        "De meest rivaliserende spelers komen oog in oog te staan met elkaar waarna het ultieme gevecht zal beginnen.",
+        self._show_game_popup("Versus",
+                              "Bij versus draait het erom dat de wedstrijd gelijk is maar dat de rivaliteit extreem hoog ligt."
+                              "De meest rivaliserende spelers komen oog in oog te staan met elkaar waarna het ultieme gevecht zal beginnen.",
                               "../img/love.svg", "fatality.mp3")
 
     def on_lovemeter_pressed(self, button):
-        self._show_game_popup("Love Meter", "De Lovemeter selecteert twee spelers om zo het perfecte koppel samen te stellen."
-                                            "Denkt u dat u op het punt de ware liefde te gaan vinden maar u wilt het 100% weten, speel dan de Lovemeter!",
+        self._show_game_popup("Love Meter",
+                              "De Lovemeter selecteert twee spelers om zo het perfecte koppel samen te stellen."
+                              "Denkt u dat u op het punt de ware liefde te gaan vinden maar u wilt het 100% weten, speel dan de Lovemeter!",
                               "assets/images/versus.svg", "dingDong.mp3")
 
     def on_mocking_pressed(self, button):
-        self._show_game_popup("Wanted", "Wanted checkt de achtergrond van de spelers om vervolgens de meest criminele speler bekend te maken d.m.v een “wanted”-poster.",
+        self._show_game_popup("Wanted",
+                              "Wanted checkt de achtergrond van de spelers om vervolgens de meest criminele speler bekend te maken d.m.v een “wanted”-poster.",
                               "assets/images/love-example.png", "finishHim.mp3")
 
     def on_close_clicked(self, button):
