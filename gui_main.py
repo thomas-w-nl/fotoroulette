@@ -127,7 +127,7 @@ class MainWindow:
 
     def start(self):
         self._window.show_all()
-        self._stack.set_visible_child_name("preview-photos")
+        self._stack.set_visible_child_name("splash-screen")
         Gtk.main()
 
 class Handler:

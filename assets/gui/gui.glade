@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.20.2 -->
+<!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <!-- interface-local-resource-path ../images/ -->
@@ -308,7 +308,9 @@
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">../images/inf.svg</property>
+                <style>
+                  <class name="foto-wait-img"/>
+                </style>
               </object>
               <packing>
                 <property name="index">5</property>
@@ -320,14 +322,20 @@
                 <property name="can_focus">False</property>
                 <property name="valign">start</property>
                 <property name="label" translatable="yes">Lachen, er worden foto's gemaakt!</property>
+                <style>
+                  <class name="foto-wait-text"/>
+                </style>
               </object>
               <packing>
                 <property name="index">-1</property>
               </packing>
             </child>
+            <style>
+              <class name="foto-wait-container"/>
+            </style>
           </object>
           <packing>
-            <property name="name">page1</property>
+            <property name="name">foto-wait</property>
             <property name="title" translatable="yes">page1</property>
             <property name="position">2</property>
             <property name="needs_attention">True</property>
@@ -737,9 +745,6 @@ Je kan ook de QR code scannen</property>
         </style>
       </object>
     </child>
-    <child>
-      <placeholder/>
-    </child>
   </object>
   <object class="GtkDialog" id="InfoDialog">
     <property name="can_focus">False</property>
@@ -883,9 +888,6 @@ Na het spelen van een of meerdere spellen kunt u deze opslaan op onze website wa
         </style>
       </object>
     </child>
-    <child>
-      <placeholder/>
-    </child>
   </object>
   <object class="GtkDialog" id="StopGameDialog">
     <property name="can_focus">False</property>
@@ -1022,9 +1024,6 @@ website</property>
           <class name="dialog"/>
         </style>
       </object>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </object>
 </interface>
