@@ -133,6 +133,7 @@
                     <property name="receives_default">True</property>
                     <property name="relief">half</property>
                     <property name="image_position">right</property>
+                    <signal name="clicked" handler="on_preview_clicked" swapped="no"/>
                     <style>
                       <class name="button"/>
                     </style>
@@ -530,7 +531,7 @@ Je kan ook de QR code scannen</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkImage" id="Picture1">
+              <object class="GtkImage" id="PreviewPicture">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="pixbuf">../images/love.svg</property>
@@ -540,28 +541,71 @@ Je kan ook de QR code scannen</property>
               </packing>
             </child>
             <child type="overlay">
-              <object class="GtkArrow">
-                <property name="width_request">100</property>
-                <property name="height_request">100</property>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Terug</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
                 <property name="halign">end</property>
-                <property name="valign">center</property>
-                <property name="shadow_type">etched-in</property>
-              </object>
-            </child>
-            <child type="overlay">
-              <object class="GtkArrow">
-                <property name="width_request">100</property>
-                <property name="height_request">100</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="valign">center</property>
-                <property name="arrow_type">left</property>
+                <property name="valign">end</property>
+                <signal name="clicked" handler="on_back_clicked" swapped="no"/>
+                <style>
+                  <class name="button"/>
+                </style>
               </object>
               <packing>
-                <property name="index">1</property>
+                <property name="index">2</property>
+              </packing>
+            </child>
+            <child type="overlay">
+              <object class="GtkButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="halign">start</property>
+                <property name="valign">center</property>
+                <property name="margin_top">1</property>
+                <property name="relief">none</property>
+                <signal name="clicked" handler="on_left_clicked" swapped="no"/>
+                <child>
+                  <object class="GtkArrow" id="LeftArrow">
+                    <property name="width_request">100</property>
+                    <property name="height_request">100</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="valign">center</property>
+                    <property name="arrow_type">left</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="index">3</property>
+              </packing>
+            </child>
+            <child type="overlay">
+              <object class="GtkButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
+                <property name="relief">none</property>
+                <signal name="clicked" handler="on_right_clicked" swapped="no"/>
+                <child>
+                  <object class="GtkArrow" id="RightArrow">
+                    <property name="width_request">100</property>
+                    <property name="height_request">100</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                    <property name="shadow_type">etched-in</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="index">3</property>
               </packing>
             </child>
           </object>
