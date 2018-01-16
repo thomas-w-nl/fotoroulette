@@ -3,7 +3,7 @@ Description=Fotoroulette hardware layer
 
 [Service]
 Type=simple
-ExecStart=/home/thomas/PycharmProjects/raspberry-pi/start_server.py
+ExecStart=python3 /home/thomas/PycharmProjects/raspberry-pi/start_server.py
 
 [Install]
 WantedBy=multi-user.target
