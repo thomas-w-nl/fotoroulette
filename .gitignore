@@ -7,6 +7,10 @@ docs/_build
 test
 out
 .iml
+
+# gui shizzel
+\#*#
+
 #
 # Python shizzel
 #

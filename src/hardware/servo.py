@@ -1,29 +1,25 @@
 import configparser
-import RPi.GPIO as GPIO
 import time
 
 from src.common.log import *
 
 config = configparser.ConfigParser()
 config.read('fotoroulette.conf')
-MAX_SERVO_POS = config['Servo'].getint('MAX_SERVO_POS')
-MIN_SERVO_POS = config['Servo'].getint('MIN_SERVO_POS')
 
-_position = 0
+try:
+    import RPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(18, GPIO.OUT)
-pwm = GPIO.PWM(18, 50)
-pwm.start(0)
+    MAX_SERVO_POS = config['Servo'].getint('MAX_SERVO_POS')
+    MIN_SERVO_POS = config['Servo'].getint('MIN_SERVO_POS')
 
+    _position = 0
 
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(18, GPIO.OUT)
     pwm = GPIO.PWM(18, 50)
     pwm.start(0)
-except ModuleNotFoundError:
-    pass
-
+except ImportError as error:
+    log.error("ImportError: %s, normal if in fake environment", error)
 
 
 def goto_position(graden: int, sleep:float=0.4) -> None:

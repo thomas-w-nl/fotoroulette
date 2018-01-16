@@ -36,6 +36,9 @@ class Game:
              tuple with the 2 indexes
         """
 
+        if len(self.faces) == 0:
+            raise ValueError("No faces found")
+
         random.shuffle(self.faces)
 
         diff = len(self.faces) - self.player_count
@@ -181,18 +184,18 @@ class LoveMeter(Game):
         super(LoveMeter, self).__init__(faces)
 
         self.overlay = "assets/overlays/lovemeter.png"
-        self.background_color = (0, 0, 0)
+        self.background_color = (249, 81, 161)
         self.player_count = 2
         self.offsets = [
             {
-                'offset_y': -30,
-                'offset_x': -35,
-                'minus_image_width': 150
+                'offset_y': -23,
+                'offset_x': -28,
+                'minus_image_width': 120
             },
             {
-                'offset_y': -30,
-                'offset_x': -70,
-                'minus_image_width': 150
+                'offset_y': -23,
+                'offset_x': -71.5,
+                'minus_image_width': 120
             },
         ]
 
