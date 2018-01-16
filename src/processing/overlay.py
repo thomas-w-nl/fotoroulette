@@ -7,6 +7,7 @@ from src.common.log import *
 
 DEBUG = False
 
+
 def generate_overlay(game):
     """
     Generates the final image with the faces and overlays
@@ -32,12 +33,15 @@ def generate_overlay(game):
 
     for index, face in enumerate(game.faces):
         face_offset = game.offsets[index]
-        face.image = _resize_fit(face.image, int(final_overlay_width / 2) - face_offset['minus_image_width'],
-                                 final_overlay_height - face_offset['minus_image_width'])
+
+        resize_max_width = int(final_overlay_width / 2) - face_offset['minus_image_width']
+        resize_max_height = int(final_overlay_height - face_offset['minus_image_width'])
+
+        face.image = _resize_fit(face.image, resize_max_width, resize_max_height)
 
         f = Image.fromarray(cv2.cvtColor(face.image, cv2.COLOR_BGR2RGB))
 
-        face_height, face_width = f.size
+        face_width, face_height = f.size
 
         offset_x = face_offset['offset_x']
         offset_y = face_offset['offset_y']
@@ -48,17 +52,28 @@ def generate_overlay(game):
         # negative numbers from -100 to 1 are percentage offsets
         if offset_y < 0:
             offset_y_percentage = offset_y * -0.01
-            offset_y = int((final_overlay_height - face_width) * offset_y_percentage)
+            offset_y = int((final_overlay_height - face_height) * offset_y_percentage)
 
         if offset_x < 0:
             offset_x_percentage = offset_x * -0.01
-            offset_x = int((final_overlay_width - face_height) * offset_x_percentage)
-
-        if (face_height > final_overlay_height) or (face_width > final_overlay_width):
-            raise ValueError('Overlay bigger than background')
+            offset_x = int((final_overlay_width - face_width) * offset_x_percentage)
 
         if ((offset_y + face_height) > final_overlay_height) or ((offset_x + face_width) > final_overlay_width):
-            raise ValueError('offset too big')
+            err = "\nDetailed description of vague error:\n"
+            err += "offset_y = " + str(offset_x) + "\n"
+            err += "face_height = " + str(face_width) + "\n"
+
+            err += "offset_x = " + str(offset_x) + "\n"
+            err += "face_width = " + str(face_width) + "\n"
+
+            err += "((offset_y + face_height) > final_overlay_height) = " + str(offset_y + face_height) + \
+                   ">" + str(final_overlay_height) + "\n"
+            err += "OR\n"
+            err += "(offset_x + face_width) > final_overlay_width) = " + str(offset_x + face_width) + \
+                   ">" + str(final_overlay_width) + "\n"
+            log.error(err)
+
+            raise ValueError('Face is out of image bounds')
 
         place_holder_image.paste(f, (offset_x, offset_y))
 
@@ -81,11 +96,10 @@ def _resize_fit(image: np.array, max_width: int, max_height: int) -> np.array:
     """
     height, width, channels = image.shape
     if DEBUG:
-        log.debug("RESIZE IMAGE INFO =====> width:" + str(width) + " height:" + str(height))
-
+        log.debug("image to resize width:" + str(width) + " height:" + str(height))
 
     scale_width = max_width / width
-    scale_height = max_height / width
+    scale_height = max_height / height
 
     final_scale = scale_width
 
@@ -95,4 +109,3 @@ def _resize_fit(image: np.array, max_width: int, max_height: int) -> np.array:
     res = cv2.resize(image, None, fx=final_scale, fy=final_scale, interpolation=cv2.INTER_CUBIC)
 
     return res
-

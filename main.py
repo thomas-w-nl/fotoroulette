@@ -19,22 +19,24 @@ if __name__ == "__main__":
     #
     #     pickle.dump(data, output, pickle.HIGHEST_PROTOCOL)
 
-    fakedata = open('real_2_personen_new.pkl', 'rb')
-    data = pickle.load(fakedata)
+    with open('real_2_personen_new.pkl', 'rb') as pickleinput:
 
-    photos_with_angels, range_sensor = data.get()
+        data = pickle.load(pickleinput)
 
-    faces = get_faces(data)
+        photos_with_angels, range_sensor = data.get()
 
-    games = []
+        game_type = Games.VERSUS
 
-    games.append(game_by_type(Games.VERSUS, faces).gen_overlay())
+        faces = get_faces(data, game_type)
 
-    # for face in faces:
-    #     cv2.imshow("output", face.image)
-    #     cv2.waitKey()
+        games = []
 
-    for game in games:
-        cv2.imshow("output", game)
-        cv2.imwrite("game.jpg", game)
-        cv2.waitKey()
+        games.append(game_by_type(game_type, faces).gen_overlay())
+
+        # for face in faces:
+        #     cv2.imshow("output", face.image)
+        #     cv2.waitKey()
+
+
+        for game in games:
+            game.show()
