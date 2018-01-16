@@ -362,7 +362,7 @@
                 <property name="receives_default">True</property>
                 <property name="halign">end</property>
                 <property name="valign">end</property>
-                <signal name="clicked" handler="on_start_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_pick_game_clicked" swapped="no"/>
                 <style>
                   <class name="button"/>
                 </style>
@@ -390,10 +390,10 @@
               <object class="GtkAlignment">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="margin_left">50</property>
-                <property name="margin_right">50</property>
-                <property name="margin_top">50</property>
-                <property name="margin_bottom">50</property>
+                <property name="margin_left">10</property>
+                <property name="margin_right">10</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
                 <property name="left_padding">12</property>
                 <child>
                   <object class="GtkBox">
