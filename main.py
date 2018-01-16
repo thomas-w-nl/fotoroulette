@@ -12,8 +12,8 @@ from src.processing.get_faces import get_faces
 # from src.processing.overlay import generate_overlay
 from src.processing.spel import *
 
+if __name__ == "__main__":
 
-    #
     # with open('real_2_personen_new.pkl', 'wb') as output:
     #
     #     pickle.dump(data, output, pickle.HIGHEST_PROTOCOL)
