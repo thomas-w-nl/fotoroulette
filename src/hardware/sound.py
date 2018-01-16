@@ -1,6 +1,6 @@
-+import vlc
+import vlc
 import time
-from common.log import *
+from src.common.log import *
 
 love = vlc.MediaPlayer("assets/sound/dingDong.mp3")
 finishHim = vlc.MediaPlayer("assets/sound/finishHim.mp3")

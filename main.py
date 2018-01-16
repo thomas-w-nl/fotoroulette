@@ -1,4 +1,3 @@
-
 import pickle
 
 import cv2
@@ -13,22 +12,19 @@ from src.processing.get_faces import get_faces
 from src.processing.spel import *
 
 if __name__ == "__main__":
-
+    print("====== THIS FILE IS DEPRECATED ======")
+    print("Please use the proper files to start fotoroulette")
+    # data = collect_photos()
     # with open('real_2_personen_new.pkl', 'wb') as output:
     #
     #     pickle.dump(data, output, pickle.HIGHEST_PROTOCOL)
 
-    # with open('real_2_personen_new.pkl', 'rb') as input:
-    #     data = pickle.load(input)
-
-    data = collect_photos()
+    fakedata = open('real_2_personen_new.pkl', 'rb')
+    data = pickle.load(fakedata)
 
     photos_with_angels, range_sensor = data.get()
 
     faces = get_faces(data)
-
-    print("======END======")
-    print("Number of faces found:", len(faces))
 
     games = []
 

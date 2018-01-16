@@ -78,7 +78,7 @@ class Camera:
                 time.sleep(2)
 
             except PiCameraError as err:
-                log.warning('Something went wrong with the camera:', err)
+                log.error('Something went wrong with the camera:', err)
         except NameError as error:
             log.error("NameError: %s, normal if in fake environment", error)
 

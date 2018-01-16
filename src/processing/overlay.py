@@ -5,6 +5,8 @@ import cv2
 from PIL import Image, ImageMode
 from src.common.log import *
 
+DEBUG = False
+
 def generate_overlay(game):
     """
     Generates the final image with the faces and overlays
@@ -78,7 +80,8 @@ def _resize_fit(image: np.array, max_width: int, max_height: int) -> np.array:
         resized image
     """
     height, width, channels = image.shape
-    log.debug("RESIZE IMAGE INFO =====> width:" + str(width) + " height:" + str(height))
+    if DEBUG:
+        log.debug("RESIZE IMAGE INFO =====> width:" + str(width) + " height:" + str(height))
 
 
     scale_width = max_width / width
