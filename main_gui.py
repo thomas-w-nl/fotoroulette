@@ -2,26 +2,18 @@ import gi
 import signal
 import cv2
 import numpy as np
-import subprocess
-import os
 
 gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk, GdkPixbuf, Gdk, GObject
 from gi.repository.GdkPixbuf import Pixbuf
-from src.gui import photos
+from src.gui import networking
 from src.gui.handler import Handler
-from multiprocessing import Process
-
-
-def play_sound(file_name: str):
-    subprocess.run(["mpv", "--no-resume-playback", "--volume=60", "assets/sound/" + file_name])
-
+b
 class MainWindow:
     """
     The GTK application that displays the photos taken by the photobooth
     """
-
     def __init__(self):
         """
         Sets up the basic logic of the GTK application
@@ -33,11 +25,9 @@ class MainWindow:
         self._stack = self._builder.get_object("WindowStack")
         self._logo = self._builder.get_object("CorendonLogo")
         self._window = self._builder.get_object("MainWindow")
-        self._popup = None  # shitty hack
-        self._song = None
-        self._photos = photos.PhotoList(self._builder)
+        self._popup = None # shitty hack
 
-        self._set_logo("assets/images/corendon_logo.png", 600, 200)
+        self._set_logo("img/corendon_logo.png", 400, 150)
 
         # Use CSS for styling
         style = Gtk.CssProvider()
@@ -48,7 +38,7 @@ class MainWindow:
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-    def show_popup(self, popup_name: str) -> Gtk.Dialog:
+    def show_popup(self, popup_name : str) -> Gtk.Dialog:
         """
         Show a popup and disable the screen
 
@@ -71,7 +61,7 @@ class MainWindow:
             self._window.set_sensitive(True)
             self._popup = None
 
-    def _set_logo(self, path: str, width: int, height: int) -> None:
+    def _set_logo(self, path : str, width : int, height : int) -> None:
         """
         Sets the logo on top of the application
 
@@ -98,7 +88,7 @@ class MainWindow:
         # Maakt GTK blij
         return True
 
-    def set_photo(self, response: str) -> bool:
+    def set_photo(self, response : str) -> bool:
         """
         Set the currently showed picture from a string
 
@@ -116,14 +106,10 @@ class MainWindow:
         image = Pixbuf.new_from_file(path)
         os.remove(path)
 
-        self._photos.append(image)
-
         picture_widget.set_from_pixbuf(image)
-        if self._song is not None:
-            p = Process(target=play_sound, args=(self._song,)).start()
-
         self.close_popup()
         return True
+
 
     def start(self):
         self._window.show_all()
@@ -131,5 +117,6 @@ class MainWindow:
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal.SIG_DFL)
+    networking.create_server()
     window = MainWindow()
     window.start()

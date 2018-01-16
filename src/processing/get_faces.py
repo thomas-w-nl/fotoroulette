@@ -4,13 +4,14 @@ from typing import List
 import numpy as np
 
 from src.common.log import *
+from src.processing import spel
 from src.common.tools import *
 from src.processing.photo_data import PhotoData, Photo, RangeSensor
 
-DEBUG = 0  # 2
-
 config = configparser.ConfigParser()
 config.read('fotoroulette.conf')
+
+DEBUG = config['General'].getint('DEBUG')
 
 
 class Face:
@@ -51,12 +52,13 @@ class Faces:
         yield self.faces
 
 
-def get_faces(photos_with_data: PhotoData) -> List[np.array]:
+def get_faces(photos_with_data: PhotoData, game_type: spel.Games) -> List[np.array]:
     """
     Returned de uniek gezichten uit meerdere fotos die voldoen aan een bepaalde drempelwaarde.
 
     Args:
        photos_with_data: De fotos met sensor en orientatie data
+       game_type: Het type game wat er gespeeld wordt.
 
     Returns:
        Een lijst met de gezichten.
@@ -101,7 +103,10 @@ def get_faces(photos_with_data: PhotoData) -> List[np.array]:
             if not _confident(face, range_sensor):
                 continue
 
-            face.image = _cut_out_head(face, photo)
+            cutout_padding_factor = config['FaceDetection'].getfloat(
+                str(game_type).split('.')[1] + '_CUTOUT_PADDING_FACTOR')
+
+            face.image = _cut_out_head(face, photo, cutout_padding_factor)
             _append_or_replace(all_faces, face)
 
             # mark a detected face
@@ -281,7 +286,7 @@ def _crop_image(img: np.array, rect: list, padding: int) -> np.array:
     return img[y:(y + h), x:(x + w)]
 
 
-def _cut_out_head(face: Face, photo: np.array) -> np.array:
+def _cut_out_head(face: Face, photo: np.array, cut_out_paddign: float) -> np.array:
     """
     Haalt een gezicht uit de foto en geeft die weer terug als een aparte foto
 
@@ -292,10 +297,9 @@ def _cut_out_head(face: Face, photo: np.array) -> np.array:
     Returns:
         Het gezicht als een aparte foto
     """
-    CUTOUT_PADDING_FACTOR = config['FaceDetection'].getfloat('CUTOUT_PADDING_FACTOR')
     x, y, w, h = face.pos
 
-    padding = int(round(w * CUTOUT_PADDING_FACTOR))
+    padding = int(round(w * cut_out_paddign))
     cutout = _crop_image(photo, face.pos, padding)
 
     return cutout

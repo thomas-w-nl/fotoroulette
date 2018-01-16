@@ -72,38 +72,3 @@ def send_message(message : str, callback, path : str = "/tmp/python-processing-i
     connection = Gio.SocketClient()
     connection.connect_after("event", connection_handler, connection)
     connection.connect(server_info)
-
-
-def create_server(path_name : str = "/tmp/python-gui-ipc") -> None:
-    """
-    Create a Gio server using a TCP Unix Socket on a specified address
-
-    Args:
-       path: The path to the UNIX socket
-
-    """
-    def connection_handler(socket_service, connection, source_object, unknown):
-        input_stream = connection.get_input_stream()
-        print(input_stream.read_bytes(8192, None).get_data())
-
-        output_stream = connection.get_output_stream()
-        bytes_written = output_stream.write_all(pickle.dumps(image))
-        output_stream.flush()
-
-        connection.close()
-
-    path = Path(path_name)
-
-    if path.exists():
-        path.unlink()
-
-    server = Gio.SocketService.new()
-    server.add_address(Gio.UnixSocketAddress.new(path_name), Gio.SocketType.STREAM, Gio.SocketProtocol.DEFAULT)
-    server.connect("incoming", connection_handler, server)
-
-
-if __name__ == "__main__":
-
-    create_server()
-    main = GLib.MainLoop()
-    main.run()
