@@ -7,12 +7,16 @@ from src.thread import start as thread_start
 # test client
 if __name__ == "__main__":
     log.debug("running in debug mode")
-    # log.debug(thread_start())
+    # log.debug(thread_start(["HARDWARE"]))
     package = FRICP(request=FRICP.Request.HARDWARE_GET_CAMERA,
                     owner=FRICP.Owner.PROCESSING,
                     address=FRICP.Owner.HARDWARE,
                     buffer_size=1024,
                     open=False)
+    # log.debug(package._to_array)
+    # packed = package.to_binary
+    # log.debug(packed)
+    # log.debug(FRICP.build(packed).__dict__)
     try:
         response = FRICP.send(package)
         log.debug("succesvol verzonden en ontvangen YES!")

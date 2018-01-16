@@ -24,10 +24,10 @@ class Server:
                 Void
 
             """
-            self.data = pickle.load(self.rfile)
-            self.buffer_size = self.data.buffer_size
-            log.debug("recieved: %s", self.data.__dict__)
             try:
+                log.debug("Incoming package")
+                self.data = FRICP.build(self.rfile)
+                log.debug("recieved: %s", self.data.__dict__)
                 FRICP.validate(self.data, "REQUEST")
                 log.debug("validation complete, no errors found!")
             except FRICP.ValidationError as error:
@@ -55,7 +55,7 @@ class Server:
 
                 response = FRICP(FRICP.Request.RESPONSE, self.data.address, self.data.owner, FRICP.Response.SUCCESS,
                                  response_data,
-                                 buffer_size=self.buffer_size)
+                                 buffer_size=self.data.buffer_size)
             except FRICP.ValidationError as error:
                 log.error("Error while handeling request: %s", error)
                 response = error.response

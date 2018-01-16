@@ -25,6 +25,6 @@ parser.add_argument("type", metavar='FRICP.Owner', type=str, nargs=1, help="Whic
 
 args = parser.parse_args()
 type = args.type[0]
+log.debug("init %s server", type)
 server = Server(FRICP.Owner[type])
 server.open_server()
-# log.debug("server %s init", type)

@@ -68,6 +68,7 @@ class FRICP:
         INVALID_DATA = 215
         UNEXPECTED_REQUEST_OR_RESPONSE = 216
         FAILED_TO_RECEIVE = 217  # client error
+        FAILED_TO_BUILD = 218
 
         #: 220-229 connection
         CONNECTION_LOST = 220  # heeft dit wel nut? # TODO: implementeren
@@ -103,6 +104,21 @@ class FRICP:
             self.request = request
             self.data_type = data_type
 
+        @staticmethod
+        def get_by_number(request_number: int) -> object:
+            """
+            Krijg het passende FRICP.Request wat bij `request_number` hoort
+            Args:
+                request_number(int): het nummer van de request
+
+            Returns:
+                FRICP.Request: request object wat bij het nummer hoort
+
+            """
+            for request in FRICP.Request:
+                if request.value[0] == request_number:
+                    return request
+
     class Owner(Enum):
         """
         Het address van de sockets, kan ook vervangen worden door ip, port.
@@ -112,7 +128,7 @@ class FRICP:
         PROCESSING = ("processing_unixSocket", 200, 299)
         GUI = ("gui_unixSocket", 300, 399)
 
-        def __init__(self, address : str, min_request_range : int, max_request_range : int):
+        def __init__(self, address: str, min_request_range: int, max_request_range: int):
             self.address = address
             self.min_request_range = min_request_range
             self.max_request_range = max_request_range
@@ -171,12 +187,60 @@ class FRICP:
         pass
 
     @property
-    def to_binary(self):
+    def to_binary(self) -> bytearray:
         """
         Returns:
-            binary: Krijg het object in een pickle pakketje zodat je het kan versturen
+            bytearray: Krijg het object in een pickle pakketje zodat je het kan versturen
         """
-        return pickle.dumps(self)
+        return pickle.dumps(self._to_array)
+
+    @property
+    def _to_array(self) -> list:
+        """
+        Returns:
+            list: array van het fricp object values
+
+        """
+        return [self.request.value[0],
+                self.owner.list().index(self.owner.name),
+                self.address.list().index(self.address.name),
+                self.response.value,
+                self.data,
+                self.open,
+                self.buffer_size,
+                self.version]
+
+    @staticmethod
+    def build(fricp_binary_array: object) -> object:
+        """
+        maak van een binary array een legit FRICP object.
+        throwd een FRICP.ValidationError: "FAILED_TO_BUILD" als het niet lukt
+        Args:
+            fricp_binary_array (bin): binary fricp in array formaat
+        Returns:
+            FRICP: fricp object
+
+        """
+        # try:
+        fricp_array = pickle.load(fricp_binary_array)
+        fricp_object = FRICP(FRICP.Request.get_by_number(fricp_array[0]),  # request
+                             FRICP.Owner[FRICP.Owner.list()[fricp_array[1]]],  # owner
+                             FRICP.Owner[FRICP.Owner.list()[fricp_array[2]]],  # address
+                             FRICP.Response(fricp_array[3]),  # response
+                             fricp_array[4],  # data
+                             fricp_array[5],  # open
+                             fricp_array[6],  # buffer_size
+                             fricp_array[7])  # version
+        # TODO: deze exception moet weer bebouwt worden, maar ik wou dat hij heel hard crasht
+        # TypeError exception
+        # except (Exception, pickle.UnpicklingError) as error:
+        #     # TODO: `Exception` als exception is eigenlijk superkut, moet een nameError ofzo zijn. Uitzoeken welke van toepassing is
+        #     log.error("Failed to build FRICP package: %s", error)
+        #     if type(fricp_object) is not FRICP:
+        #         fricp_object = None
+        #     raise FRICP.ValidationError(FRICP.Response.FAILED_TO_BUILD, fricp_object)
+        #     # TODO: pikt ValidationError wel `None` als FRICP object?
+        return fricp_object
 
     @staticmethod
     def validate(fricp, expected: str):
@@ -262,9 +326,13 @@ class FRICP:
                 # log.debug(incoming)
                 if not incoming:
                     break
-            received = pickle.loads(received)
+            # TODO: zorgen dat dit werkt
+            # log.debug(pickle.loads(received))
+            # log.debug(pickle.load(received))
+            received = FRICP.build(received)
             log.debug("recieved: %s", received.__dict__)
-        except (EOFError, pickle.UnpicklingError) as error:
+            # TODO: EOFError en pickle errors kunnen niet meer voorkomen omdat `build()` het nu afhandeld
+        except (EOFError, pickle.UnpicklingError, FRICP.ValidationError) as error:
             log.error("Failed to receive data: %s", error)
             # controleren of we wel een bruikbare object hebben ontvangen
             if type(received) is not FRICP:

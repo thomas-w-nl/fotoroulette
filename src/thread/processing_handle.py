@@ -6,7 +6,6 @@ from src.common.log import *
 
 
 # TODO: code testen
-# TODO: RP libary errors fixen
 
 
 def handle(fricp: FRICP) -> object:

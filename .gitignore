@@ -8,6 +8,9 @@ test
 out
 .iml
 
+# log bestanden
+logs/*
+
 # gui shizzel
 \#*#
 
