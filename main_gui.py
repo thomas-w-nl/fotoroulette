@@ -2,6 +2,7 @@ import gi
 import signal
 import cv2
 import numpy as np
+import threading
 
 gi.require_version('Gtk', '3.0')
 
@@ -9,7 +10,7 @@ from gi.repository import Gtk, GdkPixbuf, Gdk, GObject
 from gi.repository.GdkPixbuf import Pixbuf
 from src.gui import networking
 from src.gui.handler import Handler
-b
+
 class MainWindow:
     """
     The GTK application that displays the photos taken by the photobooth
@@ -96,6 +97,7 @@ class MainWindow:
           response: a string containing an (opencv) image
         """
         picture_widget = self._builder.get_object("Picture")
+        self._builder.get_object("FidgetSpinner").stop()
         self._stack.set_visible_child_name("picture-view")
 
         nparr = np.fromstring(response, np.uint8)
@@ -113,6 +115,7 @@ class MainWindow:
 
     def start(self):
         self._window.show_all()
+
         Gtk.main()
 
 if __name__ == "__main__":
