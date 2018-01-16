@@ -1,0 +1,9 @@
+[Unit]
+Description=Fotoroulette processing layer
+
+[Service]
+Type=simple
+ExecStart=python3 /home/thomas/PycharmProjects/raspberry-pi/processing_main.py
+
+[Install]
+WantedBy=multi-user.target

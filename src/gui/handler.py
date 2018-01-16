@@ -6,6 +6,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, Gdk, GObject
 from gi.repository.GdkPixbuf import Pixbuf
 from src.gui import networking
+from src.common.log import *
 
 class Handler:
     def __init__(self, window):
@@ -42,7 +43,7 @@ class Handler:
         try:
             self.window._builder.get_object("PreviewPicture").set_from_pixbuf(photos.previous_photo())
         except IndexError:
-            print("Error")
+            log.error("Error")
 
         return True
 
@@ -71,7 +72,7 @@ class Handler:
 
             self.window.close_popup()
 
-            print(response)
+            log.debug(response)
 
             return True
 
@@ -81,7 +82,7 @@ class Handler:
         self.window.show_popup("StopGameDialog")
 
     def on_dialog_close(self, *args):
-        print("closed")
+        log.debug("closed")
 
     def on_information_clicked(self, button):
         self.window.show_popup("InfoDialog")

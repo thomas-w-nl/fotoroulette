@@ -64,7 +64,7 @@ def send_message(message : str, callback, path : str = "/tmp/python-processing-i
                     callback(image)
 
             elif response["message"] == "error":
-                print("[{0}] {1}".format(response["result"]["code"], response["result"]["message"]))
+                log.error("[{0}] {1}".format(response["result"]["code"], response["result"]["message"]))
             else:
                 pass
 

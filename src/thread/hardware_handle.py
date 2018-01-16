@@ -5,6 +5,7 @@ from src.thread.fricp import FRICP
 
 # TODO: dit moet eigenlijk een class zijn.
 camera = None
+DEBUG = False
 
 
 def init() -> int:
@@ -12,7 +13,7 @@ def init() -> int:
     camera = hw_camera()
 
     if camera is None:
-        log.warning("Unable to open camera!")
+        log.error("Unable to open camera!")
         return 1
     else:
         return 0
@@ -25,7 +26,7 @@ def delete() -> int:
         camera.close()
         return 0
     else:
-        log.warning("Camera not open!")
+        log.warning("Camera not open when closing!")
         return 1
 
 
@@ -46,7 +47,9 @@ def handle(fricp: FRICP) -> object:
             data = camera.get_frame()
 
         if fricp.request == FRICP.Request.HARDWARE_SET_SERVO_POSITION:
-            log.debug(fricp.data)
+            if DEBUG:
+                log.debug(fricp.data)
+
             position, sleep = fricp.data
             data = hw_servo.goto_position(position, sleep)
 
