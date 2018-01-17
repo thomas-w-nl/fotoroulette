@@ -3,7 +3,9 @@ Description=Fotoroulette GUI
 
 [Service]
 Type=simple
-ExecStart=python3 /home/thomas/PycharmProjects/raspberry-pi/gui_main.py
+ExecStart=/home/thomas/PycharmProjects/raspberry-pi/python_install/bin/python3 /home/thomas/PycharmProjects/raspberry-pi/gui_main.py
+WorkingDirectory=/home/thomas/PycharmProjects/raspberry-pi
+User=thomas
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=graphical.target
