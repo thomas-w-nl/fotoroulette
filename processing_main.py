@@ -17,7 +17,6 @@ from io import BytesIO
 
 from src.common import tools, jsonserializer
 from src.common.log import *
-
 from src.processing.get_faces import get_faces
 from src.processing.netwerk import send_photos_by_path, UploadException
 from src.processing.spel import *
@@ -104,7 +103,7 @@ class IPCHandler(socketserver.StreamRequestHandler):
         try:
             game = game_by_type(game_type, faces).gen_overlay()
             self.photos.append(game)
-        except ValueError as err:
+        except:
             log.warning("Not enough players to create overlay")
             self._send_error(502, "Not enough faces to generate an overlay")
         else:

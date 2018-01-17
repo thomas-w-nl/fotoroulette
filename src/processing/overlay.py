@@ -13,7 +13,7 @@ def generate_overlay(game):
     Args:
          game: the [Game] object
 
-    Returns:
+;   Returns:
         returns the final image as np.array
     """
     # the overlay to place on top of the image with background and faces

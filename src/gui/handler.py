@@ -19,9 +19,9 @@ class Handler:
         self.window = window
 
     def _game_menu_error(self, error_message : str) -> bool:
+        self.window._builder.get_object("FidgetSpinner").stop()
         self.window.close_popup()
         self.window._stack.set_visible_child_name("game-menu")
-
         error_bar = self.window._builder.get_object("GameMenuError")
         error_bar.set_text(error_message)
         error_bar.set_sensitive(True)
@@ -50,7 +50,7 @@ class Handler:
         photos = self.window._photos
 
         if photos.is_empty():
-            # TODO: Show dialog
+            self._game_menu_error("[403]: Geen gezichten opgeslagen")
             return
 
         photos._show_arrows()
@@ -95,6 +95,9 @@ class Handler:
 
             return False
 
+        if self.window._photos.is_empty():
+            self._game_menu_error("[403]: Geen gezichten opgeslagen")
+            return
 
         self.window._stack.set_visible_child_name("photo-wait")
         self.window._builder.get_object("FidgetSpinner").start()

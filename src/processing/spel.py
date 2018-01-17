@@ -31,10 +31,7 @@ class Game:
         """
         Just for auto-completion purposes
         """
-        try:
-            self._random_images()
-        except ValueError:
-            raise FRICP.Request.HANDLING_NOT_ENOUGH_FACES_ERROR
+        self._random_images()
 
         return ov.generate_overlay(self)
 
