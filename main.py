@@ -10,6 +10,7 @@ from src.processing.collect_photos import collect_photos
 from src.processing.get_faces import get_faces
 # from src.processing.overlay import generate_overlay
 from src.processing.spel import *
+import numpy as np
 
 if __name__ == "__main__":
     print("====== THIS FILE IS DEPRECATED ======")
@@ -39,4 +40,7 @@ if __name__ == "__main__":
 
 
         for game in games:
-            game.show()
+            cv2.imshow('output', game)
+            cv2.waitKey()
+
+        cv2.destroyAllWindows()
