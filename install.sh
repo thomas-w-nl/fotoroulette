@@ -39,12 +39,12 @@ update_desktop_file () {
 # Update the executable path in a desktop file to be copied to the DE startup folder
 
 sed -i "/Exec=/c Exec=$1" "$2"
-sed -i "/Path=/c Path=$PWD" "$2"
+sed -i "/Path=/c Path=$PWD/" "$2"
 sed -i "/Icon=/c Icon=$PWD/$3" "$2"
 }
 
-# hier geen $python_install gebruiken, desktop files houden daar schijnbaar niet van
-update_desktop_file "python3 $PWD/$python_file_gui" "$services_folder/$gui_desktop" "$gui_logo"
+
+update_desktop_file "$python_install $PWD/$python_file_gui" "$services_folder/$gui_desktop" "$gui_logo"
 
 update_service_file "$python_install $PWD/$python_file_processing" "$services_folder/$processing_service"
 update_service_file "$python_install $PWD/$python_file_hw"  "$services_folder/$hardware_service"
