@@ -1,17 +1,19 @@
-import gi
 import signal
-import cv2
 import numpy as np
 import subprocess
 import os
+from multiprocessing import Process
+from io import BytesIO
+from PIL import Image
 
+import gi
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk, GdkPixbuf, Gdk, GObject
+from gi.repository import Gtk, GdkPixbuf, Gdk
 from gi.repository.GdkPixbuf import Pixbuf
 from src.gui import photos
 from src.gui.handler import Handler
-from multiprocessing import Process
+
 
 SOUND = False
 
@@ -85,20 +87,6 @@ class MainWindow:
         photo_scaled = photo_file.scale_simple(width, height, GdkPixbuf.InterpType.BILINEAR)
         self._logo.set_from_pixbuf(photo_scaled)
 
-    def get_photo(self) -> bool:
-        """Display the current image from the webcam on screen"""
-        frame = self._camera.get_photo()
-        image = Pixbuf.new_from_data(frame.tostring(),
-                                     GdkPixbuf.Colorspace.RGB,
-                                     False,
-                                     8,
-                                     frame.shape[1],
-                                     frame.shape[0],
-                                     frame.shape[2] * frame.shape[1])
-        self._photo.set_from_pixbuf(image)
-        # Maakt GTK blij
-        return True
-
     def set_photo(self, response: str) -> bool:
         """
         Set the currently showed picture from a string
@@ -109,13 +97,10 @@ class MainWindow:
         picture_widget = self._builder.get_object("Picture")
         self._stack.set_visible_child_name("picture-view")
 
-        nparr = np.fromstring(response, np.uint8)
-        image_cv2 = cv2.imdecode(nparr, 1)
-
-        path = "transferred_by_network.png"
-        cv2.imwrite(path, image_cv2)
-        image = Pixbuf.new_from_file(path)
-        os.remove(path)
+        pimage = Image.open(BytesIO(response))
+        pimage.save(".temp_image.png")
+        image = Pixbuf.new_from_file(".temp_image.png")
+        os.remove(".temp_image.png")
 
         self._photos.append(image)
 
