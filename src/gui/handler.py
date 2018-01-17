@@ -7,7 +7,7 @@ import threading
 import signal
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk, GdkPixbuf, Gdk, GObject
+from gi.repository import Gtk, GdkPixbuf, Gdk, GObject, GLib
 from gi.repository.GdkPixbuf import Pixbuf
 from src.gui.networking import NetworkTask
 from src.common.log import *
@@ -17,6 +17,16 @@ GObject.threads_init()
 class Handler:
     def __init__(self, window):
         self.window = window
+
+    def _game_menu_error(self, error_message : str) -> bool:
+        self.window.close_popup()
+        self.window._stack.set_visible_child_name("game-menu")
+
+        error_bar = self.window._builder.get_object("GameMenuError")
+        error_bar.set_text(error_message)
+        error_bar.set_sensitive(True)
+
+        GLib.timeout_add_seconds(10, lambda: error_bar.set_sensitive(False))
 
     def on_start_clicked(self, button):
         self.window._stack.set_visible_child_name("game-menu")
@@ -90,13 +100,12 @@ class Handler:
         self.window._builder.get_object("FidgetSpinner").start()
         self.window.close_popup()
 
-        NetworkTask(callback, "{\"message\": \"command\", \"name\": \"send_photos\"}\n").start()
+        NetworkTask(callback,
+                    self._game_menu_error,
+                    "{\"message\": \"command\", \"name\": \"send_photos\"}\n").start()
 
     def open_save_window(self, *args):
         self.window.show_popup("StopGameDialog")
-
-    def on_dialog_close(self, *args):
-        log.debug("closed")
 
     def on_information_clicked(self, button):
         self.window.show_popup("InfoDialog")
@@ -112,7 +121,9 @@ class Handler:
         json_message = "{\"message\": \"play_game\", \"name\": \"%s\"}\n" % name
 
         # Send it over the network in a thread
-        thread = NetworkTask(self.window.set_photo, json_message)
+        thread = NetworkTask(self.window.set_photo,
+                             self._game_menu_error,
+                             json_message)
         thread.start()
 
     def _show_game_popup(self, name: str, description: str, example_image: str, song: str) -> Gtk.Window:

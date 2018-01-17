@@ -18,11 +18,12 @@ from pathlib import Path
 from src.common import log, jsonserializer
 
 class NetworkTask(threading.Thread):
-    def __init__(self, callback, message):
+    def __init__(self, callback, error_callback, message):
         threading.Thread.__init__(self)
         self.callback = callback
         self.message = message
         self.result = None
+        self.error_callback = error_callback
 
     def _read_all_bytes(self, input_stream : Gio.IOStream, amount_of_bytes : int=16384) -> bytes:
         """
@@ -57,9 +58,17 @@ class NetworkTask(threading.Thread):
 
             if response["message"] == "response":
                 self.result = response["result"]
+                Gdk.threads_add_idle(100,
+                                     self.callback,
+                                     self.result[0] if len(self.result) == 1
+                                                    else self.result)
 
             elif response["message"] == "error":
-                log.error("[{0}] {1}".format(response["result"]["code"], response["result"]["message"]))
+                error_message = "[{0}] {1}".format(response["result"]["code"],
+                                                   response["result"]["message"])
+                Gdk.threads_add_idle(100,
+                                     self.error_callback,
+                                     error_message)
             else:
                 pass
 
@@ -67,6 +76,10 @@ class NetworkTask(threading.Thread):
         server_info = Gio.UnixSocketAddress.new("/tmp/python-processing-ipc")
         connection = Gio.SocketClient()
         connection.connect_after("event", self.connection_handler, connection)
-        connection.connect(server_info)
 
-        Gdk.threads_add_idle(100, self.callback, self.result[0] if len(self.result) == 1 else self.result)
+        try:
+            connection.connect(server_info)
+        except:
+            Gdk.threads_add_idle(100,
+                                 self.error_callback,
+                                 "Error 500: Can't connect to server")

@@ -126,12 +126,15 @@ class IPCHandler(socketserver.StreamRequestHandler):
             elif message["name"] == "send_photos":
                 # todo gebruik cv2.imgencode
                 # Due to the backend implementation we first need to write the photos to disk
-                directory_name = "/tmp/vakantieklieker-fotos-" + str(random.randint(0, 10000))
+                directory_name = "/tmp/vakantieklieker-fotos-" + \
+                                 str(random.randint(0, 10000))
                 path = Path(directory_name)
                 path.mkdir()
 
                 for photo_index in range(len(self.photos)):
-                    self.photos[photo_index].save("{0}/{1}.png".format(directory_name, photo_index))
+                    self.photos[photo_index].save("{0}/{1}.png"\
+                                                  .format(directory_name,
+                                                          photo_index))
 
                 response = send_photos_by_path(directory_name)
 
@@ -156,7 +159,7 @@ class IPCHandler(socketserver.StreamRequestHandler):
             elif message["name"] == "wanted":
                 self._start_game(Games.WANTED)
             else:
-                self._send_error(400, "game '%s' not found" % message["message"])
+                self._send_error(400, "game '%s' not found" % message["name"])
         else:
             self._send_error(400, "this server doesn't support '{}'".format(message["message"]))
 

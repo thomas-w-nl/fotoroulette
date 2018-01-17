@@ -1,7 +1,33 @@
+#wait-container,
+spinner,
 #splashscreen {
     background-image: url("../images/background_blur.png");
     background-size: cover;
     background-color: rgba(0, 0, 255, 0.5);
+}
+
+spinner {
+    background-color: transparent;
+}
+
+.error-message:disabled {
+    opacity: 0;
+    font-size: 0px;
+    background: initial;
+    padding: 0px;
+    margin: 0px;
+}
+
+
+.error-message {
+    transition: opacity, font-size 0.5s ease;
+    font-family: Cantarell;
+    font-size: 1.8em;
+    font-weight: bold;
+    font-style: italic;
+    background: #D81A1A;
+    color: white;
+    padding: 10px;
 }
 
 .top-bar:disabled,
@@ -69,10 +95,12 @@
     background-position: center;
 }
 .dialog {
-    padding: 20px;
+    padding: 10px;
 }
 
-.dialog-header {}
+.dialog-header {
+    font: 2em Cantarell bold;
+ }
 
 #love-meter {
     background-image: url("../images/love.png");
@@ -92,21 +120,14 @@
 
 #example-image {
     min-width: 50px;
-    min-height: 200px;
+    min-height: 10px;
     opacity: 1;
 }
-
-.foto-wait-container {
-    background: #FCCC00;
-    padding: 50px;
-}
-.foto-wait-text{
-    font-size: 3em;
-    margin-top: 50px;
-}
-
-.foto-wait-img {
-    background-color: #FCCC00;
-    background: url("../images/camera.svg") no-repeat center;
-    background-size: 30%;
+#wait-text {
+    background-color: #000;
+    opacity: 0.8;
+    font: 3em Cantarell;
+    font-style: italic;
+    color: white;
+    padding: 10px;
 }
