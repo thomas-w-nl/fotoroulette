@@ -118,8 +118,8 @@
 </property>
                 <property name="wrap">True</property>
                 <property name="wrap_mode">word-char</property>
-                <property name="width_chars">40</property>
-                <property name="max_width_chars">80</property>
+                <property name="width_chars">42</property>
+                <property name="max_width_chars">68</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>

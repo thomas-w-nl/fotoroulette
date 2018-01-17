@@ -119,6 +119,7 @@ class MainWindow:
 
     def start(self):
         self._window.show_all()
+        self._window.fullscreen()
         Gtk.main()
 
 if __name__ == "__main__":

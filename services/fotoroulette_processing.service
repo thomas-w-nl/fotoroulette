@@ -3,9 +3,9 @@ Description=Fotoroulette processing layer
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /home/thomas/PycharmProjects/raspberry-pi/processing_main.py
-WorkingDirectory=/home/thomas/PycharmProjects/raspberry-pi
-User=thomas
+ExecStart=/usr/bin/python3 /home/pi/raspberry-pi/processing_main.py
+WorkingDirectory=/home/pi/raspberry-pi
+User=pi
 
 [Install]
 WantedBy=multi-user.target

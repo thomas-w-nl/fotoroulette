@@ -1,14 +1,14 @@
 [Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=/usr/bin/python3 /home/thomas/PycharmProjects/raspberry-pi/gui_main.py
+Exec=/usr/bin/python3 /home/pi/raspberry-pi/gui_main.py
 GenericName[en_US]=The Graphical User Interface for Fotoroulette
 GenericName=The Graphical User Interface for Fotoroulette
-Icon=/home/thomas/PycharmProjects/raspberry-pi/assets/images/corendon_logo.png
+Icon=/home/pi/raspberry-pi/assets/images/corendon_logo.png
 MimeType=
 Name[en_US]=Fotoroulette GUI
 Name=Fotoroulette GUI
-Path=/home/thomas/PycharmProjects/raspberry-pi/
+Path=/home/pi/raspberry-pi/
 StartupNotify=true
 Terminal=false
 TerminalOptions=

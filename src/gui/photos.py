@@ -62,6 +62,7 @@ class PhotoList:
         """
         self.photos.clear()
         self.index = 0
+        self.length = 0
 
     def to_start(self):
         self.index = 0

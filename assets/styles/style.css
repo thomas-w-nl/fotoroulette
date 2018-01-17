@@ -22,7 +22,7 @@ spinner {
 .error-message {
     transition: opacity, font-size 0.5s ease;
     font-family: Cantarell;
-    font-size: 1.8em;
+    font-size: 1.3em;
     font-weight: bold;
     font-style: italic;
     background: #D81A1A;
@@ -50,7 +50,7 @@ spinner {
 }
 
 .button {
-    font-size: 1.6em;
+    font-size: 1.3em;
     font-weight: bold;
     color: white;
     margin: 5px;
@@ -99,7 +99,7 @@ spinner {
 }
 
 .dialog-header {
-    font: 2em Cantarell bold;
+    font: 1.6em Cantarell bold;
  }
 
 #love-meter {
