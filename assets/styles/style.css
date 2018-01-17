@@ -1,0 +1,134 @@
+
+#wait-container,
+spinner,
+#splashscreen {
+    background-image: url("../images/background_blur.png");
+    background-size: cover;
+    background-color: rgba(0, 0, 255, 0.5);
+}
+
+spinner {
+    background-color: transparent;
+}
+
+.error-message:disabled {
+    opacity: 0;
+    font-size: 0px;
+    background: initial;
+    padding: 0px;
+    margin: 0px;
+}
+
+
+.error-message {
+    transition: opacity, font-size 0.5s ease;
+    font-family: Cantarell;
+    font-size: 1.3em;
+    font-weight: bold;
+    font-style: italic;
+    background: #D81A1A;
+    color: white;
+    padding: 10px;
+}
+
+.top-bar:disabled,
+#window-stack:disabled,
+.button:disabled {
+    background: grey;
+    opacity: 1;
+}
+
+.top-bar {
+    background: #e5e5e5;
+}
+
+.game-icon {
+    background: #70C66B;
+}
+
+.box {
+    background: white;
+}
+
+.button {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: white;
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px 10px;
+    background: #FCCC00;
+
+}
+
+.button-succes {
+    background: #70C66B;
+}
+
+.button-bad {
+    background: #D81A1A;
+}
+
+.button-info {
+    background: white url("../images/info.svg") center no-repeat;
+    background-size: contain;
+}
+.button-quit {
+    background: white url("../images/close.svg") center no-repeat;
+    background-size: contain;
+}
+
+.button-big {
+    border-radius: 25px;
+    margin: 20px;
+    padding: 15px 10px;
+    font-size: 2em;
+}
+
+.button-small {
+    border-radius: 50%;
+}
+.button-game {
+    min-height: 80px;
+    min-width: 350px;
+    background-color: #70C66B;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.dialog {
+    padding: 10px;
+}
+
+.dialog-header {
+    font: 1.6em Cantarell bold;
+ }
+
+#love-meter {
+    background-image: url("../images/love.png");
+}
+
+#mocking {
+    background-image: url("../images/mock.png");
+}
+
+#heroes {
+    background-image: url("../images/heroes.png");
+}
+
+#versus {
+    background-image: url("../images/versus.png");
+}
+
+#example-image {
+    min-width: 50px;
+    min-height: 10px;
+    opacity: 1;
+}
+#wait-text {
+    background-color: #000;
+    opacity: 0.8;
+    font: 3em Cantarell;
+    font-style: italic;
+    color: white;
+    padding: 10px;
+}

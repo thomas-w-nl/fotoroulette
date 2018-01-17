@@ -1,36 +1,31 @@
-import numpy as np
+import pickle
+
 import cv2
-import time
-import serial
 
-def gen_photo(camera):
-    while True:
-        ret, frame = camera.read()
-        gray = cv2.cvtColor(frame, 0)
-        yield frame
+from PIL import Image
+# import os
+# os.chdir("/mnt/project/")
 
-
-def save_photo(photo_name, frame):
-    print("Saving file: %s" % photo_name)
-    cv2.imwrite(photo_name, frame)
+from src.processing.collect_photos import collect_photos
+from src.processing.get_faces import get_faces
+# from src.processing.overlay import generate_overlay
+from src.processing.spel import *
 
 if __name__ == "__main__":
-    cam = cv2.VideoCapture(-1)
-    photo_gen = gen_photo(cam)
-    device = serial.Serial('/dev/ttyACM3', 9600, timeout=0)
+    print("====== THIS FILE IS DEPRECATED ======")
+    print("Please use the proper files to start fotoroulette")
 
-    while True:
-        message = device.readline().decode("utf-8")
-        photo = next(photo_gen)
-        # photo = add_median(photo)
-        cv2.imshow('image', photo)
-        key = cv2.waitKey(1)
+    with open('real_2_personen_new.pkl', 'rb') as pickleinput:
 
-        if key == ord('q'):
-            break
+        data = pickle.load(pickleinput)
 
-        if message != "":
-            save_photo(str(time.clock_gettime(0)) + '.png', photo)
+        photos_with_angels, range_sensor = data.get()
 
-    cam.release()
-    cv2.destroyAllWindows()
+        game_type = Games.VERSUS
+
+        faces = get_faces(data, game_type)
+
+        games = [game_by_type(game_type, faces).gen_overlay()]
+
+        for game in games:
+            game.show()
