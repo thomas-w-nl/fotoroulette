@@ -1,7 +1,9 @@
 import qrcode
+import os
+import threading
+
 import gi
 import threading
-import os
 import signal
 gi.require_version('Gtk', '3.0')
 

@@ -79,7 +79,7 @@ def generate_overlay(game):
 
         place_holder_image = Image.alpha_composite(place_holder_image, final_overlay)
 
-    return cv2.cvtColor(np.array(place_holder_image), cv2.COLOR_RGB2BGR)
+    return place_holder_image
 
 
 def _resize_fit(image: np.array, max_width: int, max_height: int) -> np.array:

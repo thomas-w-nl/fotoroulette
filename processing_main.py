@@ -6,13 +6,14 @@
 # Import from the parent directory instead
 
 import random
-from time import sleep
-
-import cv2
 import json
 import socketserver
 import numpy as np
+
+from PIL import Image
+from time import sleep
 from pathlib import Path
+from io import BytesIO
 
 from src.common import tools, jsonserializer
 from src.common.log import *
@@ -22,7 +23,6 @@ from src.processing.netwerk import send_photos_by_path, UploadException
 from src.processing.spel import *
 from src.processing.collect_photos import collect_photos
 from src.processing.overlay import generate_overlay
-
 
 # Check whether we're in a raspberry pi or not
 try:
@@ -77,17 +77,18 @@ class IPCHandler(socketserver.StreamRequestHandler):
         """
         self._send_response({"message": "error", "result": {"code": code, "message": message}})
 
-    def _send_single_image(self, photo : np.array, encoding: str = '.png') -> None:
+    def _send_single_image(self, photo : Image, encoding: str = '.png') -> None:
         """
         Send a single image as response
 
         Args:
-          photo: the OpenCV image you want to send
+          photo: A Pillow picture you want to send
           encoding: the type of picture you want to send, by default png
         """
         log.debug("Sending a single image of type:" + str(type(photo)))
-        self._send_response({"message": "response",
-                             "result": [cv2.imencode('.png', photo)[1].tostring()]})
+        photo_string = BytesIO()
+        photo.save(photo_string, format="PNG")
+        self._send_response({"message": "response", "result": [photo_string.getvalue()]})
 
     def _start_game(self, game_type) -> None:
         """ Play the specified game and send the picture or an error to the back"""
@@ -130,7 +131,7 @@ class IPCHandler(socketserver.StreamRequestHandler):
                 path.mkdir()
 
                 for photo_index in range(len(self.photos)):
-                    cv2.imwrite(directory_name + "/" + str(photo_index) + '.png', self.photos[photo_index])
+                    self.photos[photo_index].save("{0}/{1}.png".format(directory_name, photo_index))
 
                 response = send_photos_by_path(directory_name)
 
