@@ -1,8 +1,6 @@
-from time import sleep
-
 import numpy as np
 import cv2
-from PIL import Image, ImageMode
+from PIL import Image
 from src.common.log import *
 
 DEBUG = False
@@ -23,7 +21,6 @@ def generate_overlay(game):
     final_overlay_width, final_overlay_height = final_overlay.size
 
     # image with game background
-    place_holder_image = None
     if game.background_color is not None:
         place_holder_image = Image.new('RGBA', (final_overlay_width, final_overlay_height), game.background_color)
     elif game.extra_background is not None:
@@ -32,6 +29,8 @@ def generate_overlay(game):
         place_holder_image = Image.new('RGBA', (final_overlay_width, final_overlay_height))
 
     for index, face in enumerate(game.faces):
+        if index >= game.player_count:
+            break
         face_offset = game.offsets[index]
 
         resize_max_width = int(final_overlay_width / 2) - face_offset['minus_image_width']

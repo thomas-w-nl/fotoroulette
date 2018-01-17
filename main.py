@@ -14,10 +14,6 @@ from src.processing.spel import *
 if __name__ == "__main__":
     print("====== THIS FILE IS DEPRECATED ======")
     print("Please use the proper files to start fotoroulette")
-    # data = collect_photos()
-    # with open('real_2_personen_new.pkl', 'wb') as output:
-    #
-    #     pickle.dump(data, output, pickle.HIGHEST_PROTOCOL)
 
     with open('real_2_personen_new.pkl', 'rb') as pickleinput:
 
@@ -29,14 +25,7 @@ if __name__ == "__main__":
 
         faces = get_faces(data, game_type)
 
-        games = []
-
-        games.append(game_by_type(game_type, faces).gen_overlay())
-
-        # for face in faces:
-        #     cv2.imshow("output", face.image)
-        #     cv2.waitKey()
-
+        games = [game_by_type(game_type, faces).gen_overlay()]
 
         for game in games:
             game.show()
