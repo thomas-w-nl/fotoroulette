@@ -43,6 +43,7 @@ sed -i "/Path=/c Path=$PWD" "$2"
 sed -i "/Icon=/c Icon=$PWD/$3" "$2"
 }
 
+# hier geen $python_install gebruiken, desktop files houden daar schijnbaar niet van
 update_desktop_file "python3 $PWD/$python_file_gui" "$services_folder/$gui_desktop" "$gui_logo"
 
 update_service_file "$python_install $PWD/$python_file_processing" "$services_folder/$processing_service"
@@ -50,9 +51,9 @@ update_service_file "$python_install $PWD/$python_file_hw"  "$services_folder/$h
 
 # todo misschien in user space voor startup order? https://wiki.archlinux.org/index.php/Systemd/User#Note_about_X_applications
 
-echo "$services_folder/$processing_service" "/etc/systemd/system/"
-echo "$services_folder/$hardware_service" "/etc/systemd/system/"
-echo "$services_folder/$gui_desktop" "/home/$SUDO_USER/.config/autostart/"
+cp "$services_folder/$processing_service" "/etc/systemd/system/"
+cp "$services_folder/$hardware_service" "/etc/systemd/system/"
+cp "$services_folder/$gui_desktop" "/home/$SUDO_USER/.config/autostart/"
 
 
 systemctl enable $processing_service
