@@ -3,7 +3,7 @@ Description=Fotoroulette processing layer
 
 [Service]
 Type=simple
-ExecStart=/home/thomas/PycharmProjects/raspberry-pi/python_install/bin/python3 /home/thomas/PycharmProjects/raspberry-pi/processing_main.py
+ExecStart=/usr/bin/python3 /home/thomas/PycharmProjects/raspberry-pi/processing_main.py
 WorkingDirectory=/home/thomas/PycharmProjects/raspberry-pi
 User=thomas
 

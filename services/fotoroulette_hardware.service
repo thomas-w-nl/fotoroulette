@@ -3,7 +3,7 @@ Description=Fotoroulette hardware layer
 
 [Service]
 Type=simple
-ExecStart=/home/thomas/PycharmProjects/raspberry-pi/python_install/bin/python3 /home/thomas/PycharmProjects/raspberry-pi/start_server.py HARDWARE
+ExecStart=/usr/bin/python3 /home/thomas/PycharmProjects/raspberry-pi/start_server.py HARDWARE
 WorkingDirectory=/home/thomas/PycharmProjects/raspberry-pi
 User=thomas
 
