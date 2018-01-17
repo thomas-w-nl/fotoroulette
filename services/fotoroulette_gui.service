@@ -1,0 +1,9 @@
+[Unit]
+Description=Fotoroulette GUI
+
+[Service]
+Type=simple
+ExecStart=python3 /home/thomas/PycharmProjects/raspberry-pi/gui_main.py
+
+[Install]
+WantedBy=multi-user.target

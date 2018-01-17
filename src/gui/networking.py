@@ -59,7 +59,7 @@ class NetworkTask(threading.Thread):
                 self.result = response["result"]
 
             elif response["message"] == "error":
-                print("[{0}] {1}".format(response["result"]["code"], response["result"]["message"]))
+                log.error("[{0}] {1}".format(response["result"]["code"], response["result"]["message"]))
             else:
                 pass
 

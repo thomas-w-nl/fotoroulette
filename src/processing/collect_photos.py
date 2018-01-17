@@ -3,6 +3,7 @@ import cv2
 
 from src.thread.hardware import RangeSensor, Servo, Camera
 from src.processing.photo_data import PhotoData
+from src.common.log import *
 
 DEBUG = False
 FAKE = False
@@ -42,7 +43,7 @@ def collect_photos() -> PhotoData:
         if next_pic_angle <= next_range_angle:
 
             if DEBUG:
-                print("pic at ", next_pic_angle)
+                log.debug("pic at angle:", next_pic_angle)
 
             Servo.set_position(next_pic_angle)
             current_pos = next_pic_angle
@@ -59,7 +60,7 @@ def collect_photos() -> PhotoData:
         if next_range_angle <= next_pic_angle:
 
             if DEBUG:
-                print("range at ", next_range_angle)
+                log.debug("range at angle:", next_range_angle)
 
             Servo.set_position(next_range_angle)
             current_pos = next_range_angle

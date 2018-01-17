@@ -1,5 +1,8 @@
 import os
 
+from src.common import log
+
+
 class PhotoList:
     """
     A simple class to keep track of the photos being sent by the hardware with an index
@@ -51,7 +54,6 @@ class PhotoList:
            photo: The photo you want to add
         """
         self.photos.append(photo)
-        print(self.length)
         self.length += 1
 
     def clear(self):

@@ -96,12 +96,12 @@ class IPCHandler(socketserver.StreamRequestHandler):
         else:
             data = collect_photos()
 
-        faces = get_faces(data)
+        faces = get_faces(data, game_type)
 
         log.info("Number of faces found: %s" % len(faces))
 
         try:
-            game = (game_by_type(game_type, faces).gen_overlay())
+            game = game_by_type(game_type, faces).gen_overlay()
             self.photos.append(game)
         except ValueError as err:
             log.warning("Not enough players to create overlay")

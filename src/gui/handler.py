@@ -8,6 +8,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GdkPixbuf, Gdk, GObject
 from gi.repository.GdkPixbuf import Pixbuf
 from src.gui.networking import NetworkTask
+from src.common.log import *
 
 GObject.threads_init()
 
@@ -51,7 +52,7 @@ class Handler:
         try:
             self.window._builder.get_object("PreviewPicture").set_from_pixbuf(photos.previous_photo())
         except IndexError:
-            pass
+            log.error("Error")
 
         return True
 
@@ -82,6 +83,7 @@ class Handler:
 
             return False
 
+
         self.window._stack.set_visible_child_name("photo-wait")
         self.window._builder.get_object("FidgetSpinner").start()
         self.window.close_popup()
@@ -92,7 +94,7 @@ class Handler:
         self.window.show_popup("StopGameDialog")
 
     def on_dialog_close(self, *args):
-        print("closed")
+        log.debug("closed")
 
     def on_information_clicked(self, button):
         self.window.show_popup("InfoDialog")
