@@ -22,7 +22,7 @@ except ImportError as error:
     log.error("ImportError: %s, normal if in fake environment", error)
 
 
-def goto_position(graden: int, sleep:float=0.4) -> None:
+def goto_position(graden: float, sleep: float = 0.4) -> None:
     """
     Send servo to specific position
 
