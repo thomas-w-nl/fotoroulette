@@ -1,3 +1,4 @@
+from src.processing.photo_data import PhotoData
 from src.thread.fricp import FRICP
 
 
@@ -7,10 +8,9 @@ from src.thread.fricp import FRICP
 # client code
 # TODO: owner is nu altijd PROCESSING terwijl GUI het ook zou kunnen aanroepen
 class Servo:
-
     # TODO: het zou helemaal mooi zijn als dit een getter en setter was.
     @staticmethod
-    def set_position(graden: int, sleep:float=0.4) -> FRICP.Response:
+    def set_position(graden: int, sleep: float = 0.4) -> FRICP.Response:
         """
         verstuurd `HARDWARE_SET_SERVO_POSITION` naar de Hardware FRICP server.
         Draai de servo naar `graden`.
@@ -81,6 +81,25 @@ class RangeSensor:
             int: gemete afstand
         """
         distance = FRICP(FRICP.Request.HARDWARE_GET_RANGE_SENSOR_DISTANCE,
+                         FRICP.Owner.PROCESSING,
+                         FRICP.Owner.HARDWARE,
+                         FRICP.Response.REQUEST)
+        response = distance.send()
+        return response.data
+
+
+class VirtualHardware:
+    @staticmethod
+    def collect_photos() -> PhotoData:
+        """
+        verstuurd `HARDWARE_GET_RANGE_SENSOR_DISTANCE` naar de Hardware FRICP server.
+        krijg de afstand van de range sensor
+        kan een FRICP.ValidationError exception throwen
+
+        Returns:
+            int: gemete afstand
+        """
+        distance = FRICP(FRICP.Request.HARDWARE_COLLECT_PHOTOS,
                          FRICP.Owner.PROCESSING,
                          FRICP.Owner.HARDWARE,
                          FRICP.Response.REQUEST)

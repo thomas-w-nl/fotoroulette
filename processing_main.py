@@ -20,8 +20,7 @@ from src.common.log import *
 from src.processing.get_faces import get_faces
 from src.processing.netwerk import send_photos_by_path, UploadException
 from src.processing.spel import *
-from src.processing.collect_photos import collect_photos
-from src.processing.overlay import generate_overlay
+from src.thread.hardware import VirtualHardware
 
 
 # Check whether we're in a raspberry pi or not
@@ -94,7 +93,7 @@ class IPCHandler(socketserver.StreamRequestHandler):
         if FAKE_ENV:
             data = fake_data
         else:
-            data = collect_photos()
+            data = VirtualHardware.collect_photos()
 
         faces = get_faces(data)
 

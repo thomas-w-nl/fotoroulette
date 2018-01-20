@@ -1,6 +1,7 @@
 from src.hardware.camera import Camera as hw_camera
 from src.hardware import servo as hw_servo, range_sensor as hw_range_sensor
 from src.common.log import *
+from src.hardware.collect_photos_hardware import collect_photos
 from src.thread.fricp import FRICP
 
 # TODO: dit moet eigenlijk een class zijn.
@@ -31,14 +32,14 @@ def delete() -> int:
 
 def handle(fricp: FRICP) -> object:
     """
-    functie om data op te vragen van de hardware handeler.
-    kan een FRICP.ValidationError exception throwen
+    Een functie om data op te vragen van de hardware handeler.
+    Kan een FRICP.ValidationError exception throwen
 
     Args:
         fricp(FRICP): het object wat gehandled moet worden
 
     Returns:
-        object: data van het gevraagte object
+        object: data van het gevraagde object
 
     """
     try:
@@ -55,6 +56,9 @@ def handle(fricp: FRICP) -> object:
 
         if fricp.request == FRICP.Request.HARDWARE_GET_RANGE_SENSOR_DISTANCE:
             data = hw_range_sensor.get_distance()
+
+        if fricp.request == FRICP.Request.HARDWARE_COLLECT_PHOTOS:
+            data = collect_photos()
     except Exception as error:
         log.error("Error while handeling request: %s", error)
         raise FRICP.ValidationError(FRICP.Response.UNKNOWN_HANDLING_ERROR, fricp)

@@ -1,10 +1,13 @@
 import pickle, socket
 from enum import Enum
 from src.common.log import *
+from src.processing.photo_data import PhotoData
+
 
 
 class FRICP:
     # Foto Roulette Internal Communication Protocol
+    CURRENT_VERSION = 1.1
 
     class ValidationError(Exception):
         def __init__(self, error, fricp):
@@ -93,6 +96,7 @@ class FRICP:
         HARDWARE_GET_RANGE_SENSOR_DISTANCE = (101, None)
         HARDWARE_GET_SERVO_POSITION = (102, None)
         HARDWARE_SET_SERVO_POSITION = (103, list)
+        HARDWARE_COLLECT_PHOTOS = (104, PhotoData)
 
         #: 200-299 processing
         PROCESSING_MAKE_PHOTOS = (200, None)
@@ -146,10 +150,10 @@ class FRICP:
                 array.append(owner.name)
             return array
 
-    current_version = 1
+
 
     def __init__(self, request: Request, owner: Owner, address: Owner, response: Response = Response.REQUEST, data=None,
-                 open: bool = False, buffer_size: int = 1024, version: float = 1):
+                 open: bool = False, buffer_size: int = 1024, version: float = CURRENT_VERSION):
         """
         Foto Roulette Internal Communication Protocol
         Protocol voor de communicatie tussen de processing; hardware en gui
@@ -163,7 +167,7 @@ class FRICP:
                 Bij een response staat de status van het bericht. Default is "UNDEFINED"
             open (:obj: `bool`, optional): true voor een continuous verbinding. Default is false
             buffer_size (:obj: `int`, optional): Hoegroot de buffer moet zijn. Default is 1024
-            version (:obj: `float`, optional): De FRICP versie nummer. Default is 1
+            version (:obj: `float`, optional): De FRICP versie nummer. Default is FRICP.CURRENT_VERSION
 
         Returns:
             object:
@@ -261,7 +265,7 @@ class FRICP:
         """
         # fricp type is FRICP, maar op run-time geeft hij een error dat hij niet defined is.
         # valideren of er geen onbekende waardes inzitten
-        if fricp.version is not FRICP.current_version:
+        if fricp.version is not FRICP.CURRENT_VERSION:
             raise FRICP.ValidationError(FRICP.Response.VERSION_MISMATCH, fricp)
         if fricp.request not in FRICP.Request:
             raise FRICP.ValidationError(FRICP.Response.UNKNOWN_REQUEST, fricp)

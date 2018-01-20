@@ -46,7 +46,7 @@ class SensorFactory:
         return True
 
 
-def collect_photos_new():
+def collect_photos() -> PhotoData:
     """
         Maakt de fotos en meet de afstand om een bepaald aantal graden
         :return: Alle fotos met range sensor data
@@ -69,13 +69,16 @@ def collect_photos_new():
 
     servo.goto_position(current_pos, 1)
 
-    rs = SensorFactory(start_angle, stop_angle, step_size=rs_step_size, data_store_func=data.append_distance,
+    rs = SensorFactory(start_angle, stop_angle, rs_step_size, data_store_func=data.append_distance,
                        sensor_perform_func=range_sensor.get_distance)
-    c = SensorFactory(start_angle, stop_angle, step_size=c_step_size, data_store_func=data.append_photo,
+    c = SensorFactory(start_angle, stop_angle, c_step_size, data_store_func=data.append_photo,
                       sensor_perform_func=camera.get_frame)
 
-    # while we can still collect images or sensor data
+    # while we can still collect camera photos or range_sensor data
     c_has_next = rs_has_next = True
     while c_has_next or rs_has_next:
         c_has_next = c.next_action(rs)
         rs_has_next = rs.next_action(c)
+
+    servo.goto_position(current_pos, 1)
+    return data
