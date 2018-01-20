@@ -69,8 +69,8 @@ class Server:
                 fricp (FRICP): Het object dat moet worden verstuurd
             """
             log.debug("Sending reply: %s", fricp.__dict__)
-            self.request.sendall(fricp.to_binary)
-            # self.wfile.write(fricp.to_binary)
+            # self.request.sendall(fricp.to_binary)
+            self.wfile.write(fricp.to_binary)
 
     class ServerStatus(Enum):
         ERROR = -2
@@ -155,6 +155,7 @@ class Server:
         finally:
             return self.server_status
 
+    # TODO: close_server() moet eigenlijk vervangen worden door server_status
     @property
     def server_status(self) -> ServerStatus:
         """

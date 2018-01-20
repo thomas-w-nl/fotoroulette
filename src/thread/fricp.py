@@ -4,7 +4,6 @@ from src.common.log import *
 from src.processing.photo_data import PhotoData
 
 
-
 class FRICP:
     # Foto Roulette Internal Communication Protocol
     CURRENT_VERSION = 1.1
@@ -17,6 +16,7 @@ class FRICP:
                 error (FRICP.Reponse): de error code
                 fricp (FRICP): Het object waar het omgaat
             """
+            # TODO: FRICP error zonder een FRICP object
             # error type = FRICP.Response en fricp is type FRICP, Maar op run-time herkend hij dat niet.
             self.error = error
             self.fricp = fricp
@@ -150,8 +150,6 @@ class FRICP:
                 array.append(owner.name)
             return array
 
-
-
     def __init__(self, request: Request, owner: Owner, address: Owner, response: Response = Response.REQUEST, data=None,
                  open: bool = False, buffer_size: int = 1024, version: float = CURRENT_VERSION):
         """
@@ -163,14 +161,10 @@ class FRICP:
             owner (Owner/Enum): "HARDWARE/GUI/PROCESSING" Wie het bericht verstuurd
             address (Owner/Enum): "HARDWARE/GUI/PROCESSING" waar moet het naartoe?
             response (:obj: `Response/Enum`, optional): "REQUEST" Voor een request.
-            data (Any): De data die je verstuurd.
-                Bij een response staat de status van het bericht. Default is "UNDEFINED"
+            data (Any): De data die je verstuurd. Default is "None"
             open (:obj: `bool`, optional): true voor een continuous verbinding. Default is false
             buffer_size (:obj: `int`, optional): Hoegroot de buffer moet zijn. Default is 1024
-            version (:obj: `float`, optional): De FRICP versie nummer. Default is FRICP.CURRENT_VERSION
-
-        Returns:
-            object:
+            version (:obj: `float`, optional): De FRICP versie nummer. Default is FRICP.CURRENT_VERSION (1.1)
         """
         self.request = request
         self.owner = owner
@@ -225,25 +219,32 @@ class FRICP:
             FRICP: fricp object
 
         """
-        # try:
-        fricp_array = pickle.load(fricp_binary_array)
-        fricp_object = FRICP(FRICP.Request.get_by_number(fricp_array[0]),  # request
-                             FRICP.Owner[FRICP.Owner.list()[fricp_array[1]]],  # owner
-                             FRICP.Owner[FRICP.Owner.list()[fricp_array[2]]],  # address
-                             FRICP.Response(fricp_array[3]),  # response
-                             fricp_array[4],  # data
-                             fricp_array[5],  # open
-                             fricp_array[6],  # buffer_size
-                             fricp_array[7])  # version
-        # TODO: deze exception moet weer bebouwt worden, maar ik wou dat hij heel hard crasht
+        try:
+            try:
+                fricp_array = pickle.load(fricp_binary_array)
+                # TODO: uitzoeken of dit pickle loaden ook kan zonder deze gare hack.
+                # pickle.load werkt alleen op de server en pickle.loads werkt alleen op de client, super raar.
+                # spelers: FRICP.to_binary `pickle.dumps()`, Server.ServerHandeler.handle() `self.rfile`, Server.ServerHandeler.reply() `wfile.write` en FRICP.send() `sock.send()`
+            except TypeError as error:
+                log.debug("failed to load pickle: %s, normal if client. Trying alternative method", error)
+                fricp_array = pickle.loads(fricp_binary_array)
+
+            fricp_object = FRICP(FRICP.Request.get_by_number(fricp_array[0]),  # request
+                                 FRICP.Owner[FRICP.Owner.list()[fricp_array[1]]],  # owner
+                                 FRICP.Owner[FRICP.Owner.list()[fricp_array[2]]],  # address
+                                 FRICP.Response(fricp_array[3]),  # response
+                                 fricp_array[4],  # data
+                                 fricp_array[5],  # open
+                                 fricp_array[6],  # buffer_size
+                                 fricp_array[7])  # version
         # TypeError exception
-        # except (Exception, pickle.UnpicklingError) as error:
-        #     # TODO: `Exception` als exception is eigenlijk superkut, moet een nameError ofzo zijn. Uitzoeken welke van toepassing is
-        #     log.error("Failed to build FRICP package: %s", error)
-        #     if type(fricp_object) is not FRICP:
-        #         fricp_object = None
-        #     raise FRICP.ValidationError(FRICP.Response.FAILED_TO_BUILD, fricp_object)
-        #     # TODO: pikt ValidationError wel `None` als FRICP object?
+        except (TypeError, pickle.UnpicklingError) as error:
+            log.error("Failed to build FRICP package: %s", error)
+            if "fricp_object" not in locals() or type(fricp_object) is not FRICP:
+                # TODO FRICP errors moeten kunnen worden getrowed zonder een fricp object
+                # Nu heb je een nep HARDWARE owner en nep PROCESSING address, wat totaal onwenselijk is natuurlijk.
+                fricp_object = FRICP(FRICP.Request.RESPONSE, FRICP.Owner.HARDWARE, FRICP.Owner.PROCESSING)
+            raise FRICP.ValidationError(FRICP.Response.FAILED_TO_BUILD, fricp_object)
         return fricp_object
 
     @staticmethod
@@ -263,9 +264,8 @@ class FRICP:
             fricp (FRICP): het object wat moet worden gecontroleerd
             expected (String): "REQUEST" of "RESPONSE", wat je verwacht wat voor paketje het is
         """
-        # fricp type is FRICP, maar op run-time geeft hij een error dat hij niet defined is.
         # valideren of er geen onbekende waardes inzitten
-        if fricp.version is not FRICP.CURRENT_VERSION:
+        if fricp.version != FRICP.CURRENT_VERSION:
             raise FRICP.ValidationError(FRICP.Response.VERSION_MISMATCH, fricp)
         if fricp.request not in FRICP.Request:
             raise FRICP.ValidationError(FRICP.Response.UNKNOWN_REQUEST, fricp)
@@ -315,7 +315,7 @@ class FRICP:
             # TODO: makkelijk kunnen switchen tussen unix socket en ip/poort
             sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             sock.connect(self.address.address)
-            sock.sendall(self.to_binary)
+            sock.send(self.to_binary)
         except socket.error as error:
             log.error("Failed to send data: %s.", error)
             sock.close()
@@ -330,13 +330,9 @@ class FRICP:
                 # log.debug(incoming)
                 if not incoming:
                     break
-            # TODO: zorgen dat dit werkt
-            # log.debug(pickle.loads(received))
-            # log.debug(pickle.load(received))
             received = FRICP.build(received)
             log.debug("recieved: %s", received.__dict__)
-            # TODO: EOFError en pickle errors kunnen niet meer voorkomen omdat `build()` het nu afhandeld
-        except (EOFError, pickle.UnpicklingError, FRICP.ValidationError) as error:
+        except FRICP.ValidationError as error:
             log.error("Failed to receive data: %s", error)
             # controleren of we wel een bruikbare object hebben ontvangen
             if type(received) is not FRICP:
