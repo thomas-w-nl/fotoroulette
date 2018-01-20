@@ -2,11 +2,11 @@ import pickle, socket
 from enum import Enum
 from src.common.log import *
 from src.processing.photo_data import PhotoData
+from configparser import ConfigParser
 
 
 class FRICP:
     # Foto Roulette Internal Communication Protocol
-    CURRENT_VERSION = 1.1
 
     class ValidationError(Exception):
         def __init__(self, error, fricp):
@@ -149,6 +149,13 @@ class FRICP:
             for owner in FRICP.Owner:
                 array.append(owner.name)
             return array
+
+    CURRENT_VERSION = 1.1
+
+    # Setting up config file
+    config = ConfigParser()
+    config.read("settings.conf")
+    config = config["Fricp"]
 
     def __init__(self, request: Request, owner: Owner, address: Owner, response: Response = Response.REQUEST, data=None,
                  open: bool = False, buffer_size: int = 1024, version: float = CURRENT_VERSION):
@@ -310,11 +317,15 @@ class FRICP:
         """
         # Verbinding maken en data versturen
         try:
+            address = FRICP.config[self.address.name + "_ADDR"], FRICP.config[self.address.name + "_PORT"]
             # TODO: check for open connection
-            log.debug("sending: %s", self.__dict__)
-            # TODO: makkelijk kunnen switchen tussen unix socket en ip/poort
-            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            sock.connect(self.address.address)
+            log.debug("sending: %s, to: %s", self.__dict__, address)
+            if address[0] != "UNIX":
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.connect((address[0], int(address[1])))
+            else:
+                sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                sock.connect(self.address.address)
             sock.send(self.to_binary)
         except socket.error as error:
             log.error("Failed to send data: %s.", error)

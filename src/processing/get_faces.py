@@ -9,7 +9,7 @@ from src.processing.photo_data import PhotoData, Photo, RangeSensor
 
 
 config = configparser.ConfigParser()
-config.read('fotoroulette.conf')
+config.read('settings.conf')
 
 DEBUG = config['General'].getint('DEBUG')
 class Face:

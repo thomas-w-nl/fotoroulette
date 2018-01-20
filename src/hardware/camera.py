@@ -28,7 +28,7 @@ class Camera:
 
 
         config = configparser.ConfigParser()
-        config.read('fotoroulette.conf')
+        config.read('settings.conf')
 
         width = config['Camera'].getint('CAMERA_RESOLUTION_H')
         height = config['Camera'].getint('CAMERA_RESOLUTION_V')
@@ -69,7 +69,7 @@ class Camera:
                 # self.rawCapture = PiRGBArray(self.camera)  # dit is redundant volgens mij
 
                 config = configparser.ConfigParser()
-                config.read('fotoroulette.conf')
+                config.read('settings.conf')
 
                 width = config['Camera'].getint('CAMERA_RESOLUTION_H')
                 height = config['Camera'].getint('CAMERA_RESOLUTION_V')

@@ -4,7 +4,7 @@ import time
 from src.common.log import *
 
 config = configparser.ConfigParser()
-config.read('fotoroulette.conf')
+config.read('settings.conf')
 
 try:
     import RPi.GPIO as GPIO

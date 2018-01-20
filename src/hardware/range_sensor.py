@@ -7,7 +7,7 @@ import time
 DEBUG = False
 
 config = configparser.ConfigParser()
-config.read('fotoroulette.conf')
+config.read('settings.conf')
 TRIG = config['RangeSensor'].getint('TRIG')
 ECHO = config['RangeSensor'].getint('ECHO')
 GELUIDSSNELHEID = config['RangeSensor'].getint('GELUIDSSNELHEID')

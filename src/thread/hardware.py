@@ -2,9 +2,6 @@ from src.processing.photo_data import PhotoData
 from src.thread.fricp import FRICP
 
 
-# TODO code testen
-
-
 # client code
 # TODO: owner is nu altijd PROCESSING terwijl GUI het ook zou kunnen aanroepen
 class Servo:
@@ -99,6 +96,7 @@ class VirtualHardware:
         Returns:
             int: gemete afstand
         """
+        # TODO: Leuk dat je documentatie toevoegt Thomas, maar dat kan je niet copy-pasten!
         distance = FRICP(FRICP.Request.HARDWARE_COLLECT_PHOTOS,
                          FRICP.Owner.PROCESSING,
                          FRICP.Owner.HARDWARE,

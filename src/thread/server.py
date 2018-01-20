@@ -86,7 +86,6 @@ class Server:
             Helemaal niks, jonguh BAM!
         """
 
-        # TODO: eigenlijk moet er ook een flag staan of het een socketserver of TCP/IP address is zodat je ook over internet dingen kan sturen. Unix socket is nu gehardcoded
         self.owner = owner
         self.server_address = owner.address
         self._serverStatus = self.server_status = self.ServerStatus.OFF
@@ -106,16 +105,22 @@ class Server:
             ServerStatus/Enum: Zodat je kan zien of hij goed is gestart!
         """
         if self.server_status is not self.ServerStatus.ON:
-            if os.path.exists(self.server_address):
-                log.debug("%s, path exists. Removing.", self.server_address)
-                os.remove(self.server_address)
+
             try:
-                self.socketServer = socketserver.UnixStreamServer(self.server_address, self.ServerHandeler)
+                address = FRICP.config[self.owner.name + "_ADDR"], FRICP.config[self.owner.name + "_PORT"]
+                if address[0] != "UNIX":
+                    # TODO: uitzoeken wat het vershil is tussen TCPServer en ThreadingTCPServer
+                    self.socketServer = socketserver.TCPServer((address[0], int(address[1])), self.ServerHandeler)
+                else:
+                    if os.path.exists(self.server_address):
+                        log.debug("%s, path exists. Removing.", self.server_address)
+                        os.remove(self.server_address)
+                    self.socketServer = socketserver.UnixStreamServer(self.server_address, self.ServerHandeler)
 
                 # Start the server in een thread zodat de code daarna nogsteeds word uitgevoerd.
                 threading.Thread(target=self.socketServer.serve_forever).start()
                 self.server_status = self.ServerStatus.ON
-                log.debug("Running %s server", self.owner.name)
+                log.debug("Running %s server on %s", self.owner.name, address)
             except OSError as error:
                 log.error("failed to open server, OSError: %s. Current serverstatus: %s", error.strerror,
                           self.server_status.name)
@@ -176,6 +181,7 @@ class Server:
         """
         self._serverStatus = value
         # Server uitzetten zodat je geen zombie processen kan krijgen
+        # TODO: dit zorgt er nu wel voor dat de server 2x word gesloten, kan opgelost worden met de bovenstaande TODO
         if value == self.ServerStatus.OFF:
             self.close_server()
 

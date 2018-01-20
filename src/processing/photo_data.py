@@ -3,7 +3,7 @@ import configparser
 import numpy as np
 
 config = configparser.ConfigParser()
-config.read('fotoroulette.conf')
+config.read('settings.conf')
 
 DEBUG = False
 

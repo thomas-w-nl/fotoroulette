@@ -54,7 +54,7 @@ def collect_photos() -> PhotoData:
     data = PhotoData()
 
     config = configparser.ConfigParser()
-    config.read('fotoroulette.conf')
+    config.read('settings.conf')
 
     start_angle = config['Servo'].getint('MIN_SERVO_POS')
     stop_angle = config['Servo'].getint('MAX_SERVO_POS')
