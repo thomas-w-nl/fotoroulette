@@ -3,16 +3,22 @@ import cv2
 
 from src.thread.hardware import RangeSensor, Servo, Camera
 from src.processing.photo_data import PhotoData
+from src.common.log import log
 
 DEBUG = False
 FAKE = False
 
 
 def collect_photos() -> PhotoData:
+
     """
-    Maakt de fotos en meet de afstand om een bepaald aantal graden
-    :return: Alle fotos met range sensor data
+     Maakt de fotos en meet de afstand om een bepaald aantal graden. Deprecated, de hardware layer collect_photos
+     is sneller.
+    Returns:
+        Een photo data object met de verzamelde data en foto's
+
     """
+    log.waring("The processing layer collect_photos method is now deprecated, use the hardware service")
     data = PhotoData()
 
     config = configparser.ConfigParser()
