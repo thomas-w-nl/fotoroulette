@@ -1,7 +1,6 @@
 import pickle, socket
 from enum import Enum
 from src.common.log import *
-from src.processing.photo_data import PhotoData
 from configparser import ConfigParser
 
 
@@ -100,7 +99,7 @@ class FRICP:
         HARDWARE_GET_RANGE_SENSOR_DISTANCE = (101, None)
         HARDWARE_GET_SERVO_POSITION = (102, None)
         HARDWARE_SET_SERVO_POSITION = (103, list)
-        HARDWARE_COLLECT_PHOTOS = (104, PhotoData)
+        HARDWARE_COLLECT_PHOTOS = (104, None)
 
         #: 200-299 processing
         PROCESSING_MAKE_PHOTOS = (200, None)
