@@ -110,7 +110,7 @@ class Server:
                 address = FRICP.config[self.owner.name + "_ADDR"], FRICP.config[self.owner.name + "_PORT"]
                 if address[0] != "UNIX":
                     # TODO: uitzoeken wat het vershil is tussen TCPServer en ThreadingTCPServer
-                    self.socketServer = socketserver.TCPServer((address[0], int(address[1])), self.ServerHandeler)
+                    self.socketServer = socketserver.TCPServer(('', int(address[1])), self.ServerHandeler)
                 else:
                     if os.path.exists(self.server_address):
                         log.debug("%s, path exists. Removing.", self.server_address)

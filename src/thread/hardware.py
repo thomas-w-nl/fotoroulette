@@ -89,8 +89,8 @@ class VirtualHardware:
     @staticmethod
     def collect_photos() -> PhotoData:
         """
-        verstuurd `HARDWARE_GET_RANGE_SENSOR_DISTANCE` naar de Hardware FRICP server.
-        krijg de afstand van de range sensor
+        verstuurd `HARDWARE_COLLECT_PHOTOS` naar de Hardware FRICP server.
+        Start 
         kan een FRICP.ValidationError exception throwen
 
         Returns:
