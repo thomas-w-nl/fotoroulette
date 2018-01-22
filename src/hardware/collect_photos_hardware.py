@@ -47,7 +47,7 @@ class SensorFactory:
         return True
 
 
-def collect_photos() -> PhotoData:
+def collect_photos(camera: Camera):
     """
         Maakt de fotos en meet de afstand om een bepaald aantal graden
         :return: Alle fotos met range sensor data
@@ -64,8 +64,6 @@ def collect_photos() -> PhotoData:
     # de step size voor de volgende meeting
     rs_step_size = config['RangeSensor'].getint('SENSOR_FOV')
     c_step_size = config['General'].getint('CAMERA_STEP_SIZE')
-
-    camera = Camera()
 
     current_pos = start_angle
 
