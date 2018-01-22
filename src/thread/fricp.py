@@ -51,6 +51,7 @@ class FRICP:
         """
         Het response van de server, is 0 als het een request is
         """
+        # TODO return type aangeven zoals bij request.
         REQUEST = 0
         #: 100-199 is success range
         SUCCESS = 100
@@ -322,7 +323,7 @@ class FRICP:
         try:
             address = FRICP.config[self.address.name + "_ADDR"], FRICP.config[self.address.name + "_PORT"]
             # TODO: check for open connection
-            log.debug("sending: %s, to: %s", self.__dict__, address)
+            log.debug("sending: %s, to: %s", self.__dict__, "Unix-socket" if address[0] == "UNIX" else address)
             if address[0] != "UNIX":
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock.connect((address[0], int(address[1])))

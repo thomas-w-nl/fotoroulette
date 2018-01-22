@@ -25,7 +25,7 @@ class Server:
 
             """
             try:
-                log.debug("Incoming package")
+                log.info("Incoming package")
                 self.data = FRICP.build(self.rfile)
                 log.debug("recieved: %s", self.data.__dict__)
                 FRICP.validate(self.data, "REQUEST")
@@ -120,7 +120,8 @@ class Server:
                 # Start the server in een thread zodat de code daarna nogsteeds word uitgevoerd.
                 threading.Thread(target=self.socketServer.serve_forever).start()
                 self.server_status = self.ServerStatus.ON
-                log.debug("Running %s server on %s", self.owner.name, address)
+                log.debug("Running %s server on %s", self.owner.name, "Unix-socket" if address[0] == "UNIX" else (
+                socket.gethostbyname(socket.gethostname()), address[1]))
             except OSError as error:
                 log.error("failed to open server, OSError: %s. Current serverstatus: %s", error.strerror,
                           self.server_status.name)
