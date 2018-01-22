@@ -51,6 +51,7 @@ class FRICP:
         """
         Het response van de server, is 0 als het een request is
         """
+        # TODO return type aangeven zoals bij request.
         REQUEST = 0
         #: 100-199 is success range
         SUCCESS = 100

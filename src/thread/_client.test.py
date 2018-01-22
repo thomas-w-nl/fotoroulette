@@ -18,7 +18,6 @@ if __name__ == "__main__":
 
     # myServer = Server(FRICP.Owner.HARDWARE)
     # myServer.open_server()
-
     try:
         response = FRICP.send(package)
         log.debug("succesvol verzonden en ontvangen YES!")

@@ -25,7 +25,7 @@ class Server:
 
             """
             try:
-                log.debug("Incoming package")
+                log.info("Incoming package")
                 self.data = FRICP.build(self.rfile)
                 log.debug("recieved: %s", self.data.__dict__)
                 FRICP.validate(self.data, "REQUEST")
