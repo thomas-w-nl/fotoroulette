@@ -1,6 +1,7 @@
 import configparser
 from typing import Callable
 
+from src.common.log import log
 from src.hardware import servo, range_sensor
 from src.hardware.camera import Camera
 from src.processing.photo_data import PhotoData
@@ -52,6 +53,7 @@ def collect_photos() -> PhotoData:
         :return: Alle fotos met range sensor data
     """
     data = PhotoData()
+    log.info("Using collect photos directly on hardware")
 
     config = configparser.ConfigParser()
     config.read('settings.conf')
