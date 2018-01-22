@@ -159,11 +159,11 @@ class Server:
             if self.owner == FRICP.Owner.HARDWARE:
                 hardware.delete()
 
+            log.info("Stopped " + str(self.owner) + " server, current serverstatus: " + str(self.server_status))
         except socket.error as msg:
             # TODO: geeft dit ding wel een socket.error als het mis gaat? Is het geen OSError?
             log.error("Failed to close server: %s. Current serverstatus: %s", msg, self.server_status.name)
         finally:
-            log.info("Stopping " + str(self.owner) + " server with status " + str(self.server_status))
             return self.server_status
 
     @property
