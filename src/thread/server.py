@@ -90,6 +90,7 @@ class Server:
         self.server_address = owner.address
         self._serverStatus = self.server_status = self.ServerStatus.OFF
         self.socketServer = None
+        self.address = FRICP.config[self.owner.name + "_ADDR"], FRICP.config[self.owner.name + "_PORT"]
 
     def __del__(self):
         """
@@ -107,10 +108,10 @@ class Server:
         if self.server_status is not self.ServerStatus.ON:
 
             try:
-                address = FRICP.config[self.owner.name + "_ADDR"], FRICP.config[self.owner.name + "_PORT"]
-                if address[0] != "UNIX":
+
+                if self.address[0] != "UNIX":
                     # TODO: uitzoeken wat het vershil is tussen TCPServer en ThreadingTCPServer
-                    self.socketServer = socketserver.TCPServer(('', int(address[1])), self.ServerHandeler)
+                    self.socketServer = socketserver.TCPServer(('', int(self.address[1])), self.ServerHandeler)
                 else:
                     if os.path.exists(self.server_address):
                         log.debug("%s, path exists. Removing.", self.server_address)
@@ -120,8 +121,8 @@ class Server:
                 # Start the server in een thread zodat de code daarna nogsteeds word uitgevoerd.
                 threading.Thread(target=self.socketServer.serve_forever).start()
                 self.server_status = self.ServerStatus.ON
-                log.debug("Running %s server on %s", self.owner.name, "Unix-socket" if address[0] == "UNIX" else (
-                socket.gethostbyname(socket.gethostname()), address[1]))
+                log.debug("Running %s server on %s", self.owner.name, "Unix-socket" if self.address[0] == "UNIX" else (
+                socket.gethostbyname(socket.gethostname()), self.address[1]))
             except OSError as error:
                 log.error("failed to open server, OSError: %s. Current serverstatus: %s", error.strerror,
                           self.server_status.name)
@@ -151,7 +152,8 @@ class Server:
         """
         try:
             self.socketServer.server_close()
-            os.remove(self.server_address)
+            if self.address[0] == "UNIX":
+                os.remove(self.server_address)
             self.server_status = self.ServerStatus.OFF
 
             if self.owner == FRICP.Owner.HARDWARE:
@@ -164,7 +166,6 @@ class Server:
             log.info("Stopping " + str(self.owner) + " server with status " + str(self.server_status))
             return self.server_status
 
-    # TODO: close_server() moet eigenlijk vervangen worden door server_status
     @property
     def server_status(self) -> ServerStatus:
         """
@@ -177,17 +178,16 @@ class Server:
     def server_status(self, value: ServerStatus):
         """
         Deze functie moet eigenlijk private zijn.
-        schakelt ook de server uit, als je hem op off zet. Om zombie processen tegen te gaan.
-        Het is nog steeds niet de bedoeling dat je deze setter gebruikt
+        Het is niet de bedoeling dat je deze setter gebruikt
 
         Args:
             value (ServerStatus/Emum): de waarde dat de server moet hebben
         """
         self._serverStatus = value
+        log.debug("Server_status changed: %s", value.name)
         # Server uitzetten zodat je geen zombie processen kan krijgen
-        # TODO: dit zorgt er nu wel voor dat de server 2x word gesloten, kan opgelost worden met de bovenstaande TODO
-        if value == self.ServerStatus.OFF:
-            self.close_server()
+        # if value == self.ServerStatus.OFF:
+        #     self.close_server()
 
 
 if __name__ == "__main__":
