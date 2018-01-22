@@ -78,6 +78,9 @@ class FRICP:
         CONNECTION_TIMEOUT = 221  # heeft dit wel nut? # TODO: implementeren
         UNABLE_TO_SEND = 222
 
+        # 230-239 handling errors
+        HANDLING_NOT_ENOUGH_FACES_ERROR = 230
+
         #: 300-399 is de opdracht range
         CLOSE_CONNECTION = 301  # unused
 

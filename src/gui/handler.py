@@ -1,18 +1,39 @@
 import qrcode
+import os
+import threading
+
 import gi
 import threading
+import signal
 gi.require_version('Gtk', '3.0')
 
-from gi.repository import Gtk, GdkPixbuf, Gdk, GObject
+from gi.repository import Gtk, GdkPixbuf, Gdk, GObject, GLib
 from gi.repository.GdkPixbuf import Pixbuf
-from src.gui import networking
+from src.gui.networking import NetworkTask
+from src.common.log import *
+
+GObject.threads_init()
 
 class Handler:
     def __init__(self, window):
         self.window = window
 
+    def _game_menu_error(self, error_message: str) -> bool:
+        self.window._builder.get_object("FidgetSpinner").stop()
+        self.window.close_popup()
+        self.window._stack.set_visible_child_name("game-menu")
+        error_bar = self.window._builder.get_object("GameMenuError")
+        error_bar.set_text(error_message)
+        error_bar.set_sensitive(True)
+
+        GLib.timeout_add_seconds(10, lambda: error_bar.set_sensitive(False))
+
     def on_start_clicked(self, button):
         self.window._stack.set_visible_child_name("game-menu")
+
+    def on_pick_game_clicked(self, *args):
+        self.window._stack.set_visible_child_name("game-menu")
+        os.kill(self.window._song_pid + 1, signal.SIGKILL)
 
     def on_back_clicked(self, *args):
         self.window._stack.set_visible_child_name("game-menu")
@@ -20,6 +41,7 @@ class Handler:
 
     def on_quit_clicked(self, *args):
         self.window._stack.set_visible_child_name("splash-screen")
+        self.window._photos.clear()
 
         def callback(self, response):
             self._builder.get_object("unique-code").set_text(response)
@@ -28,7 +50,7 @@ class Handler:
         photos = self.window._photos
 
         if photos.is_empty():
-            # TODO: Show dialog
+            self._game_menu_error("[403]: Geen gezichten opgeslagen")
             return
 
         photos._show_arrows()
@@ -42,7 +64,7 @@ class Handler:
         try:
             self.window._builder.get_object("PreviewPicture").set_from_pixbuf(photos.previous_photo())
         except IndexError:
-            print("Error")
+            log.error("Error")
 
         return True
 
@@ -59,47 +81,56 @@ class Handler:
 
     def on_save_clicked(self, *args):
         def callback(response):
+            self.window._builder.get_object("FidgetSpinner").stop()
             self.window._builder.get_object("unique-code").set_text(response)
             self.window._stack.set_visible_child_name("save-screen")
 
             photo = qrcode.make("https://fys.1hz.nl/nl/pictures/%s" % response)
+            photo = photo.get_image().resize((200, 200))
             photo.save("qr-code.png", "PNG")
 
             image = Pixbuf.new_from_file("qr-code.png")
             self.window._builder.get_object("qr-code").set_from_pixbuf(image)
             os.remove("qr-code.png")
 
-            self.window.close_popup()
+            return False
 
-            print(response)
+        if self.window._photos.is_empty():
+            self._game_menu_error("[403]: Geen gezichten opgeslagen")
+            return
 
-            return True
+        self.window._stack.set_visible_child_name("photo-wait")
+        self.window._builder.get_object("FidgetSpinner").start()
+        self.window.close_popup()
 
-        networking.send_message("{\"message\": \"command\", \"name\": \"send_photos\"}\n", callback)
+        NetworkTask(callback,
+                    self._game_menu_error,
+                    "{\"message\": \"command\", \"name\": \"send_photos\"}\n").start()
 
     def open_save_window(self, *args):
         self.window.show_popup("StopGameDialog")
-
-    def on_dialog_close(self, *args):
-        print("closed")
 
     def on_information_clicked(self, button):
         self.window.show_popup("InfoDialog")
 
     def play_game_pressed(self, button):
-        # We need to simplify the name to something we can send over the network
-
-        #self.window._builder.get_object("FidgetSpinner").start()
-        #self.window._stack.set_visible_child_name("photo-wait")
+        # Enable the waiting screen
+        self.window._stack.set_visible_child_name("photo-wait")
+        self.window._builder.get_object("FidgetSpinner").start()
         self.window.close_popup()
-        #t = threading.Thread(target=self.window._builder.get_object("FidgetSpinner").start)
-        #t.start()
+
+        # We need to simplify the name to something we can send over the network
         name = self.window._builder.get_object("GameTitle").get_text().lower().replace(' ', '_')
         json_message = "{\"message\": \"play_game\", \"name\": \"%s\"}\n" % name
-        networking.send_message(json_message, self.window.set_photo)
+
+        # Send it over the network in a thread
+        thread = NetworkTask(self.window.set_photo,
+                             self._game_menu_error,
+                             json_message)
+        thread.start()
 
     def _show_game_popup(self, name: str, description: str, example_image: str, song: str) -> Gtk.Window:
-        self.window._song = song
+        self.window._song_name = song
 
         popup = self.window.show_popup("GameDialog")
         image = Pixbuf.new_from_file(example_image)

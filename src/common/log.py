@@ -10,6 +10,12 @@ logging.basicConfig(
     format='%(levelname)-8s %(asctime)s [%(filename)s:%(lineno)d] %(message)s',
     datefmt='%d-%m-%Y:%H:%M:%S',
     level=logging.DEBUG)
+
+# https://docs.python.org/3/library/logging.html#logging-levels
+# 0 = debug
+# 20 = info en erger
+logger.setLevel(20)
+
 log = logger
 
 # check if file is run as module

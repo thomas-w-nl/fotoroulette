@@ -4,14 +4,16 @@ from typing import List
 import numpy as np
 
 from src.common.log import *
+from src.processing import spel
 from src.common.tools import *
 from src.processing.photo_data import PhotoData, Photo, RangeSensor
-
 
 config = configparser.ConfigParser()
 config.read('settings.conf')
 
 DEBUG = config['General'].getint('DEBUG')
+
+
 class Face:
     def __init__(self, opencv_face, photo_angle: float, face_image: np.array):
         """
@@ -50,12 +52,13 @@ class Faces:
         yield self.faces
 
 
-def get_faces(photos_with_data: PhotoData) -> List[np.array]:
+def get_faces(photos_with_data: PhotoData, game_type: spel.Games) -> List[np.array]:
     """
     Returned de uniek gezichten uit meerdere fotos die voldoen aan een bepaalde drempelwaarde.
 
     Args:
        photos_with_data: De fotos met sensor en orientatie data
+       game_type: Het type game wat er gespeeld wordt.
 
     Returns:
        Een lijst met de gezichten.
@@ -91,7 +94,7 @@ def get_faces(photos_with_data: PhotoData) -> List[np.array]:
 
     for photo, angle in photos:
         if DEBUG:
-            print("\n----- next photo ----- ")
+            log.debug("\n----- next photo ----- ")
 
         for opencv_face in _opencv_get_faces(photo):
 
@@ -100,7 +103,10 @@ def get_faces(photos_with_data: PhotoData) -> List[np.array]:
             if not _confident(face, range_sensor):
                 continue
 
-            face.image = _cut_out_head(face, photo)
+            cutout_padding_factor = config['FaceDetection'].getfloat(
+                str(game_type).split('.')[1] + '_CUTOUT_PADDING_FACTOR')
+
+            face.image = _cut_out_head(face, photo, cutout_padding_factor)
             _append_or_replace(all_faces, face)
 
             # mark a detected face
@@ -112,7 +118,7 @@ def get_faces(photos_with_data: PhotoData) -> List[np.array]:
                 # calculate face size in degrees
                 left_bound = _location_to_angle(angle, x)
                 right_bound = _location_to_angle(angle, x + w)
-                print("Face size (in degrees):", abs(left_bound - right_bound))
+                log.debug("Face size (in degrees):", abs(left_bound - right_bound))
 
     # display debug info with photos
     if DEBUG >= 1:
@@ -121,7 +127,7 @@ def get_faces(photos_with_data: PhotoData) -> List[np.array]:
             cv2.waitKey()
 
     if DEBUG >= 1:
-        print("number of faces found:", len(all_faces))
+        log.debug("number of faces found:", len(all_faces))
     return all_faces
 
 
@@ -152,7 +158,7 @@ def _confident(face: Face, range_sensor: RangeSensor) -> bool:
         return True
 
     if DEBUG >= 1:
-        print("discarding a face, not confident enough (", total_confidence, ")")
+        log.debug("discarding a face, not confident enough (", total_confidence, ")")
     return False
 
 
@@ -175,12 +181,12 @@ def _append_or_replace(all_faces: List[Face], cur_face: Face) -> bool:
     nearby_face_angle_diff_max = config['FaceDetection'].getfloat('NEARBY_FACE_ANGLE_DIFF_MAX')
 
     if DEBUG >= 1:
-        print("- Comparing", len(all_faces), " faces to current face -")
+        log.debug("- Comparing", len(all_faces), " faces to current face -")
 
     for other_face in all_faces:
 
         if DEBUG >= 2:
-            print("Comparing face: other:", other_face.angle, "current:", cur_face.angle)
+            log.debug("Comparing face: other:", other_face.angle, "current:", cur_face.angle)
         # if het huidige gezicht dicht bij een oud gezicht zit
         if abs(other_face.angle - cur_face.angle) < nearby_face_angle_diff_max:
 
@@ -190,13 +196,13 @@ def _append_or_replace(all_faces: List[Face], cur_face: Face) -> bool:
 
             if other_face_dist_to_photo_center > cur_face_dist_to_photo_center:
                 if DEBUG >= 2:
-                    print("Nearby faces: Replacing face")
+                    log.debug("Nearby faces: Replacing face")
                 all_faces.remove(other_face)
                 all_faces.append(cur_face)
                 return True
 
             if DEBUG >= 2:
-                print("Nearby faces: Skipping face, not best position")
+                log.debug("Nearby faces: Skipping face, not best position")
             return False
 
     # als er geen andere gezichten zijn of die zijn allemaal ver dan voegen we het gezicht toe
@@ -214,8 +220,8 @@ def _opencv_get_faces(photo: np.array):
     Returns:
        Een list met de coordinaten van de gezichten en een lijst met confidence scores
     """
-
-    log.debug("Opencv Input image size:" + str(photo.shape))
+    if DEBUG >= 2:
+        log.debug("Opencv Input image size:" + str(photo.shape))
 
     img_gray = cv2.cvtColor(photo, cv2.COLOR_BGR2GRAY)
 
@@ -236,11 +242,11 @@ def _opencv_get_faces(photo: np.array):
         outputRejectLevels=True
     )
 
-    if len(confidences):
+    if len(confidences) and DEBUG >= 2:
         log.debug("face confidence " + str(confidences[0]))
 
     if DEBUG and len(faces):
-        print("got " + str(len(faces)) + " faces! (in one foto)")
+        log.debug("got " + str(len(faces)) + " faces! (in one foto)")
 
     return zip(faces, confidences)
 
@@ -280,7 +286,7 @@ def _crop_image(img: np.array, rect: list, padding: int) -> np.array:
     return img[y:(y + h), x:(x + w)]
 
 
-def _cut_out_head(face: Face, photo: np.array) -> np.array:
+def _cut_out_head(face: Face, photo: np.array, cut_out_paddign: float) -> np.array:
     """
     Haalt een gezicht uit de foto en geeft die weer terug als een aparte foto
 
@@ -291,10 +297,9 @@ def _cut_out_head(face: Face, photo: np.array) -> np.array:
     Returns:
         Het gezicht als een aparte foto
     """
-    CUTOUT_PADDING_FACTOR = config['FaceDetection'].getfloat('CUTOUT_PADDING_FACTOR')
     x, y, w, h = face.pos
 
-    padding = int(round(w * CUTOUT_PADDING_FACTOR))
+    padding = int(round(w * cut_out_paddign))
     cutout = _crop_image(photo, face.pos, padding)
 
     return cutout

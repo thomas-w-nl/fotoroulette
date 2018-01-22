@@ -4,7 +4,7 @@ from functools import partial
 from src.common.log import *
 import time
 
-DEBUG = False
+DEBUG = 0
 
 config = configparser.ConfigParser()
 config.read('settings.conf')
@@ -76,8 +76,8 @@ def _get_distance_uncorrected() -> int:
     time.sleep(0.00001)
     GPIO.output(TRIG, False)
 
-    if DEBUG:
-        print("Waiting for callbacks")
+    if DEBUG > 1:
+        log.info("Waiting for callbacks")
 
     # wacht op de pulse event tot maximaal 0.1 seconde (15 meter)
     completed = event.wait(timeout=0.1)
@@ -104,12 +104,12 @@ def _edge_callback(event, _):
 
     if GPIO.input(ECHO):
         global_time_start = time.time()
-        if DEBUG:
-            print("high callback")
+        if DEBUG > 2:
+            log.debug("high callback")
     else:
         global_time_end = time.time()
-        if DEBUG:
-            print("low callback")
+        if DEBUG > 2:
+            log.debug("low callback")
 
         # debounce door alleen te stoppen als we gestart zijn
         if global_time_start:

@@ -1,0 +1,58 @@
+VERSUS:
+  overlay: "assets/overlays/versus.png"
+  background_color: !!python/tuple [145, 140, 138]
+  player_count: 2
+  offsets:
+    - offset_y: -50
+      offset_x: 0
+      minus_image_width: 0
+    - offset_y: -50
+      offset_x: -100
+      minus_image_width: 0
+
+WANTED:
+  overlay: "assets/overlays/wanted.png"
+  player_count: 1
+  offsets:
+    - offset_y: -50
+      offset_x: -50
+      minus_image_width: 120
+
+SUPERHEROES:
+  overlay: "assets/overlays/superheroes_transparent.png"
+  player_count: 7
+  extra_background: "assets/overlays/superheroes_solid.png"
+  offsets:
+    - offset_y: -10
+      offset_x: -47
+      minus_image_width: 270
+    - offset_y: -35
+      offset_x: -29
+      minus_image_width: 270
+    - offset_y: -36
+      offset_x: -67
+      minus_image_width: 270
+    - offset_y: -52
+      offset_x: -19
+      minus_image_width: 275
+    - offset_y: -50
+      offset_x: -80
+      minus_image_width: 280
+    - offset_y: -64
+      offset_x: -91
+      minus_image_width: 275
+    - offset_y: -56.5
+      offset_x: -9
+      minus_image_width: 280
+
+LOVEMETER:
+  overlay: "assets/overlays/lovemeter.png"
+  background_color: !!python/tuple [249, 81, 161]
+  player_count: 2
+  offsets:
+    - offset_y: -23
+      offset_x: -28
+      minus_image_width: 120
+    - offset_y: -23
+      offset_x: -71.5
+      minus_image_width: 120
