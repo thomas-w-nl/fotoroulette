@@ -106,6 +106,10 @@ def get_faces(photos_with_data: PhotoData, game_type: spel.Games) -> List[np.arr
             cutout_padding_factor = config['FaceDetection'].getfloat(
                 str(game_type).split('.')[1] + '_CUTOUT_PADDING_FACTOR')
 
+
+            if cutout_padding_factor is None:
+                log.error("Error reading config file for padding factor!")
+
             face.image = _cut_out_head(face, photo, cutout_padding_factor)
             _append_or_replace(all_faces, face)
 
@@ -286,7 +290,7 @@ def _crop_image(img: np.array, rect: list, padding: int) -> np.array:
     return img[y:(y + h), x:(x + w)]
 
 
-def _cut_out_head(face: Face, photo: np.array, cut_out_paddign: float) -> np.array:
+def _cut_out_head(face: Face, photo: np.array, cut_out_padding: float) -> np.array:
     """
     Haalt een gezicht uit de foto en geeft die weer terug als een aparte foto
 
@@ -299,7 +303,7 @@ def _cut_out_head(face: Face, photo: np.array, cut_out_paddign: float) -> np.arr
     """
     x, y, w, h = face.pos
 
-    padding = int(round(w * cut_out_paddign))
+    padding = int(round(w * cut_out_padding))
     cutout = _crop_image(photo, face.pos, padding)
 
     return cutout

@@ -61,7 +61,7 @@ def handle(fricp: FRICP) -> object:
             data = hw_range_sensor.get_distance()
 
         if fricp.request == FRICP.Request.HARDWARE_COLLECT_PHOTOS:
-            data = collect_photos()
+            data = collect_photos(camera)
     except Exception as error:
         log.error("Error while handeling request: %s", error)
         raise FRICP.ValidationError(FRICP.Response.UNKNOWN_HANDLING_ERROR, fricp)

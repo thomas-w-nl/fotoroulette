@@ -22,19 +22,32 @@ from src.processing.netwerk import send_photos_by_path, UploadException
 from src.processing.spel import *
 from src.thread.hardware import VirtualHardware
 
-# Check whether we're in a raspberry pi or not
-try:
-    import RPi.GPIO as GPIO
-except ImportError:
-    print("Running in a fake environment")
-    print("This is very dangerous regarding to errors. Please debug using ImportError and ModuleNotFound exeptions")
-    import pickle
+# Setting up config file
+config = ConfigParser()
+config.read("settings.conf")
+config = config["Fricp"]
+SYSTEM_SETUP = config['SYSTEM_SETUP']
 
-    FAKE_ENV = True
-    with open('real_2_personen_new.pkl', 'rb') as _file:
-        fake_data = pickle.load(_file)
-else:
+# check of special system config
+if SYSTEM_SETUP == "HW_ON_PI_PROCESS_AND_GUI_ON_LAPTOP":
+
     FAKE_ENV = False
+    log.info("System setup: " + SYSTEM_SETUP)
+else:
+    # Check whether we're in a raspberry pi or not
+    try:
+        import RPi.GPIO as GPIO
+    except ImportError:
+
+        log.debug("Running in a fake environment")
+        import pickle
+
+        FAKE_ENV = True
+        with open('real_2_personen_new.pkl', 'rb') as _file:
+            fake_data = pickle.load(_file)
+
+    else:
+        FAKE_ENV = False
 
 
 def send_message(message : str, address = "/tmp/python-gui-ipc") -> str:
@@ -168,9 +181,11 @@ class IPCServer(socketserver.ThreadingMixIn, socketserver.UnixStreamServer):
 
 if __name__ == "__main__":
     path = Path("/tmp/python-processing-ipc")
+
     if path.exists():
         path.unlink()
     server = IPCServer("/tmp/python-processing-ipc", IPCHandler)
 
+    log.info("Starting processing server on adress:" + str(server.server_address))
     server.serve_forever()
     server.shutdown()
