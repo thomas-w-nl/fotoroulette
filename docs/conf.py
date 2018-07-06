@@ -19,8 +19,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
-
+sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../src'))
 
 # -- General configuration ------------------------------------------------
 
@@ -31,9 +31,17 @@ sys.path.insert(0, os.path.abspath('..'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc',
+extensions = \
+   ['sphinx.ext.autodoc',
     'sphinx.ext.todo',
+    'sphinx.ext.napoleon',
+    'sphinx_autodoc_typehints',
     'sphinx.ext.viewcode']
+
+napoleon_numpy_docstring = False
+napoleon_include_init_with_doc = True
+napoleon_include_private_with_doc = True
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -49,8 +57,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Vakantiekieker'
-copyright = '2017, Valentijn van de Beek, Thomas Wiggers, Michel Jonk, Noeël Moeskops, Theo Bouwman'
-author = 'Valentijn van de Beek, Thomas Wiggers, Michel Jonk, Noeël Moeskops, Theo Bouwman'
+copyright = '2017, Valentijn Beek, Thomas Wiggers, Noeël Moeskops, Theo Bouwman'
+author = 'Valentijn Beek, Thomas Wiggers, Noeël Moeskops, Theo Bouwman'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -145,7 +153,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Vakantiekieker.tex', 'Vakantiekieker Documentation',
-     'Valentijn van de Beek, Thomas Wiggers, Michel Jonk, Noeël Moeskops, Theo Bouwman', 'manual'),
+     'Valentijn Beek, Thomas Wiggers, Noeël Moeskops, Theo Bouwman', 'manual'),
 ]
 
 
@@ -169,6 +177,3 @@ texinfo_documents = [
      author, 'Vakantiekieker', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
