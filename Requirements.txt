@@ -19,5 +19,5 @@ python-dateutil==2.6.1
 qrcode==5.3
 requests==2.18.4
 six==1.11.0
-urllib3==1.22
+urllib3==1.24.2
 wcwidth==0.1.7
