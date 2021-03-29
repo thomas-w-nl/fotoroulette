@@ -12,7 +12,7 @@ numpy==1.14.0
 packaging==16.8
 Pillow==5.0.0
 pycairo==1.15.4
-Pygments==2.2.0
+Pygments==2.7.4
 pygobject==3.26.1
 pyparsing==2.2.0
 python-dateutil==2.6.1
